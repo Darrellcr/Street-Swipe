@@ -42,8 +42,11 @@ class GameScene: SKScene {
     private var frameCount: Int = 0
     private var updateFramePer: Int = 3
     
+    private var cameraX = 0.0
+    
     override func didMove(to view: SKView) {
         self.backgroundColor = .black
+        print(self.size.width)
         
         let roadTexture = SKTexture(imageNamed: "road")
         roadTexture.filteringMode = .nearest
@@ -54,8 +57,16 @@ class GameScene: SKScene {
         for i in 0..<3 {  // 👈 Add 3 stacked roads
             yOffset = addRoadSegments(startY: yOffset, replicaIndex: i, texture: roadTexture) - 1
         }
+    }
+    
+    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+        if gesture.direction == .left {
+            cameraX -= 0.35
+        } else if gesture.direction == .right {
+            cameraX += 0.35
+        }
         
-        print(nodeScales)
+        cameraX = max(-0.35, min(0.35, cameraX))
     }
     
     func addRoadSegments(startY: CGFloat, replicaIndex: Int, texture: SKTexture) -> CGFloat {
@@ -103,11 +114,11 @@ class GameScene: SKScene {
     }
     
     func spawnStaticObstacle() {
-        print("Static object spawned")
+//        print("Static object spawned")
         // ➊ pilih index segmen yang 3–4 layar di depan
         let ahead = nodePositions.count - 1                           // segmen di depan pemain
         let spawnIndex = (bottom + ahead) % nodePositions.count
-        print(spawnIndex)
+//        print(spawnIndex)
 
         // ➋ buat sprite
         let sprite = SKSpriteNode(imageNamed: "chicken")   // ganti dengan aset Anda
@@ -127,11 +138,11 @@ class GameScene: SKScene {
     }
 
     func spawnDynamicObstacle() {
-        print("Dynamic object spawned")
+//        print("Dynamic object spawned")
         // ➊ pilih index segmen yang 3–4 layar di depan
         let ahead = nodePositions.count - 1                           // segmen di depan pemain
         let spawnIndex = (bottom + ahead) % nodePositions.count
-        print(spawnIndex)
+//        print(spawnIndex)
 
         // ➋ buat sprite
         let sprite = SKSpriteNode(imageNamed: "motor")   // ganti dengan aset Anda
@@ -151,17 +162,23 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
+        var i = 0
+        let numNode = self.nodePositions.count
         if frameCount == 0 {
-            var i = 0
-            let numNode = self.nodePositions.count
-            
+            var roadWidths: [CGFloat] = Array(repeating: 0.0, count: self.nodePositions.count)
+
             road.enumerateChildNodes(withName: "roadSegment") { node, _ in
                 guard let node = node as? SKSpriteNode else { return }
                 var idx = (-self.bottom + i + 1) % numNode
                 if idx < 0 {
                     idx += numNode
                 }
+//                let shift = -0.3 + ((self.cameraX + 10) * 0.6 / 20)
+                let roadSegmentShift = node.size.width * self.cameraX
+                roadWidths[idx] = node.size.width
+                self.nodePositions[idx].x = self.size.width / 2 - roadSegmentShift
                 node.position = self.nodePositions[idx]
+                
                 node.size.height = self.nodeHeights[idx]
                 node.xScale = self.nodeScales[idx]
                 i += 1
@@ -176,7 +193,7 @@ class GameScene: SKScene {
             }
             
             if staticObstacles.count > 0{
-                print("Static obs count: \(staticObstacles.count)")
+//                print("Static obs count: \(staticObstacles.count)")
             }
             
             // --- update every obstacle ---------------------------------
@@ -184,19 +201,24 @@ class GameScene: SKScene {
                 
                 // konversi index cache → index layar
                 let segIdx = (obs.index - bottom + nodePositions.count) % nodePositions.count
-                print("Static \(idx) = \(segIdx)")
+//                print("Static \(idx) = \(segIdx)")
 
                 // ambil data cache segIdx
                 let pos   = nodePositions[segIdx]
-                let scale = nodeScales[segIdx] * 3
+                let scale = nodeScales[segIdx]
+                let roadWidth = roadWidths[segIdx]
+//                let width = 1400 * nodeScales[segIdx]
+//                let x = (self.size.width - width) / 2.0
     //            let xOffset = pos.x * CGFloat(obs.offsetPct) / 100.0
 
                 // posisikan obstacle sedikit di atas segmen dasar
-                obs.sprite.position = CGPoint(x: self.size.width * ( (1.0 - scale) / 2.0 + scale * obs.offsetPct),
+//                print("Static \(idx) = \(shift)")
+                obs.sprite.position = CGPoint(x:  pos.x - (roadWidth / 2) + obs.offsetPct * roadWidth,
                                               y: pos.y)
+//                print("Static pos x \(idx) = \(obs.sprite.position.x)")
 
                 // lebarkan atau sempitkan sesuai lebar jalan di segmen itu
-                obs.sprite.setScale(scale)
+                obs.sprite.setScale(scale * 3)
                 
                 if segIdx <= 1 {
                     obs.sprite.removeFromParent()
@@ -208,15 +230,16 @@ class GameScene: SKScene {
                 
                 // konversi index cache → index layar
                 let segIdx = (obs.index - bottom + nodePositions.count) % nodePositions.count
-                print("Dynamic \(idx) = \(segIdx)")
+//                print("Dynamic \(idx) = \(segIdx)")
 
                 // ambil data cache segIdx
                 let pos   = nodePositions[segIdx]
                 let scale = nodeScales[segIdx]  * 3
+                let roadWidth = roadWidths[segIdx]
     //            let xOffset = pos.x * CGFloat(obs.offsetPct) / 100.0
 
                 // posisikan obstacle sedikit di atas segmen dasar
-                obs.sprite.position = CGPoint(x: self.size.width * ( (1.0 - scale) / 2.0 + scale * obs.offsetPct),
+                obs.sprite.position = CGPoint(x: pos.x - (roadWidth / 2) + obs.offsetPct * roadWidth,
                                               y: pos.y)
 
                 // lebarkan atau sempitkan sesuai lebar jalan di segmen itu
@@ -229,7 +252,7 @@ class GameScene: SKScene {
                     dynamicObstacles[idx].direction = 1.0
                 }
                 
-                print("OFFSET = \(dynamicObstacles[idx].offsetPct)")
+//                print("OFFSET = \(dynamicObstacles[idx].offsetPct)")
                 
                 if segIdx <= 1 {
                     obs.sprite.removeFromParent()
