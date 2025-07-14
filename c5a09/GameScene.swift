@@ -32,6 +32,7 @@ class GameScene: SKScene {
     private let numSegments: Int = 50
     private var total: CGFloat = 0
     private var road = SKNode()
+    private var playerCar = SKSpriteNode()
     private var roadSpeed = 3 // 1 segment down per update call
     private var nodePositions: [CGPoint] = []
     private var nodeHeights: [CGFloat] = []
@@ -40,9 +41,12 @@ class GameScene: SKScene {
     private var staticObstacles: [StaticObstacle] = []
     private var dynamicObstacles: [DynamicObstacle] = []
     private var frameCount: Int = 0
-    private var updateFramePer: Int = 3
+    private var updateFramePer: Int = 4
     
     private var cameraX = 0.0
+    private let cameraTargetPositions: [CGFloat] = [-0.35, 0.0, 0.35]
+    private var cameraMovingLeft: Bool = false
+    private var cameraMovingRight: Bool = false
     
     override func didMove(to view: SKView) {
         self.backgroundColor = .black
@@ -51,27 +55,61 @@ class GameScene: SKScene {
         let roadTexture = SKTexture(imageNamed: "road")
         roadTexture.filteringMode = .nearest
         
+        self.addChild(playerCar)
         self.addChild(road)
-
         var yOffset: CGFloat = 0.0
         for i in 0..<3 {  // 👈 Add 3 stacked roads
             yOffset = addRoadSegments(startY: yOffset, replicaIndex: i, texture: roadTexture) - 1
         }
+        
+        let playerCarTexture = SKTexture(imageNamed: "car")
+        let aspectRatio = playerCarTexture.size().width / playerCarTexture.size().height
+        playerCar.texture = playerCarTexture
+        let desiredWidth: CGFloat = 270
+        let desiredHeight: CGFloat = desiredWidth / aspectRatio
+        playerCar.size = CGSize(width: desiredWidth, height: desiredHeight)
+        playerCar.position = CGPoint(x: self.size.width / 2, y: playerCar.size.height / 2)
+        playerCar.zPosition = 100
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
         if gesture.direction == .left {
-            cameraX -= 0.35
+            cameraMovingLeft = true
+            cameraMovingRight = false
         } else if gesture.direction == .right {
-            cameraX += 0.35
+            cameraMovingRight = true
+            cameraMovingLeft = false
+        } else if gesture.direction == .up {
+            updateFramePer -= 1
+            updateFramePer = max(1, min(updateFramePer, 5))
+        } else if gesture.direction == .down {
+            updateFramePer += 1
+            updateFramePer = max(1, min(updateFramePer, 5))
         }
-        
-        cameraX = max(-0.35, min(0.35, cameraX))
+    }
+    
+    func updateCameraPosition() {
+        let maxX: CGFloat = 0.35
+        let minX: CGFloat = -0.35
+        let numFramesPerMove: Int = 20 + (updateFramePer - 1) * 5
+        let moveDistance: CGFloat = maxX / CGFloat(numFramesPerMove)
+        if cameraMovingLeft {
+            cameraX -= moveDistance
+        }
+        if cameraMovingRight {
+            cameraX += moveDistance
+        }
+        cameraX = max(minX, min(maxX, cameraX))
+        let tolerance: CGFloat = 0.001
+        if cameraTargetPositions.contains(where: { abs($0 - cameraX) < tolerance }) {
+            cameraMovingLeft = false
+            cameraMovingRight = false
+        }
     }
     
     func addRoadSegments(startY: CGFloat, replicaIndex: Int, texture: SKTexture) -> CGFloat {
         var heightCurve: [CGFloat] = []
-        let roadHeight = self.size.height * 0.65
+        let roadHeight = self.size.height * 0.5
         let baseWidth: CGFloat = self.size.width * 4
 //        print("WIDTH = \(baseWidth)")
         
@@ -162,6 +200,8 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
+        updateCameraPosition()
+        
         var i = 0
         let numNode = self.nodePositions.count
         if frameCount == 0 {
@@ -260,8 +300,10 @@ class GameScene: SKScene {
                 }
             }
             
-            bottom += 1
-            bottom %= numNode
+            if updateFramePer <= 3 {
+                bottom += 1
+                bottom %= numNode
+            }
         }
         
         frameCount += 1
