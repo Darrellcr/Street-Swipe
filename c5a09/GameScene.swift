@@ -40,6 +40,8 @@ class GameScene: SKScene {
     private var bottom = 0
     private var staticObstacles: [StaticObstacle] = []
     private var dynamicObstacles: [DynamicObstacle] = []
+    private var zebraCrossLength: Int = 15
+    private var zebraCrossPosition: Int = -15
     private var frameCount: Int = 0
     private var updateFramePer: Int = 4
     
@@ -50,7 +52,6 @@ class GameScene: SKScene {
     
     override func didMove(to view: SKView) {
         self.backgroundColor = .black
-        print(self.size.width)
         
         let roadTexture = SKTexture(imageNamed: "road")
         roadTexture.filteringMode = .nearest
@@ -161,7 +162,6 @@ class GameScene: SKScene {
 //        print("Static object spawned")
         // ➊ pilih index segmen yang 3–4 layar di depan
         let spawnIndex = nodePositions.count - 1                           // segmen di depan pemain
-        print(spawnIndex)
 //        let spawnIndex = (bottom + ahead) % nodePositions.count
 //        print(spawnIndex)
 
@@ -171,7 +171,7 @@ class GameScene: SKScene {
         let aspectRatio = sprite.size.height / sprite.size.width
         sprite.size = CGSize(width: desiredWidth, height: desiredWidth * aspectRatio)
         sprite.name = "obstacle"
-        sprite.zPosition = 1                           // di atas jalan
+        sprite.zPosition = 2                           // di atas jalan
         
         let boundingBox = SKNode()
         boundingBox.name = "boundingBox"
@@ -246,8 +246,8 @@ class GameScene: SKScene {
                                 y: obsBB.position.y - obsSize.height * 0.5)
         let obsRect   = CGRect(origin: obsOrigin, size: obsSize)
         
-        print("CAR RECT = \(carRect)")
-        print("OBS RECT = \(carRect)")
+//        print("CAR RECT = \(carRect)")
+//        print("OBS RECT = \(carRect)")
 
 
         // --- Overlap? ---------------------------------------------------------
@@ -283,21 +283,25 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        self.enumerateChildNodes(withName: "debugBox") { node, _ in
-            node.removeFromParent()
-        }
-        
         updateCameraPosition()
 //        print(playerCar.position)
 //        print(playerCar.size)
-        playerCar.position = CGPoint(x: size.width / 2,
-                                     y: playerCar.size.height / 2)
-        addDebugBox(to: self.playerCar)
         
         var i = 0
         let numNode = self.nodePositions.count
         if frameCount == 0 {
-            print("\n\n\nNEW FRAME \(frameCount)")
+            print("\nNEW FRAME \(frameCount)")
+            
+            self.enumerateChildNodes(withName: "debugBox") { node, _ in
+                node.removeFromParent()
+            }
+            road.enumerateChildNodes(withName: "zebraCross") { node, _ in
+                node.removeFromParent()
+            }
+            
+            playerCar.position = CGPoint(x: size.width / 2,
+                                         y: playerCar.size.height / 2)
+            addDebugBox(to: self.playerCar)
 
             var roadWidths: [CGFloat] = Array(repeating: 0.0, count: self.nodePositions.count)
 
@@ -330,6 +334,10 @@ class GameScene: SKScene {
                 spawnDynamicObstacle()
             }
             
+            if zebraCrossPosition <= -zebraCrossLength && Double.random(in: 0...1) < 0.01 {
+                zebraCrossPosition = nodePositions.count - 1
+            }
+            
             // --- update every obstacle ---------------------------------
             for (idx, obs) in staticObstacles.enumerated().reversed() {
                 
@@ -343,8 +351,7 @@ class GameScene: SKScene {
                     continue
                 }
                 
-                print("STATIC \(idx) = \(segIdx)")
-//                print("Static \(idx) = \(segIdx)")
+//                print("STATIC \(idx) = \(segIdx)")
 
                 // ambil data cache segIdx
                 let pos   = nodePositions[segIdx]
@@ -383,13 +390,13 @@ class GameScene: SKScene {
                     dynamicObstacles[idx].index -= 1
                 }
                 
-                print("Dynamic \(idx) = \(segIdx)")
+//                print("Dynamic \(idx) = \(segIdx)")
                 
                 if segIdx <= 10 {
                     obs.sprite.removeFromParent()
-                    print("Want remove \(idx)")
+//                    print("Want remove \(idx)")
                     dynamicObstacles.remove(at: idx)
-                    print("Now remove \(idx)")
+//                    print("Now remove \(idx)")
                     continue
                 }
 
@@ -419,12 +426,32 @@ class GameScene: SKScene {
                 
                 if isColliding(playerCar, obs.sprite, scale) && scale > 0.56 {
                     print("💥 Player hits DYNAMIC obstacle!")
-                    updateFramePer = 1000000
+//                    updateFramePer = 1000000
                     // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
                     break                                               // satu hit cukup
                 }
 //                print("OFFSET = \(dynamicObstacles[idx].offsetPct)")
                 addDebugBox(to: dynamicObstacles[idx].sprite, scale: scale)
+            }
+            
+            if zebraCrossPosition > -zebraCrossLength {
+                for i in 0..<zebraCrossLength {
+                    let index = i + zebraCrossPosition
+                    
+                    if 0 <= index && index < nodePositions.count {
+                        let node = SKSpriteNode(imageNamed: "zebra cross")
+                        let baseWidth: CGFloat = self.size.width * 4
+                        
+                        node.anchorPoint = CGPoint(x: 0.5, y: 0)
+                        node.position = nodePositions[index]
+                        node.size = CGSize(width: baseWidth, height: nodeHeights[index])
+                        node.xScale = nodeScales[index]
+                        node.name = "zebraCross"
+                        node.zPosition = 1
+                        road.addChild(node)
+                    }
+                }
+                zebraCrossPosition -= 1
             }
             
             if updateFramePer <= 3 {
