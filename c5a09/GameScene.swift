@@ -70,6 +70,12 @@ class GameScene: SKScene {
         playerCar.size = CGSize(width: desiredWidth, height: desiredHeight)
         playerCar.position = CGPoint(x: self.size.width / 2, y: playerCar.size.height / 2)
         playerCar.zPosition = 100
+        
+        let boundingBox = SKNode()
+        boundingBox.name = "boundingBox"
+        boundingBox.position = CGPoint(x: playerCar.position.x, y: playerCar.position.y)
+        boundingBox.userData = ["size": CGSize(width: 240, height: 140)]
+        playerCar.addChild(boundingBox)
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
@@ -167,6 +173,12 @@ class GameScene: SKScene {
         sprite.name = "obstacle"
         sprite.zPosition = 1                           // di atas jalan
         
+        let boundingBox = SKNode()
+        boundingBox.name = "boundingBox"
+        boundingBox.position = CGPoint(x: sprite.position.x, y: sprite.position.y)
+        boundingBox.userData = ["size": CGSize(width: 100, height: 100)]
+        sprite.addChild(boundingBox)
+        
         let offset = Double.random(in: 0...1)
 
         // ➌ cache
@@ -191,6 +203,12 @@ class GameScene: SKScene {
         sprite.name = "obstacle"
         sprite.zPosition = 2                           // di atas jalan
         
+        let boundingBox = SKNode()
+        boundingBox.name = "boundingBox"
+        boundingBox.position = CGPoint(x: sprite.position.x, y: sprite.position.y)
+        boundingBox.userData = ["size": CGSize(width: 100, height: 130)]
+        sprite.addChild(boundingBox)
+        
         let offset = Double.random(in: 0...1)
 
         // ➌ cache
@@ -200,12 +218,87 @@ class GameScene: SKScene {
         road.addChild(sprite)
     }
     
+
+    /// deteksi overlap 2 sprite (pakai kotak kustom jika ada)
+    private func isColliding(_ car: SKSpriteNode,
+                             _ obstacle: SKSpriteNode,
+                             _ scale: CGFloat) -> Bool {
+
+        // --- Ambil bounding-box mobil -----------------------------------------
+        guard
+            let carBB   = car.childNode(withName: "boundingBox"),
+            let carSize = carBB.userData?["size"] as? CGSize
+        else { return false }
+
+        let carOrigin = CGPoint(x: carBB.position.x - carSize.width  * 0.5,
+                                y: carBB.position.y - carSize.height * 0.5)
+        let carRect   = CGRect(origin: carOrigin, size: carSize)
+
+        // --- Ambil bounding-box obstacle & terapkan skala ---------------------
+        guard
+            let obsBB      = obstacle.childNode(withName: "boundingBox"),
+            let baseObs    = obsBB.userData?["size"] as? CGSize
+        else { return false }
+
+        let obsSize   = CGSize(width:  baseObs.width  * scale,
+                               height: baseObs.height * scale)
+        let obsOrigin = CGPoint(x: obsBB.position.x - obsSize.width  * 0.5,
+                                y: obsBB.position.y - obsSize.height * 0.5)
+        let obsRect   = CGRect(origin: obsOrigin, size: obsSize)
+        
+        print("CAR RECT = \(carRect)")
+        print("OBS RECT = \(carRect)")
+
+
+        // --- Overlap? ---------------------------------------------------------
+        return carRect.intersects(obsRect)
+    }
+    
+    func addDebugBox(to sprite: SKSpriteNode, color: SKColor = .red, scale: CGFloat = 1) {
+        // hilangkan kotak lama agar tidak menumpuk
+        sprite.childNode(withName: "debugBox")?.removeFromParent()
+
+        // cari node pembawa data ukuran — di sini saya pakai nama "boundingBox"
+        guard
+            let bb   = sprite.childNode(withName: "boundingBox"),
+            var size = bb.userData?["size"] as? CGSize
+        else { return }
+        
+        size.width *= scale
+        size.height *= scale
+//        print("SIZE: \(size)")
+//        print("BB POS: \(bb.position)")
+
+        // gambar rect terpusat
+        let box = SKShapeNode(rectOf: size)           // otomatis anchor di tengah
+        box.strokeColor   = color
+        box.lineWidth     = 1
+        box.isAntialiased = false
+        box.zPosition     = 999
+        box.name          = "debugBox"
+
+        // posisikan sesuai offset bb (mis. bb.position = (0,10))
+        box.position = bb.position
+        self.addChild(box)
+    }
+    
     override func update(_ currentTime: TimeInterval) {
+        self.enumerateChildNodes(withName: "debugBox") { node, _ in
+            node.removeFromParent()
+        }
+        
         updateCameraPosition()
+//        print(playerCar.position)
+//        print(playerCar.size)
+        playerCar.position = CGPoint(x: size.width / 2,
+                                     y: playerCar.size.height / 2)
+        addDebugBox(to: self.playerCar)
         
         var i = 0
         let numNode = self.nodePositions.count
         if frameCount == 0 {
+            print("\n\n\nNEW FRAME \(frameCount)")
+
             var roadWidths: [CGFloat] = Array(repeating: 0.0, count: self.nodePositions.count)
 
             road.enumerateChildNodes(withName: "roadSegment") { node, _ in
@@ -235,10 +328,6 @@ class GameScene: SKScene {
                 abs(dynamicObstacles.last!.index) <= 110) {
 
                 spawnDynamicObstacle()
-            }
-//
-            if staticObstacles.count > 0{
-//                print("Static obs count: \(staticObstacles.count)")
             }
             
             // --- update every obstacle ---------------------------------
@@ -274,7 +363,16 @@ class GameScene: SKScene {
                 // lebarkan atau sempitkan sesuai lebar jalan di segmen itu
                 obs.sprite.setScale(scale * 3)
                 
+                staticObstacles[idx].sprite.childNode(withName: "boundingBox")?.position = obs.sprite.position
                 
+                if isColliding(playerCar, obs.sprite, scale) && scale > 0.56 {
+                    print("💥 Player hits STATIC obstacle!")
+//                    updateFramePer = 1000000
+                    // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
+                    break                                               // satu hit cukup
+                }
+                
+                addDebugBox(to: staticObstacles[idx].sprite, scale: scale)
             }
             
             for (idx, obs) in dynamicObstacles.enumerated().reversed() {
@@ -299,7 +397,7 @@ class GameScene: SKScene {
 
                 // ambil data cache segIdx
                 let pos   = nodePositions[segIdx]
-                let scale = nodeScales[segIdx]  * 3
+                let scale = nodeScales[segIdx]
                 let roadWidth = roadWidths[segIdx]
     //            let xOffset = pos.x * CGFloat(obs.offsetPct) / 100.0
 
@@ -308,7 +406,7 @@ class GameScene: SKScene {
                                               y: pos.y)
 
                 // lebarkan atau sempitkan sesuai lebar jalan di segmen itu
-                obs.sprite.setScale(scale)
+                obs.sprite.setScale(scale * 2)
                 
                 dynamicObstacles[idx].offsetPct += obs.velocity * obs.direction
                 if(dynamicObstacles[idx].offsetPct >= 1.0){
@@ -317,8 +415,16 @@ class GameScene: SKScene {
                     dynamicObstacles[idx].direction = 1.0
                 }
                 
-//                print("OFFSET = \(dynamicObstacles[idx].offsetPct)")
+                dynamicObstacles[idx].sprite.childNode(withName: "boundingBox")?.position = obs.sprite.position
                 
+                if isColliding(playerCar, obs.sprite, scale) && scale > 0.56 {
+                    print("💥 Player hits DYNAMIC obstacle!")
+                    updateFramePer = 1000000
+                    // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
+                    break                                               // satu hit cukup
+                }
+//                print("OFFSET = \(dynamicObstacles[idx].offsetPct)")
+                addDebugBox(to: dynamicObstacles[idx].sprite, scale: scale)
             }
             
             if updateFramePer <= 3 {
