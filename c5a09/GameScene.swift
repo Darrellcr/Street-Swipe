@@ -5,6 +5,7 @@
 //  Created by Darrell Cornelius Rivaldo on 11/07/25.
 //
 
+import AVFoundation
 import SpriteKit
 import GameplayKit
 
@@ -48,9 +49,17 @@ class GameScene: SKScene {
     private var cameraMovingLeft: Bool = false
     private var cameraMovingRight: Bool = false
     
+    var distance: Int = 0
+    var timer: TimeInterval = 0
+    var backgroundMusicPlayer: AVAudioPlayer?
+    
+    private var isGameRunning: Bool = false
+    
     override func didMove(to view: SKView) {
         self.backgroundColor = .black
         print(self.size.width)
+        
+        playBackgroundMusic()
         
         let roadTexture = SKTexture(imageNamed: "road")
         roadTexture.filteringMode = .nearest
@@ -73,15 +82,16 @@ class GameScene: SKScene {
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
-        if gesture.direction == .left {
+        if gesture.direction == .left && updateFramePer != 4 {
             cameraMovingLeft = true
             cameraMovingRight = false
-        } else if gesture.direction == .right {
+        } else if gesture.direction == .right && updateFramePer != 4{
             cameraMovingRight = true
             cameraMovingLeft = false
         } else if gesture.direction == .up {
             updateFramePer -= 1
             updateFramePer = max(1, min(updateFramePer, 5))
+            isGameRunning = true
         } else if gesture.direction == .down {
             updateFramePer += 1
             updateFramePer = max(1, min(updateFramePer, 5))
@@ -111,26 +121,26 @@ class GameScene: SKScene {
         var heightCurve: [CGFloat] = []
         let roadHeight = self.size.height * 0.5
         let baseWidth: CGFloat = self.size.width * 4
-//        print("WIDTH = \(baseWidth)")
+        //        print("WIDTH = \(baseWidth)")
         
         for i in 0..<numSegments {
             let t = CGFloat(i + numSegments * replicaIndex) / CGFloat(numSegments)
             let scale = 1.0 / (1.0 + pow(t + 0.4, 2) * 2.0)
             heightCurve.append(scale)
         }
-
+        
         total += heightCurve.reduce(0, +)
         let unitHeight = roadHeight / total + CGFloat(replicaIndex) * 2.5
-
+        
         var currentY = startY
-
+        
         for i in 0..<numSegments {
             let segmentY = CGFloat(i) * (1.0 / CGFloat(numSegments))
             let roadSegment = SKTexture(
                 rect: CGRect(x: 0, y: segmentY - 1.0 / CGFloat(numSegments), width: 1, height: 1.0 / CGFloat(numSegments)), // FIX FOR DISCONTINUED ROAD
                 in: texture
             )
-
+            
             let node = SKSpriteNode(texture: roadSegment)
             node.anchorPoint = CGPoint(x: 0.5, y: 0)
             node.position = CGPoint(x: self.size.width / 2, y: currentY)
@@ -144,20 +154,20 @@ class GameScene: SKScene {
             self.nodeScales.append(scale)
             node.name = "roadSegment"
             road.addChild(node)
-
+            
             currentY += height
         }
-
+        
         return currentY // So you know where to start the next stack
     }
     
     func spawnStaticObstacle() {
-//        print("Static object spawned")
+        //        print("Static object spawned")
         // ➊ pilih index segmen yang 3–4 layar di depan
         let ahead = nodePositions.count - 1                           // segmen di depan pemain
         let spawnIndex = (bottom + ahead) % nodePositions.count
-//        print(spawnIndex)
-
+        //        print(spawnIndex)
+        
         // ➋ buat sprite
         let sprite = SKSpriteNode(imageNamed: "chicken")   // ganti dengan aset Anda
         let desiredWidth: CGFloat = 70
@@ -167,21 +177,21 @@ class GameScene: SKScene {
         sprite.zPosition = 1                           // di atas jalan
         
         let offset = Double.random(in: 0...1)
-
+        
         // ➌ cache
         staticObstacles.append(
             StaticObstacle(index: spawnIndex, sprite: sprite, offsetPct: offset)
         )
         road.addChild(sprite)                          // layer sama dgn jalan
     }
-
+    
     func spawnDynamicObstacle() {
-//        print("Dynamic object spawned")
+        //        print("Dynamic object spawned")
         // ➊ pilih index segmen yang 3–4 layar di depan
         let ahead = nodePositions.count - 1                           // segmen di depan pemain
         let spawnIndex = (bottom + ahead) % nodePositions.count
-//        print(spawnIndex)
-
+        //        print(spawnIndex)
+        
         // ➋ buat sprite
         let sprite = SKSpriteNode(imageNamed: "motor")   // ganti dengan aset Anda
         let desiredWidth: CGFloat = 150
@@ -191,7 +201,7 @@ class GameScene: SKScene {
         sprite.zPosition = 2                           // di atas jalan
         
         let offset = Double.random(in: 0...1)
-
+        
         // ➌ cache
         dynamicObstacles.append(
             DynamicObstacle(index: spawnIndex, sprite: sprite, offsetPct: offset)
@@ -199,7 +209,26 @@ class GameScene: SKScene {
         road.addChild(sprite)
     }
     
+    func resetGame() {
+        distance = 0
+        timer = 0
+        isGameRunning = true
+        
+        NotificationCenter.default.post(name: .distanceDidUpdate, object: nil, userInfo: ["distance": distance])
+    }
+    
     override func update(_ currentTime: TimeInterval) {
+        guard isGameRunning else { return }
+        
+        timer += 1.0 / 60.0 // assuming update runs ~60 fps
+        
+        if timer >= 3.0 {
+            distance += 100
+            timer = 0
+            
+            NotificationCenter.default.post(name: .distanceDidUpdate, object: nil, userInfo: ["distance": distance])
+        }
+        
         updateCameraPosition()
         
         var i = 0
@@ -309,5 +338,26 @@ class GameScene: SKScene {
         frameCount += 1
         frameCount %= updateFramePer
     }
+    
+    func playBackgroundMusic() {
+        guard let url = Bundle.main.url(forResource: "bgm", withExtension: "mp3") else {
+            print("Music file not found")
+            return
+        }
+        
+        do {
+            backgroundMusicPlayer = try AVAudioPlayer(contentsOf: url)
+            backgroundMusicPlayer?.numberOfLoops = -1 // Loop forever
+            backgroundMusicPlayer?.volume = 0.5
+            backgroundMusicPlayer?.play()
+        } catch {
+            print("Error loading music: \(error)")
+        }
+    }
+}
 
+
+extension Notification.Name {
+    static let distanceDidUpdate = Notification.Name("distanceDidUpdate")
+    static let gameOver = Notification.Name("gameOver")
 }

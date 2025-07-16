@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		5B462DD82E215F1100E1E404 /* c5a09.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = c5a09.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B462DD82E215F1100E1E404 /* c5a09.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = c5a09.app; path = "/Users/feliciastevany/Desktop/SwiftUI XCode/ADA-C5-A09/build/Debug-iphoneos/c5a09.app"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		5B462DDA2E215F1100E1E404 /* c5a09 */ = {
+		2AFEA7212E2794AE009BEA51 /* c5a09 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = c5a09;
 			sourceTree = "<group>";
@@ -32,17 +32,8 @@
 		5B462DCF2E215F1100E1E404 = {
 			isa = PBXGroup;
 			children = (
-				5B462DDA2E215F1100E1E404 /* c5a09 */,
-				5B462DD92E215F1100E1E404 /* Products */,
+				2AFEA7212E2794AE009BEA51 /* c5a09 */,
 			);
-			sourceTree = "<group>";
-		};
-		5B462DD92E215F1100E1E404 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				5B462DD82E215F1100E1E404 /* c5a09.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -61,7 +52,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				5B462DDA2E215F1100E1E404 /* c5a09 */,
+				2AFEA7212E2794AE009BEA51 /* c5a09 */,
 			);
 			name = c5a09;
 			packageProductDependencies = (
@@ -95,7 +86,7 @@
 			mainGroup = 5B462DCF2E215F1100E1E404;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 5B462DD92E215F1100E1E404 /* Products */;
+			productRefGroup = 5B462DCF2E215F1100E1E404;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -253,7 +244,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 43L9JAD6SS;
+				DEVELOPMENT_TEAM = 69Y258ZWMH;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -281,7 +272,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 43L9JAD6SS;
+				DEVELOPMENT_TEAM = 69Y258ZWMH;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
