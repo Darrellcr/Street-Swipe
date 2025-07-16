@@ -28,6 +28,12 @@ struct DynamicObstacle {
     var direction: CGFloat = 1
 }
 
+struct TrafficLight {
+    var index: Int
+    var sprite: SKSpriteNode
+    var offsetPct: CGFloat = 0
+}
+
 class GameScene: SKScene {
     private let numSegments: Int = 50
     private var total: CGFloat = 0
@@ -45,13 +51,20 @@ class GameScene: SKScene {
     private var frameCount: Int = 0
     private var updateFramePer: Int = 4
     
+    private var trafficLight: TrafficLight?
+    
     private var cameraX = 0.0
     private let cameraTargetPositions: [CGFloat] = [-0.35, 0.0, 0.35]
     private var cameraMovingLeft: Bool = false
     private var cameraMovingRight: Bool = false
     
     override func didMove(to view: SKView) {
-        self.backgroundColor = .black
+//        self.backgroundColor = .black
+        let background = SKSpriteNode(color: .darkGray, size: self.size)
+        background.position = CGPoint(x: size.width/2, y: size.height/2)
+        background.zPosition = -1 // Place behind everything
+        background.lightingBitMask = 0b1 // React to light
+        addChild(background)
         
         let roadTexture = SKTexture(imageNamed: "road")
         roadTexture.filteringMode = .nearest
@@ -77,6 +90,22 @@ class GameScene: SKScene {
         boundingBox.position = CGPoint(x: playerCar.position.x, y: playerCar.position.y)
         boundingBox.userData = ["size": CGSize(width: 240, height: 140)]
         playerCar.addChild(boundingBox)
+        
+        
+        
+        
+        
+//        let lightNode = SKLightNode()
+//        lightNode.zPosition = 1000
+//        lightNode.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+//        lightNode.categoryBitMask = 0b0001
+//        lightNode.lightColor = .white.withAlphaComponent(1.0)
+//        lightNode.falloff = 4.0
+//        lightNode.ambientColor = SKColor(white: 1.0, alpha: 1.0)
+
+        
+//        playerCar.lightingBitMask = 0b0001
+//        self.addChild(lightNode)
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
@@ -150,6 +179,7 @@ class GameScene: SKScene {
             node.xScale = scale
             self.nodeScales.append(scale)
             node.name = "roadSegment"
+            node.lightingBitMask = 0b0001
             road.addChild(node)
 
             currentY += height
@@ -186,6 +216,44 @@ class GameScene: SKScene {
             StaticObstacle(index: spawnIndex, sprite: sprite, offsetPct: offset)
         )
         road.addChild(sprite)                          // layer sama dgn jalan
+    }
+    
+    func spawnTrafficLight() {
+        let spawnIndex = nodePositions.count - 1
+        let sprite = SKSpriteNode(imageNamed: "vertical traffic light")
+        let desiredWidth: CGFloat = 200
+        let aspectRatio: CGFloat = sprite.size.height / sprite.size.width
+        sprite.size = CGSize(width: desiredWidth, height: desiredWidth * aspectRatio)
+//        sprite.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+        sprite.name = "trafficlight"
+        sprite.lightingBitMask = 0b0001
+        sprite.zPosition = 3
+        
+//        let lightNode = SKLightNode()
+//        lightNode.zPosition = 1000
+//        lightNode.position = CGPoint(x: sprite.position.x, y: sprite.size.height * 1.25)
+//        lightNode.categoryBitMask = 0b0001
+//        lightNode.lightColor = .red
+//        lightNode.falloff = 2.0
+//        lightNode.ambientColor = SKColor(white: 1.0, alpha: 1.0)
+//        lightNode.zPosition = 2
+//        
+//        let circle = SKShapeNode(circleOfRadius: 20)
+//        circle.fillColor = .clear
+//        circle.strokeColor = .cyan
+//        circle.lineWidth = 2
+//        circle.zPosition = 1000
+//        circle.position = lightNode.position
+//        circle.name = "lightIndicator"
+        
+        
+        let offset = -0.15
+        self.trafficLight = TrafficLight(index: spawnIndex, sprite: sprite, offsetPct: offset)
+//        road.addChild(lightNode)
+        
+//        road.addChild(circle)
+        road.addChild(sprite)
+        
     }
 
     func spawnDynamicObstacle() {
@@ -254,7 +322,7 @@ class GameScene: SKScene {
         return carRect.intersects(obsRect)
     }
     
-    func addDebugBox(to sprite: SKSpriteNode, color: SKColor = .red, scale: CGFloat = 1) {
+    func addDebugBox(to sprite: SKNode, color: SKColor = .red, scale: CGFloat = 1) {
         // hilangkan kotak lama agar tidak menumpuk
         sprite.childNode(withName: "debugBox")?.removeFromParent()
 
@@ -322,6 +390,7 @@ class GameScene: SKScene {
                 i += 1
             }
             
+
             if Double.random(in: 0...1) < 0.01 {
                 spawnStaticObstacle()
             }
@@ -337,7 +406,9 @@ class GameScene: SKScene {
             if zebraCrossPosition <= -zebraCrossLength && Double.random(in: 0...1) < 0.01 {
                 zebraCrossPosition = nodePositions.count - 1
             }
-            
+            if zebraCrossPosition == nodePositions.count - 2*zebraCrossLength {
+                spawnTrafficLight()
+            }
             // --- update every obstacle ---------------------------------
             for (idx, obs) in staticObstacles.enumerated().reversed() {
                 
@@ -381,6 +452,8 @@ class GameScene: SKScene {
                 
                 addDebugBox(to: staticObstacles[idx].sprite, scale: scale)
             }
+            
+            
             
             for (idx, obs) in dynamicObstacles.enumerated().reversed() {
                 
@@ -452,6 +525,24 @@ class GameScene: SKScene {
                     }
                 }
                 zebraCrossPosition -= 1
+            }
+            
+            
+            if let trafficLight {
+                let segIdx = trafficLight.index
+                self.trafficLight?.index -= 1
+                
+                if segIdx <= 10 {
+                    trafficLight.sprite.removeFromParent()
+                    self.trafficLight = nil
+                } else {
+                    let pos   = nodePositions[segIdx]
+                    let scale = nodeScales[segIdx]
+                    let roadWidth = roadWidths[segIdx]
+                    
+                    trafficLight.sprite.position = CGPoint(x:  pos.x - (roadWidth / 2) + trafficLight.offsetPct * roadWidth, y: pos.y)
+                    trafficLight.sprite.setScale(scale * 3)
+                }
             }
             
             if updateFramePer <= 3 {
