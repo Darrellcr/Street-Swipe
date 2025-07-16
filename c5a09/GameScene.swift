@@ -61,10 +61,15 @@ class GameScene: SKScene {
     private var cameraMovingRight: Bool = false
     
     override func didMove(to view: SKView) {
-//        self.backgroundColor = .black
-        let background = SKSpriteNode(color: .darkGray, size: self.size)
-        background.position = CGPoint(x: size.width/2, y: size.height/2)
-        background.zPosition = -1 // Place behind everything
+        self.backgroundColor = .black
+        let backgroundTexture = SKTexture(imageNamed: "night sky")
+        let background = SKSpriteNode(texture: backgroundTexture)
+        background.anchorPoint = CGPoint(x: 0.0, y: 1.0)
+        background.position = CGPoint(x: 0.0, y: self.size.height)
+        let backgroundAspectRatio = backgroundTexture.size().width / backgroundTexture.size().height
+        background.size.width = self.size.width
+        background.size.height = self.size.width / backgroundAspectRatio
+        background.zPosition = 1 // Place behind everything
         background.lightingBitMask = 0b1 // React to light
         addChild(background)
         
@@ -74,7 +79,7 @@ class GameScene: SKScene {
         self.addChild(playerCar)
         self.addChild(road)
         var yOffset: CGFloat = 0.0
-        for i in 0..<3 {  // 👈 Add 3 stacked roads
+        for i in 0..<4 {  // 👈 Add 3 stacked roads
             yOffset = addRoadSegments(startY: yOffset, replicaIndex: i, texture: roadTexture) - 1
         }
         
@@ -147,7 +152,7 @@ class GameScene: SKScene {
     
     func addRoadSegments(startY: CGFloat, replicaIndex: Int, texture: SKTexture) -> CGFloat {
         var heightCurve: [CGFloat] = []
-        let roadHeight = self.size.height * 0.5
+        let roadHeight = self.size.height * 0.518
         let baseWidth: CGFloat = self.size.width * 4
 //        print("WIDTH = \(baseWidth)")
         
@@ -183,6 +188,7 @@ class GameScene: SKScene {
             node.name = "roadSegment"
             node.lightingBitMask = 0b0001
             road.addChild(node)
+            road.zPosition = 2
 
             currentY += height
         }
@@ -223,13 +229,13 @@ class GameScene: SKScene {
     func spawnTrafficLight() {
         let spawnIndex = nodePositions.count - 1
         let sprite = SKSpriteNode(imageNamed: "red light")
-        let desiredWidth: CGFloat = 200
+        let desiredWidth: CGFloat = 400
         let aspectRatio: CGFloat = sprite.size.height / sprite.size.width
         sprite.size = CGSize(width: desiredWidth, height: desiredWidth * aspectRatio)
 //        sprite.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
         sprite.name = "trafficlight"
         sprite.lightingBitMask = 0b0001
-        sprite.zPosition = 3
+        sprite.zPosition = 4
         
 //        let lightNode = SKLightNode()
 //        lightNode.zPosition = 1000
@@ -272,7 +278,7 @@ class GameScene: SKScene {
         let aspectRatio = sprite.size.height / sprite.size.width
         sprite.size = CGSize(width: desiredWidth, height: desiredWidth * aspectRatio)
         sprite.name = "obstacle"
-        sprite.zPosition = 2                           // di atas jalan
+        sprite.zPosition = 3                           // di atas jalan
         
         let boundingBox = SKNode()
         boundingBox.name = "boundingBox"
@@ -547,7 +553,7 @@ class GameScene: SKScene {
                         node.size = CGSize(width: baseWidth, height: nodeHeights[index])
                         node.xScale = nodeScales[index]
                         node.name = "zebraCross"
-                        node.zPosition = 1
+                        node.zPosition = 2
                         road.addChild(node)
                     }
                 }
