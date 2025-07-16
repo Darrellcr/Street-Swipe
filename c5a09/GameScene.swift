@@ -32,6 +32,8 @@ struct TrafficLight {
     var index: Int
     var sprite: SKSpriteNode
     var offsetPct: CGFloat = 0
+    var state: String = "red"
+    var countDown: Int = 1000
 }
 
 class GameScene: SKScene {
@@ -220,7 +222,7 @@ class GameScene: SKScene {
     
     func spawnTrafficLight() {
         let spawnIndex = nodePositions.count - 1
-        let sprite = SKSpriteNode(imageNamed: "vertical traffic light")
+        let sprite = SKSpriteNode(imageNamed: "red light")
         let desiredWidth: CGFloat = 200
         let aspectRatio: CGFloat = sprite.size.height / sprite.size.width
         sprite.size = CGSize(width: desiredWidth, height: desiredWidth * aspectRatio)
@@ -248,7 +250,8 @@ class GameScene: SKScene {
         
         
         let offset = -0.15
-        self.trafficLight = TrafficLight(index: spawnIndex, sprite: sprite, offsetPct: offset)
+        let countDown = Int.random(in: 250...500)
+        self.trafficLight = TrafficLight(index: spawnIndex, sprite: sprite, offsetPct: offset, state: "red", countDown: countDown)
 //        road.addChild(lightNode)
         
 //        road.addChild(circle)
@@ -351,9 +354,33 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        updateCameraPosition()
 //        print(playerCar.position)
 //        print(playerCar.size)
+        
+//        Update traffic light
+        print(trafficLight?.countDown)
+        trafficLight?.countDown -= 1
+        if trafficLight?.countDown ?? 0 <= 0 {
+            print("GREEN")
+            trafficLight?.state = "green"
+            trafficLight?.sprite.texture = SKTexture(imageNamed: "green light")
+            
+//            let desiredWidth: CGFloat = 200
+//            let aspectRatio: CGFloat = trafficLight?.sprite.size.height / trafficLight?.sprite.size.width
+//            trafficLight?.sprite.size = CGSize(width: desiredWidth, height: desiredWidth * aspectRatio)
+//    //        sprite.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+//            trafficLight?.sprite.name = "trafficlight"
+//            trafficLight?.sprite.lightingBitMask = 0b0001
+//            trafficLight?.sprite.zPosition = 3
+        }
+        else if(trafficLight?.countDown ?? 0 <= 150) {
+            print("YELLOW")
+            trafficLight?.state = "yellow"
+            trafficLight?.sprite.texture = SKTexture(imageNamed: "yellow light")
+        }
+        
+        if updateFramePer >= 1000 { return }
+        updateCameraPosition()
         
         var i = 0
         let numNode = self.nodePositions.count
@@ -445,7 +472,7 @@ class GameScene: SKScene {
                 
                 if isColliding(playerCar, obs.sprite, scale) && scale > 0.56 {
                     print("💥 Player hits STATIC obstacle!")
-//                    updateFramePer = 1000000
+                    updateFramePer = 1000000
                     // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
                     break                                               // satu hit cukup
                 }
@@ -499,7 +526,7 @@ class GameScene: SKScene {
                 
                 if isColliding(playerCar, obs.sprite, scale) && scale > 0.56 {
                     print("💥 Player hits DYNAMIC obstacle!")
-//                    updateFramePer = 1000000
+                    updateFramePer = 1000000
                     // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
                     break                                               // satu hit cukup
                 }
@@ -540,9 +567,16 @@ class GameScene: SKScene {
                     let scale = nodeScales[segIdx]
                     let roadWidth = roadWidths[segIdx]
                     
+                   
+                    
                     trafficLight.sprite.position = CGPoint(x:  pos.x - (roadWidth / 2) + trafficLight.offsetPct * roadWidth, y: pos.y)
                     trafficLight.sprite.setScale(scale * 3)
                 }
+            }
+            
+            if zebraCrossPosition <= 2 && zebraCrossPosition > -zebraCrossLength && trafficLight?.state == "red" {
+                print("🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓")
+                updateFramePer = 10000
             }
             
             if updateFramePer <= 3 {
