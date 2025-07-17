@@ -14,38 +14,10 @@ extension CGFloat {
     }
 }
 
-struct StaticObstacle {
-    var index: Int
-    var sprite: SKSpriteNode
-    var offsetPct: CGFloat = 0
-}
-
-struct DynamicObstacle {
-    var index: Int
-    var sprite: SKSpriteNode
-    var offsetPct: CGFloat = 0
-    var velocity: CGFloat = 0.01
-    var direction: CGFloat = 1
-}
-
-struct TrafficLight {
-    var index: Int
-    var sprite: SKSpriteNode
-    var offsetPct: CGFloat = 0
-    var state: String = "red"
-    var countDown: Int = 1000
-}
-
 class GameScene: SKScene {
     private let numSegments: Int = 50
     private var total: CGFloat = 0
-    private var road = SKNode()
-    private var playerCar = SKSpriteNode()
     private var roadSpeed = 3 // 1 segment down per update call
-    private var nodePositions: [CGPoint] = []
-    private var nodeHeights: [CGFloat] = []
-    private var nodeScales: [CGFloat] = []
-    private var bottom = 0
     private var staticObstacles: [StaticObstacle] = []
     private var dynamicObstacles: [DynamicObstacle] = []
     private var zebraCrossLength: Int = 15
@@ -55,52 +27,28 @@ class GameScene: SKScene {
     
     private var trafficLight: TrafficLight?
     
-    private var cameraX = 0.0
-    private let cameraTargetPositions: [CGFloat] = [-0.35, 0.0, 0.35]
-    private var cameraMovingLeft: Bool = false
-    private var cameraMovingRight: Bool = false
+    private let gameCamera = GameCamera()
+    private let background: Background
+    let road: Road
+    let playerCar: PlayerCar
+    
+    override init(size: CGSize) {
+        self.background = Background(sceneSize: size)
+        self.road = Road(sceneSize: size)
+        self.playerCar = PlayerCar(sceneSize: size)
+        super.init(size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func didMove(to view: SKView) {
         self.backgroundColor = .black
-        let backgroundTexture = SKTexture(imageNamed: "night sky")
-        let background = SKSpriteNode(texture: backgroundTexture)
-        background.anchorPoint = CGPoint(x: 0.0, y: 1.0)
-        background.position = CGPoint(x: 0.0, y: self.size.height)
-        let backgroundAspectRatio = backgroundTexture.size().width / backgroundTexture.size().height
-        background.size.width = self.size.width
-        background.size.height = self.size.width / backgroundAspectRatio
-        background.zPosition = 1 // Place behind everything
-        background.lightingBitMask = 0b1 // React to light
-        addChild(background)
         
-        let roadTexture = SKTexture(imageNamed: "road")
-        roadTexture.filteringMode = .nearest
-        
-        self.addChild(playerCar)
-        self.addChild(road)
-        var yOffset: CGFloat = 0.0
-        for i in 0..<4 {  // 👈 Add 3 stacked roads
-            yOffset = addRoadSegments(startY: yOffset, replicaIndex: i, texture: roadTexture) - 1
-        }
-        
-        let playerCarTexture = SKTexture(imageNamed: "car 2")
-        let aspectRatio = playerCarTexture.size().width / playerCarTexture.size().height
-        playerCar.texture = playerCarTexture
-        let desiredWidth: CGFloat = 270
-        let desiredHeight: CGFloat = desiredWidth / aspectRatio
-        playerCar.size = CGSize(width: desiredWidth, height: desiredHeight)
-        playerCar.position = CGPoint(x: self.size.width / 2, y: playerCar.size.height / 2)
-        playerCar.zPosition = 100
-        
-        let boundingBox = SKNode()
-        boundingBox.name = "boundingBox"
-        boundingBox.position = CGPoint(x: playerCar.position.x, y: playerCar.position.y)
-        boundingBox.userData = ["size": CGSize(width: 240, height: 140)]
-        playerCar.addChild(boundingBox)
-        
-        
-        
-        
+        addChild(background.node)
+        addChild(road.node)
+        addChild(playerCar.node)
         
 //        let lightNode = SKLightNode()
 //        lightNode.zPosition = 1000
@@ -117,11 +65,9 @@ class GameScene: SKScene {
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
         if gesture.direction == .left {
-            cameraMovingLeft = true
-            cameraMovingRight = false
+            gameCamera.moveLeft()
         } else if gesture.direction == .right {
-            cameraMovingRight = true
-            cameraMovingLeft = false
+            gameCamera.moveRight()
         } else if gesture.direction == .up {
             updateFramePer -= 1
             updateFramePer = max(1, min(updateFramePer, 5))
@@ -131,75 +77,10 @@ class GameScene: SKScene {
         }
     }
     
-    func updateCameraPosition() {
-        let maxX: CGFloat = 0.35
-        let minX: CGFloat = -0.35
-        let numFramesPerMove: Int = 20 + (updateFramePer - 1) * 5
-        let moveDistance: CGFloat = maxX / CGFloat(numFramesPerMove)
-        if cameraMovingLeft {
-            cameraX -= moveDistance
-        }
-        if cameraMovingRight {
-            cameraX += moveDistance
-        }
-        cameraX = max(minX, min(maxX, cameraX))
-        let tolerance: CGFloat = 0.001
-        if cameraTargetPositions.contains(where: { abs($0 - cameraX) < tolerance }) {
-            cameraMovingLeft = false
-            cameraMovingRight = false
-        }
-    }
-    
-    func addRoadSegments(startY: CGFloat, replicaIndex: Int, texture: SKTexture) -> CGFloat {
-        var heightCurve: [CGFloat] = []
-        let roadHeight = self.size.height * 0.518
-        let baseWidth: CGFloat = self.size.width * 4
-//        print("WIDTH = \(baseWidth)")
-        
-        for i in 0..<numSegments {
-            let t = CGFloat(i + numSegments * replicaIndex) / CGFloat(numSegments)
-            let scale = 1.0 / (1.0 + pow(t + 0.4, 2) * 2.0)
-            heightCurve.append(scale)
-        }
-
-        total += heightCurve.reduce(0, +)
-        let unitHeight = roadHeight / total + CGFloat(replicaIndex) * 2.5
-
-        var currentY = startY
-
-        for i in 0..<numSegments {
-            let segmentY = CGFloat(i) * (1.0 / CGFloat(numSegments))
-            let roadSegment = SKTexture(
-                rect: CGRect(x: 0, y: segmentY - 1.0 / CGFloat(numSegments), width: 1, height: 1.0 / CGFloat(numSegments)), // FIX FOR DISCONTINUED ROAD
-                in: texture
-            )
-
-            let node = SKSpriteNode(texture: roadSegment)
-            node.anchorPoint = CGPoint(x: 0.5, y: 0)
-            node.position = CGPoint(x: self.size.width / 2, y: currentY)
-            self.nodePositions.append(node.position)
-            
-            let scale = heightCurve[i]
-            let height = pow(scale, 1.2) * unitHeight
-            node.size = CGSize(width: baseWidth, height: height)
-            self.nodeHeights.append(height)
-            node.xScale = scale
-            self.nodeScales.append(scale)
-            node.name = "roadSegment"
-            node.lightingBitMask = 0b0001
-            road.addChild(node)
-            road.zPosition = 2
-
-            currentY += height
-        }
-
-        return currentY // So you know where to start the next stack
-    }
-    
     func spawnStaticObstacle() {
 //        print("Static object spawned")
         // ➊ pilih index segmen yang 3–4 layar di depan
-        let spawnIndex = nodePositions.count - 1                           // segmen di depan pemain
+        let spawnIndex = road.segmentPositions.count - 1                           // segmen di depan pemain
 //        let spawnIndex = (bottom + ahead) % nodePositions.count
 //        print(spawnIndex)
 
@@ -223,11 +104,11 @@ class GameScene: SKScene {
         staticObstacles.append(
             StaticObstacle(index: spawnIndex, sprite: sprite, offsetPct: offset)
         )
-        road.addChild(sprite)                          // layer sama dgn jalan
+        road.node.addChild(sprite)                          // layer sama dgn jalan
     }
     
     func spawnTrafficLight() {
-        let spawnIndex = nodePositions.count - 1
+        let spawnIndex = road.segmentPositions.count - 1
         let sprite = SKSpriteNode(imageNamed: "red light")
         let desiredWidth: CGFloat = 400
         let aspectRatio: CGFloat = sprite.size.height / sprite.size.width
@@ -261,14 +142,14 @@ class GameScene: SKScene {
 //        road.addChild(lightNode)
         
 //        road.addChild(circle)
-        road.addChild(sprite)
+        road.node.addChild(sprite)
         
     }
 
     func spawnDynamicObstacle() {
 //        print("Dynamic object spawned")
         // ➊ pilih index segmen yang 3–4 layar di depan
-        let spawnIndex = nodePositions.count - 1                           // segmen di depan pemain
+        let spawnIndex = road.segmentPositions.count - 1                           // segmen di depan pemain
 //        let spawnIndex = (bottom + ahead) % nodePositions.count
 //        print(spawnIndex)
 
@@ -292,7 +173,7 @@ class GameScene: SKScene {
         dynamicObstacles.append(
             DynamicObstacle(index: spawnIndex, sprite: sprite, offsetPct: offset)
         )
-        road.addChild(sprite)
+        road.node.addChild(sprite)
     }
     
 
@@ -364,10 +245,8 @@ class GameScene: SKScene {
 //        print(playerCar.size)
         
 //        Update traffic light
-        print(trafficLight?.countDown)
         trafficLight?.countDown -= 1
         if trafficLight?.countDown ?? 0 <= 0 {
-            print("GREEN")
             trafficLight?.state = "green"
             trafficLight?.sprite.texture = SKTexture(imageNamed: "green light")
             
@@ -380,66 +259,47 @@ class GameScene: SKScene {
 //            trafficLight?.sprite.zPosition = 3
         }
         else if(trafficLight?.countDown ?? 0 <= 150) {
-            print("YELLOW")
             trafficLight?.state = "yellow"
             trafficLight?.sprite.texture = SKTexture(imageNamed: "yellow light")
         }
         
         if updateFramePer >= 1000 { return }
-        updateCameraPosition()
+        self.gameCamera.updatePosition(updateFramePer: updateFramePer)
         
-        var i = 0
-        let numNode = self.nodePositions.count
         if frameCount == 0 {
-            print("\nNEW FRAME \(frameCount)")
             
             self.enumerateChildNodes(withName: "debugBox") { node, _ in
                 node.removeFromParent()
             }
-            road.enumerateChildNodes(withName: "zebraCross") { node, _ in
+            road.node.enumerateChildNodes(withName: "zebraCross") { node, _ in
                 node.removeFromParent()
             }
             
-            playerCar.position = CGPoint(x: size.width / 2,
-                                         y: playerCar.size.height / 2)
-            addDebugBox(to: self.playerCar)
+            playerCar.node.position = CGPoint(x: size.width / 2,
+                                              y: playerCar.node.size.height / 2)
+            addDebugBox(to: playerCar.node)
 
-            var roadWidths: [CGFloat] = Array(repeating: 0.0, count: self.nodePositions.count)
-
-            road.enumerateChildNodes(withName: "roadSegment") { node, _ in
-                guard let node = node as? SKSpriteNode else { return }
-                var idx = (-self.bottom + i + 1) % numNode
-                if idx < 0 {
-                    idx += numNode
-                }
-//                let shift = -0.3 + ((self.cameraX + 10) * 0.6 / 20)
-                let roadSegmentShift = node.size.width * self.cameraX
-                roadWidths[idx] = node.size.width
-                self.nodePositions[idx].x = self.size.width / 2 - roadSegmentShift
-                node.position = self.nodePositions[idx]
-                
-                node.size.height = self.nodeHeights[idx]
-                node.xScale = self.nodeScales[idx]
-                i += 1
+            if updateFramePer <= 3 {
+                road.update(gameCamera: gameCamera)
             }
             
 
-            if Double.random(in: 0...1) < 0.01 {
+            if Double.random(in: 0...1) < 0.01 && staticObstacles.count < 1 {
                 spawnStaticObstacle()
             }
             
-            if Double.random(in: 0...1) < 0.01,
-               dynamicObstacles.count < 5,
-               (dynamicObstacles.last == nil ||
-                abs(dynamicObstacles.last!.index) <= 110) {
-
-                spawnDynamicObstacle()
-            }
+//            if Double.random(in: 0...1) < 0.01,
+//               dynamicObstacles.count < 5,
+//               (dynamicObstacles.last == nil ||
+//                abs(dynamicObstacles.last!.index) <= 110) {
+//
+//                spawnDynamicObstacle()
+//            }
             
             if zebraCrossPosition <= -zebraCrossLength && Double.random(in: 0...1) < 0.01 {
-                zebraCrossPosition = nodePositions.count - 1
+                zebraCrossPosition = road.segmentPositions.count - 1
             }
-            if zebraCrossPosition == nodePositions.count - 2*zebraCrossLength {
+            if zebraCrossPosition == road.segmentPositions.count - 2*zebraCrossLength {
                 spawnTrafficLight()
             }
             // --- update every obstacle ---------------------------------
@@ -458,9 +318,9 @@ class GameScene: SKScene {
 //                print("STATIC \(idx) = \(segIdx)")
 
                 // ambil data cache segIdx
-                let pos   = nodePositions[segIdx]
-                let scale = nodeScales[segIdx]
-                let roadWidth = roadWidths[segIdx]
+                let pos   = road.segmentPositions[segIdx]
+                let scale = road.segmentScales[segIdx]
+                let roadWidth = road.segmentSizes[segIdx].width
 //                let width = 1400 * nodeScales[segIdx]
 //                let x = (self.size.width - width) / 2.0
     //            let xOffset = pos.x * CGFloat(obs.offsetPct) / 100.0
@@ -469,6 +329,7 @@ class GameScene: SKScene {
 //                print("Static \(idx) = \(shift)")
                 obs.sprite.position = CGPoint(x:  pos.x - (roadWidth / 2) + obs.offsetPct * roadWidth,
                                               y: pos.y)
+                print("Static \(idx) = \(obs.sprite.position.x)")
 //                print("Static pos x \(idx) = \(obs.sprite.position.x)")
 
                 // lebarkan atau sempitkan sesuai lebar jalan di segmen itu
@@ -476,7 +337,7 @@ class GameScene: SKScene {
                 
                 staticObstacles[idx].sprite.childNode(withName: "boundingBox")?.position = obs.sprite.position
                 
-                if isColliding(playerCar, obs.sprite, scale) && scale > 0.56 {
+                if isColliding(playerCar.node, obs.sprite, scale) && scale > 0.56 {
                     print("💥 Player hits STATIC obstacle!")
                     updateFramePer = 1000000
                     // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
@@ -509,9 +370,9 @@ class GameScene: SKScene {
 //                print("Dynamic \(idx) = \(segIdx)")
 
                 // ambil data cache segIdx
-                let pos   = nodePositions[segIdx]
-                let scale = nodeScales[segIdx]
-                let roadWidth = roadWidths[segIdx]
+                let pos   = road.segmentPositions[segIdx]
+                let scale = road.segmentScales[segIdx]
+                let roadWidth = road.segmentSizes[segIdx].width
     //            let xOffset = pos.x * CGFloat(obs.offsetPct) / 100.0
 
                 // posisikan obstacle sedikit di atas segmen dasar
@@ -530,7 +391,7 @@ class GameScene: SKScene {
                 
                 dynamicObstacles[idx].sprite.childNode(withName: "boundingBox")?.position = obs.sprite.position
                 
-                if isColliding(playerCar, obs.sprite, scale) && scale > 0.56 {
+                if isColliding(playerCar.node, obs.sprite, scale) && scale > 0.56 {
                     print("💥 Player hits DYNAMIC obstacle!")
                     updateFramePer = 1000000
                     // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
@@ -544,17 +405,17 @@ class GameScene: SKScene {
                 for i in 0..<zebraCrossLength {
                     let index = i + zebraCrossPosition
                     
-                    if 0 <= index && index < nodePositions.count {
+                    if 0 <= index && index < road.segmentPositions.count {
                         let node = SKSpriteNode(imageNamed: "zebra cross")
                         let baseWidth: CGFloat = self.size.width * 4
                         
                         node.anchorPoint = CGPoint(x: 0.5, y: 0)
-                        node.position = nodePositions[index]
-                        node.size = CGSize(width: baseWidth, height: nodeHeights[index])
-                        node.xScale = nodeScales[index]
+                        node.position = road.segmentPositions[index]
+                        node.size = CGSize(width: baseWidth, height: road.segmentSizes[index].height)
+                        node.xScale = road.segmentScales[index]
                         node.name = "zebraCross"
                         node.zPosition = 2
-                        road.addChild(node)
+                        road.node.addChild(node)
                     }
                 }
                 zebraCrossPosition -= 1
@@ -569,9 +430,9 @@ class GameScene: SKScene {
                     trafficLight.sprite.removeFromParent()
                     self.trafficLight = nil
                 } else {
-                    let pos   = nodePositions[segIdx]
-                    let scale = nodeScales[segIdx]
-                    let roadWidth = roadWidths[segIdx]
+                    let pos   = road.segmentPositions[segIdx]
+                    let scale = road.segmentScales[segIdx]
+                    let roadWidth = road.segmentSizes[segIdx].width
                     
                    
                     
@@ -585,10 +446,6 @@ class GameScene: SKScene {
                 updateFramePer = 10000
             }
             
-            if updateFramePer <= 3 {
-                bottom += 1
-                bottom %= numNode
-            }
         }
         
         frameCount += 1
