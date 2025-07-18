@@ -224,8 +224,6 @@ class GameScene: SKScene {
         
         size.width *= scale
         size.height *= scale
-//        print("SIZE: \(size)")
-//        print("BB POS: \(bb.position)")
 
         // gambar rect terpusat
         let box = SKShapeNode(rectOf: size)           // otomatis anchor di tengah
@@ -274,9 +272,6 @@ class GameScene: SKScene {
             road.node.enumerateChildNodes(withName: "zebraCross") { node, _ in
                 node.removeFromParent()
             }
-            
-            playerCar.node.position = CGPoint(x: size.width / 2,
-                                              y: playerCar.node.size.height / 2)
             addDebugBox(to: playerCar.node)
 
             if updateFramePer <= 3 {
