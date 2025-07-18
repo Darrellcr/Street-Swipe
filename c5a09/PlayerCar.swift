@@ -19,10 +19,10 @@ class PlayerCar {
         let playerCarTexture = SKTexture(imageNamed: "car 2")
         let aspectRatio = playerCarTexture.size().width / playerCarTexture.size().height
         node.texture = playerCarTexture
-        let desiredWidth: CGFloat = 270
+        let desiredWidth: CGFloat = 220
         let desiredHeight: CGFloat = desiredWidth / aspectRatio
         node.size = CGSize(width: desiredWidth, height: desiredHeight)
-        node.position = CGPoint(x: sceneSize.width / 2, y: node.size.height / 2)
+        node.position = CGPoint(x: sceneSize.width / 2, y: node.size.height * 1.6)
         node.zPosition = 100
         
         if showBoundingBox {
