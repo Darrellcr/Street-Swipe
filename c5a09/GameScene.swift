@@ -283,17 +283,19 @@ class GameScene: SKScene {
                 spawnStaticObstacle()
             }
             
-//            if Double.random(in: 0...1) < 0.01,
-//               dynamicObstacles.count < 5,
-//               (dynamicObstacles.last == nil ||
-//                abs(dynamicObstacles.last!.index) <= 110) {
-//
-//                spawnDynamicObstacle()
-//            }
+            if Double.random(in: 0...1) < 0.01,
+               dynamicObstacles.count < 5,
+               (dynamicObstacles.last == nil ||
+                abs(dynamicObstacles.last!.index) <= 110) {
+
+                spawnDynamicObstacle()
+            }
             
+            // Spawn zebra cross
             if zebraCrossPosition <= -zebraCrossLength && Double.random(in: 0...1) < 0.01 {
                 zebraCrossPosition = road.segmentPositions.count - 1
             }
+            // Spawn traffic light
             if zebraCrossPosition == road.segmentPositions.count - 2*zebraCrossLength {
                 spawnTrafficLight()
             }
@@ -332,7 +334,7 @@ class GameScene: SKScene {
                 
                 staticObstacles[idx].sprite.childNode(withName: "boundingBox")?.position = obs.sprite.position
                 
-                if isColliding(playerCar.node, obs.sprite, scale) && scale > 0.56 {
+                if isColliding(playerCar.node, obs.sprite, scale) && obs.index <= 24 && obs.index >= 14 {
                     print("💥 Player hits STATIC obstacle!")
                     updateFramePer = 1000000
                     // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
@@ -386,7 +388,7 @@ class GameScene: SKScene {
                 
                 dynamicObstacles[idx].sprite.childNode(withName: "boundingBox")?.position = obs.sprite.position
                 
-                if isColliding(playerCar.node, obs.sprite, scale) && scale > 0.56 {
+                if isColliding(playerCar.node, obs.sprite, scale) && obs.index <= 24 && obs.index >= 14 {
                     print("💥 Player hits DYNAMIC obstacle!")
                     updateFramePer = 1000000
                     // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
@@ -436,9 +438,18 @@ class GameScene: SKScene {
                 }
             }
             
-            if zebraCrossPosition <= 2 && zebraCrossPosition > -zebraCrossLength && trafficLight?.state == "red" {
-                print("🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓")
-                updateFramePer = 10000
+            if zebraCrossPosition <= 50 && zebraCrossPosition > -zebraCrossLength && trafficLight?.state == "red" {
+                print("\(zebraCrossPosition) 🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓")
+                
+                if zebraCrossPosition >= 36 {
+                    print("BAD")
+                } else if zebraCrossPosition >= 28 {
+                    print("GOOD")
+                } else if zebraCrossPosition >= 23 {
+                    print("PERFECT")
+                } else {
+                    print("BUSTED")
+                }
             }
             
         }
