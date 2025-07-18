@@ -15,15 +15,33 @@ extension CGFloat {
 }
 
 class GameScene: SKScene {
-    private let numSegments: Int = 50
-    private var total: CGFloat = 0
-    private var roadSpeed = 3 // 1 segment down per update call
     private var staticObstacles: [StaticObstacle] = []
     private var dynamicObstacles: [DynamicObstacle] = []
     private var zebraCrossLength: Int = 15
     private var zebraCrossPosition: Int = -15
-    private var frameCount: Int = 0
-    private var updateFramePer: Int = 4
+    
+    private var speedIndex: Int = 0
+    private var speedFrameIndex: Int = 0
+    private let speedConstants: [[Int]] = [
+        [0, 0, 0, 0, 0, 0], // 0
+        [1, 0, 0, 1, 0, 0], // 1: 20
+        [1, 1, 0, 1, 0, 0], // 2: 30
+        [1, 1, 0, 1, 1, 0], // 3: 40
+        [1, 1, 1, 1, 1, 0], // 4: 50
+        [1, 1, 1, 1, 1, 1], // 5: 60
+        [2, 1, 1, 1, 1, 1], // 6: 70
+        [2, 1, 1, 2, 1, 1], // 7: 80
+        [2, 2, 1, 2, 1, 1], // 8: 90
+        [2, 2, 1, 2, 2, 1], // 9: 100
+        [2, 2, 2, 2, 2, 1], // 10: 110
+        [2, 2, 2, 2, 2, 2], // 11: 120
+        [3, 2, 2, 2, 2, 2], // 12: 130
+        [3, 2, 2, 3, 2, 2], // 13: 140
+        [3, 3, 2, 3, 2, 2], // 14: 150
+        [3, 3, 2, 3, 3, 2], // 15: 160
+        [3, 3, 3, 3, 3, 2], // 16: 170
+        [3, 3, 3, 3, 3, 3], // 17: 180
+    ]
     
     private var trafficLight: TrafficLight?
     
@@ -69,11 +87,9 @@ class GameScene: SKScene {
         } else if gesture.direction == .right {
             gameCamera.moveRight()
         } else if gesture.direction == .up {
-            updateFramePer -= 1
-            updateFramePer = max(1, min(updateFramePer, 5))
+            speedIndex = min(speedIndex + 1, speedConstants.count - 1)
         } else if gesture.direction == .down {
-            updateFramePer += 1
-            updateFramePer = max(1, min(updateFramePer, 5))
+            speedIndex = max(speedIndex - 1, 0)
         }
     }
     
@@ -241,6 +257,8 @@ class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
 //        print(playerCar.position)
 //        print(playerCar.size)
+        let segmentShift = speedConstants[speedIndex][speedFrameIndex]
+        print("Segment shift: \(segmentShift)")
         
 //        Update traffic light
         trafficLight?.countDown -= 1
@@ -261,201 +279,207 @@ class GameScene: SKScene {
             trafficLight?.sprite.texture = SKTexture(imageNamed: "yellow light")
         }
         
-        if updateFramePer >= 1000 { return }
-        self.gameCamera.updatePosition(updateFramePer: updateFramePer)
+//        if updateFramePer >= 1000 { return }
+        self.gameCamera.updatePosition(segmentShift: segmentShift)
         
-        if frameCount == 0 {
             
-            self.enumerateChildNodes(withName: "debugBox") { node, _ in
-                node.removeFromParent()
-            }
-            road.node.enumerateChildNodes(withName: "zebraCross") { node, _ in
-                node.removeFromParent()
-            }
-            addDebugBox(to: playerCar.node)
+        self.enumerateChildNodes(withName: "debugBox") { node, _ in
+            node.removeFromParent()
+        }
+        road.node.enumerateChildNodes(withName: "zebraCross") { node, _ in
+            node.removeFromParent()
+        }
+        addDebugBox(to: playerCar.node)
 
-            if updateFramePer <= 3 {
-                road.update(gameCamera: gameCamera)
-            }
-            
+//            if updateFramePer <= 3 {
+        road.update(gameCamera: gameCamera, segmentShift: segmentShift)
+//            }
+        
 
-            if Double.random(in: 0...1) < 0.01 && staticObstacles.count < 1 {
-                spawnStaticObstacle()
-            }
-            
-            if Double.random(in: 0...1) < 0.01,
-               dynamicObstacles.count < 5,
-               (dynamicObstacles.last == nil ||
-                abs(dynamicObstacles.last!.index) <= 110) {
-
-                spawnDynamicObstacle()
-            }
-            
-            // Spawn zebra cross
-            if zebraCrossPosition <= -zebraCrossLength && Double.random(in: 0...1) < 0.01 {
-                zebraCrossPosition = road.segmentPositions.count - 1
-            }
-            // Spawn traffic light
-            if zebraCrossPosition == road.segmentPositions.count - 2*zebraCrossLength {
-                spawnTrafficLight()
-            }
-            // --- update every obstacle ---------------------------------
-            for (idx, obs) in staticObstacles.enumerated().reversed() {
-                
-                // konversi index cache → index layar
-                let segIdx = obs.index
-                staticObstacles[idx].index -= 1
-                
-                if segIdx <= 10 {
-                    obs.sprite.removeFromParent()
-                    staticObstacles.remove(at: idx)
-                    continue
-                }
-                
-//                print("STATIC \(idx) = \(segIdx)")
-
-                // ambil data cache segIdx
-                let pos   = road.segmentPositions[segIdx]
-                let scale = road.segmentScales[segIdx]
-                let roadWidth = road.segmentSizes[segIdx].width
-//                let width = 1400 * nodeScales[segIdx]
-//                let x = (self.size.width - width) / 2.0
-    //            let xOffset = pos.x * CGFloat(obs.offsetPct) / 100.0
-
-                // posisikan obstacle sedikit di atas segmen dasar
-//                print("Static \(idx) = \(shift)")
-                obs.sprite.position = CGPoint(x:  pos.x - (roadWidth / 2) + obs.offsetPct * roadWidth,
-                                              y: pos.y)
-                print("Static \(idx) = \(obs.sprite.position.x)")
-//                print("Static pos x \(idx) = \(obs.sprite.position.x)")
-
-                // lebarkan atau sempitkan sesuai lebar jalan di segmen itu
-                obs.sprite.setScale(scale * 3)
-                
-                staticObstacles[idx].sprite.childNode(withName: "boundingBox")?.position = obs.sprite.position
-                
-                if isColliding(playerCar.node, obs.sprite, scale) && obs.index <= 24 && obs.index >= 14 {
-                    print("💥 Player hits STATIC obstacle!")
-                    updateFramePer = 1000000
-                    // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
-                    break                                               // satu hit cukup
-                }
-                
-                addDebugBox(to: staticObstacles[idx].sprite, scale: scale)
-            }
-            
-            
-            
-            for (idx, obs) in dynamicObstacles.enumerated().reversed() {
-                
-                // konversi index cache → index layar
-                let segIdx = obs.index
-                if Double.random(in: 0...1) < 0.3 {
-                    dynamicObstacles[idx].index -= 1
-                }
-                
-//                print("Dynamic \(idx) = \(segIdx)")
-                
-                if segIdx <= 10 {
-                    obs.sprite.removeFromParent()
-//                    print("Want remove \(idx)")
-                    dynamicObstacles.remove(at: idx)
-//                    print("Now remove \(idx)")
-                    continue
-                }
-
-//                print("Dynamic \(idx) = \(segIdx)")
-
-                // ambil data cache segIdx
-                let pos   = road.segmentPositions[segIdx]
-                let scale = road.segmentScales[segIdx]
-                let roadWidth = road.segmentSizes[segIdx].width
-    //            let xOffset = pos.x * CGFloat(obs.offsetPct) / 100.0
-
-                // posisikan obstacle sedikit di atas segmen dasar
-                obs.sprite.position = CGPoint(x: pos.x - (roadWidth / 2) + obs.offsetPct * roadWidth,
-                                              y: pos.y)
-
-                // lebarkan atau sempitkan sesuai lebar jalan di segmen itu
-                obs.sprite.setScale(scale * 2)
-                
-                dynamicObstacles[idx].offsetPct += obs.velocity * obs.direction
-                if(dynamicObstacles[idx].offsetPct >= 1.0){
-                    dynamicObstacles[idx].direction = -1.0
-                } else if(dynamicObstacles[idx].offsetPct <= 0){
-                    dynamicObstacles[idx].direction = 1.0
-                }
-                
-                dynamicObstacles[idx].sprite.childNode(withName: "boundingBox")?.position = obs.sprite.position
-                
-                if isColliding(playerCar.node, obs.sprite, scale) && obs.index <= 24 && obs.index >= 14 {
-                    print("💥 Player hits DYNAMIC obstacle!")
-                    updateFramePer = 1000000
-                    // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
-                    break                                               // satu hit cukup
-                }
-//                print("OFFSET = \(dynamicObstacles[idx].offsetPct)")
-                addDebugBox(to: dynamicObstacles[idx].sprite, scale: scale)
-            }
-            
-            if zebraCrossPosition > -zebraCrossLength {
-                for i in 0..<zebraCrossLength {
-                    let index = i + zebraCrossPosition
-                    
-                    if 0 <= index && index < road.segmentPositions.count {
-                        let node = SKSpriteNode(imageNamed: "zebra cross")
-                        let baseWidth: CGFloat = self.size.width * 4
-                        
-                        node.anchorPoint = CGPoint(x: 0.5, y: 0)
-                        node.position = road.segmentPositions[index]
-                        node.size = CGSize(width: baseWidth, height: road.segmentSizes[index].height)
-                        node.xScale = road.segmentScales[index]
-                        node.name = "zebraCross"
-                        node.zPosition = 2
-                        road.node.addChild(node)
-                    }
-                }
-                zebraCrossPosition -= 1
-            }
-            
-            
-            if let trafficLight {
-                let segIdx = trafficLight.index
-                self.trafficLight?.index -= 1
-                
-                if segIdx <= 10 {
-                    trafficLight.sprite.removeFromParent()
-                    self.trafficLight = nil
-                } else {
-                    let pos   = road.segmentPositions[segIdx]
-                    let scale = road.segmentScales[segIdx]
-                    let roadWidth = road.segmentSizes[segIdx].width
-                    
-                   
-                    
-                    trafficLight.sprite.position = CGPoint(x:  pos.x - (roadWidth / 2) + trafficLight.offsetPct * roadWidth, y: pos.y)
-                    trafficLight.sprite.setScale(scale * 3)
-                }
-            }
-            
-            if zebraCrossPosition <= 50 && zebraCrossPosition > -zebraCrossLength && trafficLight?.state == "red" {
-                print("\(zebraCrossPosition) 🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓")
-                
-                if zebraCrossPosition >= 36 {
-                    print("BAD")
-                } else if zebraCrossPosition >= 28 {
-                    print("GOOD")
-                } else if zebraCrossPosition >= 23 {
-                    print("PERFECT")
-                } else {
-                    print("BUSTED")
-                }
-            }
-            
+        if Double.random(in: 0...1) < 0.01 && staticObstacles.count < 1 {
+            spawnStaticObstacle()
         }
         
-        frameCount += 1
-        frameCount %= updateFramePer
+        if Double.random(in: 0...1) < 0.01,
+           dynamicObstacles.count < 5,
+           (dynamicObstacles.last == nil ||
+            abs(dynamicObstacles.last!.index) <= 110) {
+
+            spawnDynamicObstacle()
+        }
+        
+        // Spawn zebra cross
+        if zebraCrossPosition <= -zebraCrossLength && Double.random(in: 0...1) < 0.01 {
+            zebraCrossPosition = road.segmentPositions.count - 1
+        }
+        // Spawn traffic light
+        if zebraCrossPosition == road.segmentPositions.count - 2*zebraCrossLength {
+            spawnTrafficLight()
+        }
+        // --- update every obstacle ---------------------------------
+        for (idx, obs) in staticObstacles.enumerated().reversed() {
+            
+            // konversi index cache → index layar
+            let segIdx = obs.index
+            staticObstacles[idx].index -= segmentShift
+            
+            if segIdx <= 10 {
+                obs.sprite.removeFromParent()
+                staticObstacles.remove(at: idx)
+                continue
+            }
+            
+//                print("STATIC \(idx) = \(segIdx)")
+
+            // ambil data cache segIdx
+            let pos   = road.segmentPositions[segIdx]
+            let scale = road.segmentScales[segIdx]
+            let roadWidth = road.segmentSizes[segIdx].width
+//                let width = 1400 * nodeScales[segIdx]
+//                let x = (self.size.width - width) / 2.0
+//            let xOffset = pos.x * CGFloat(obs.offsetPct) / 100.0
+
+            // posisikan obstacle sedikit di atas segmen dasar
+//                print("Static \(idx) = \(shift)")
+            obs.sprite.position = CGPoint(x:  pos.x - (roadWidth / 2) + obs.offsetPct * roadWidth,
+                                          y: pos.y)
+//            print("Static \(idx) = \(obs.sprite.position.x)")
+//                print("Static pos x \(idx) = \(obs.sprite.position.x)")
+
+            // lebarkan atau sempitkan sesuai lebar jalan di segmen itu
+            obs.sprite.setScale(scale * 3)
+            
+            staticObstacles[idx].sprite.childNode(withName: "boundingBox")?.position = obs.sprite.position
+            
+            if isColliding(playerCar.node, obs.sprite, scale) && obs.index <= 24 && obs.index >= 14 {
+//                print("💥 Player hits STATIC obstacle!")
+//                speedIndex = 0
+                // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
+                break                                               // satu hit cukup
+            }
+            
+            addDebugBox(to: staticObstacles[idx].sprite, scale: scale)
+        }
+        
+        
+        
+        for (idx, obs) in dynamicObstacles.enumerated().reversed() {
+            
+            // konversi index cache → index layar
+            
+//            if Double.random(in: 0...1) < 0.3 {
+//                dynamicObstacles[idx].index -= segmentShift
+//            }
+//            
+            let MOTOR_SPEED_INDEX = 1
+            var speed_diff = abs(Int(speedIndex) - MOTOR_SPEED_INDEX)
+            if speed_diff == 1{
+                speed_diff = 2
+            }
+            let sign = MOTOR_SPEED_INDEX > speedIndex ? 1 : -1
+            
+            dynamicObstacles[idx].index += sign * speedConstants[speed_diff][speedFrameIndex]
+            let segIdx = obs.index
+            
+//                print("Dynamic \(idx) = \(segIdx)")
+            
+            if segIdx <= 10 || segIdx >= road.segmentPositions.count {
+                obs.sprite.removeFromParent()
+//                    print("Want remove \(idx)")
+                dynamicObstacles.remove(at: idx)
+//                    print("Now remove \(idx)")
+                continue
+            }
+
+//                print("Dynamic \(idx) = \(segIdx)")
+
+            // ambil data cache segIdx
+            let pos   = road.segmentPositions[segIdx]
+            let scale = road.segmentScales[segIdx]
+            let roadWidth = road.segmentSizes[segIdx].width
+//            let xOffset = pos.x * CGFloat(obs.offsetPct) / 100.0
+
+            // posisikan obstacle sedikit di atas segmen dasar
+            obs.sprite.position = CGPoint(x: pos.x - (roadWidth / 2) + obs.offsetPct * roadWidth,
+                                          y: pos.y)
+
+            // lebarkan atau sempitkan sesuai lebar jalan di segmen itu
+            obs.sprite.setScale(scale * 2)
+            
+            dynamicObstacles[idx].offsetPct += obs.velocity * obs.direction
+            if(dynamicObstacles[idx].offsetPct >= 1.0){
+                dynamicObstacles[idx].direction = -1.0
+            } else if(dynamicObstacles[idx].offsetPct <= 0){
+                dynamicObstacles[idx].direction = 1.0
+            }
+            
+            dynamicObstacles[idx].sprite.childNode(withName: "boundingBox")?.position = obs.sprite.position
+            
+            if isColliding(playerCar.node, obs.sprite, scale) && obs.index <= 24 && obs.index >= 14 {
+//                print("💥 Player hits DYNAMIC obstacle!")
+//                speedIndex = 0
+                // handleCrash()  // buat fungsi sendiri untuk game-over, efek, dsb.
+                break                                               // satu hit cukup
+            }
+//                print("OFFSET = \(dynamicObstacles[idx].offsetPct)")
+            addDebugBox(to: dynamicObstacles[idx].sprite, scale: scale)
+        }
+        
+        if zebraCrossPosition > -zebraCrossLength {
+            for i in 0..<zebraCrossLength {
+                let index = i + zebraCrossPosition
+                
+                if 0 <= index && index < road.segmentPositions.count {
+                    let node = SKSpriteNode(imageNamed: "zebra cross")
+                    let baseWidth: CGFloat = self.size.width * 4
+                    
+                    node.anchorPoint = CGPoint(x: 0.5, y: 0)
+                    node.position = road.segmentPositions[index]
+                    node.size = CGSize(width: baseWidth, height: road.segmentSizes[index].height)
+                    node.xScale = road.segmentScales[index]
+                    node.name = "zebraCross"
+                    node.zPosition = 2
+                    road.node.addChild(node)
+                }
+            }
+            zebraCrossPosition -= segmentShift
+        }
+        
+        
+        if let trafficLight {
+            let segIdx = trafficLight.index
+            self.trafficLight?.index -= segmentShift
+            
+            if segIdx <= 10 {
+                trafficLight.sprite.removeFromParent()
+                self.trafficLight = nil
+            } else {
+                let pos   = road.segmentPositions[segIdx]
+                let scale = road.segmentScales[segIdx]
+                let roadWidth = road.segmentSizes[segIdx].width
+                
+               
+                
+                trafficLight.sprite.position = CGPoint(x:  pos.x - (roadWidth / 2) + trafficLight.offsetPct * roadWidth, y: pos.y)
+                trafficLight.sprite.setScale(scale * 3)
+            }
+        }
+        
+        if zebraCrossPosition <= 50 && zebraCrossPosition > -zebraCrossLength && trafficLight?.state == "red" {
+//            print("\(zebraCrossPosition) 🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓")
+//            
+//            if zebraCrossPosition >= 36 {
+//                print("BAD")
+//            } else if zebraCrossPosition >= 28 {
+//                print("GOOD")
+//            } else if zebraCrossPosition >= 23 {
+//                print("PERFECT")
+//            } else {
+//                print("BUSTED")
+//            }
+        }
+            
+        speedFrameIndex = (speedFrameIndex + 1) % speedConstants[speedIndex].count
     }
 
 }
