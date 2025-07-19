@@ -29,7 +29,7 @@ class PlayerCar {
             let boundingBox = SKNode()
             boundingBox.name = "boundingBox"
             boundingBox.position = CGPoint(x: node.position.x, y: node.position.y)
-            boundingBox.userData = ["size": CGSize(width: 240, height: 140)]
+            boundingBox.userData = ["size": CGSize(width: 170, height: 100)]
             node.addChild(boundingBox)
         }
     }
