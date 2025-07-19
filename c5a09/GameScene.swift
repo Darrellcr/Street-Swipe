@@ -47,20 +47,9 @@ class GameScene: SKScene {
         self.backgroundColor = .black
         
         addChild(background.node)
+        background.node.zPosition = -1
         addChild(road.node)
         addChild(playerCar.node)
-        
-//        let lightNode = SKLightNode()
-//        lightNode.zPosition = 1000
-//        lightNode.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
-//        lightNode.categoryBitMask = 0b0001
-//        lightNode.lightColor = .white.withAlphaComponent(1.0)
-//        lightNode.falloff = 4.0
-//        lightNode.ambientColor = SKColor(white: 1.0, alpha: 1.0)
-
-        
-//        playerCar.lightingBitMask = 0b0001
-//        self.addChild(lightNode)
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
@@ -109,7 +98,7 @@ class GameScene: SKScene {
     
     func spawnTrafficLight() {
         let spawnIndex = road.segmentPositions.count - 1
-        let sprite = SKSpriteNode(imageNamed: "red light")
+        let sprite = SKSpriteNode(imageNamed: "L red light")
         let desiredWidth: CGFloat = 400
         let aspectRatio: CGFloat = sprite.size.height / sprite.size.width
         sprite.size = CGSize(width: desiredWidth, height: desiredWidth * aspectRatio)
@@ -138,7 +127,7 @@ class GameScene: SKScene {
         
         let offset = -0.15
         let countDown = Int.random(in: 250...500)
-        self.trafficLight = TrafficLight(index: spawnIndex, sprite: sprite, offsetPct: offset, state: "red", countDown: countDown)
+//        self.trafficLight = TrafficLight(index: spawnIndex, sprite: sprite, offsetPct: offset, state: "red", countDown: countDown)
 //        road.addChild(lightNode)
         
 //        road.addChild(circle)
@@ -203,9 +192,6 @@ class GameScene: SKScene {
         let obsOrigin = CGPoint(x: obsBB.position.x - obsSize.width  * 0.5,
                                 y: obsBB.position.y - obsSize.height * 0.5)
         let obsRect   = CGRect(origin: obsOrigin, size: obsSize)
-        
-//        print("CAR RECT = \(carRect)")
-//        print("OBS RECT = \(carRect)")
 
 
         // --- Overlap? ---------------------------------------------------------
@@ -241,28 +227,6 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-//        print(playerCar.position)
-//        print(playerCar.size)
-        
-//        Update traffic light
-        trafficLight?.countDown -= 1
-        if trafficLight?.countDown ?? 0 <= 0 {
-            trafficLight?.state = "green"
-            trafficLight?.sprite.texture = SKTexture(imageNamed: "green light")
-            
-//            let desiredWidth: CGFloat = 200
-//            let aspectRatio: CGFloat = trafficLight?.sprite.size.height / trafficLight?.sprite.size.width
-//            trafficLight?.sprite.size = CGSize(width: desiredWidth, height: desiredWidth * aspectRatio)
-//    //        sprite.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
-//            trafficLight?.sprite.name = "trafficlight"
-//            trafficLight?.sprite.lightingBitMask = 0b0001
-//            trafficLight?.sprite.zPosition = 3
-        }
-        else if(trafficLight?.countDown ?? 0 <= 150) {
-            trafficLight?.state = "yellow"
-            trafficLight?.sprite.texture = SKTexture(imageNamed: "yellow light")
-        }
-        
         if updateFramePer >= 1000 { return }
         self.gameCamera.updatePosition(updateFramePer: updateFramePer)
         
@@ -275,9 +239,7 @@ class GameScene: SKScene {
                 node.removeFromParent()
             }
             
-            playerCar.node.position = CGPoint(x: size.width / 2,
-                                              y: playerCar.node.size.height / 2)
-            addDebugBox(to: playerCar.node)
+            
 
             if updateFramePer <= 3 {
                 road.update(gameCamera: gameCamera)
@@ -300,14 +262,19 @@ class GameScene: SKScene {
                 zebraCrossPosition = road.segmentPositions.count - 1
             }
             if zebraCrossPosition == road.segmentPositions.count - 2*zebraCrossLength {
-                spawnTrafficLight()
+                self.trafficLight = TrafficLight.spawn(road: road)
+                
+                //
             }
+//            if trafficLight == nil {
+//                self.trafficLight = TrafficLight.spawn(road: road)
+//            }
             // --- update every obstacle ---------------------------------
             for (idx, obs) in staticObstacles.enumerated().reversed() {
                 
                 // konversi index cache → index layar
                 let segIdx = obs.index
-                staticObstacles[idx].index -= 1
+                staticObstacles[idx].index -= 4
                 
                 if segIdx <= 10 {
                     obs.sprite.removeFromParent()
@@ -329,7 +296,7 @@ class GameScene: SKScene {
 //                print("Static \(idx) = \(shift)")
                 obs.sprite.position = CGPoint(x:  pos.x - (roadWidth / 2) + obs.offsetPct * roadWidth,
                                               y: pos.y)
-                print("Static \(idx) = \(obs.sprite.position.x)")
+//                print("Static \(idx) = \(obs.sprite.position.x)")
 //                print("Static pos x \(idx) = \(obs.sprite.position.x)")
 
                 // lebarkan atau sempitkan sesuai lebar jalan di segmen itu
@@ -354,7 +321,7 @@ class GameScene: SKScene {
                 // konversi index cache → index layar
                 let segIdx = obs.index
                 if Double.random(in: 0...1) < 0.3 {
-                    dynamicObstacles[idx].index -= 1
+                    dynamicObstacles[idx].index -= 4
                 }
                 
 //                print("Dynamic \(idx) = \(segIdx)")
@@ -427,25 +394,42 @@ class GameScene: SKScene {
                 self.trafficLight?.index -= 1
                 
                 if segIdx <= 10 {
-                    trafficLight.sprite.removeFromParent()
+                    trafficLight.leftSide.removeFromParent()
+                    trafficLight.rightSide.removeFromParent()
                     self.trafficLight = nil
                 } else {
                     let pos   = road.segmentPositions[segIdx]
                     let scale = road.segmentScales[segIdx]
                     let roadWidth = road.segmentSizes[segIdx].width
+//                    
+                    let roadStartX = pos.x - (roadWidth / 2)
+                    trafficLight.leftSide.position = CGPoint(x: roadStartX + trafficLight.leftOffset * roadWidth, y: pos.y)
+                    trafficLight.leftSide.setScale(scale * 3)
+                    trafficLight.rightSide.position = CGPoint(x: roadStartX + trafficLight.rightOffset * roadWidth, y: pos.y)
+                    trafficLight.rightSide.setScale(scale * 3)
                     
-                   
-                    
-                    trafficLight.sprite.position = CGPoint(x:  pos.x - (roadWidth / 2) + trafficLight.offsetPct * roadWidth, y: pos.y)
-                    trafficLight.sprite.setScale(scale * 3)
+                    trafficLight.falloff = max(3.8 - scale * (3000.0 / CGFloat(segIdx)), 2.0)
+                    print(trafficLight.falloff)
                 }
+                
             }
             
-            if zebraCrossPosition <= 2 && zebraCrossPosition > -zebraCrossLength && trafficLight?.state == "red" {
+            if zebraCrossPosition <= 2 && zebraCrossPosition > -zebraCrossLength && trafficLight?.state == TrafficLightState.red {
                 print("🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓🦓")
                 updateFramePer = 10000
             }
             
+        }
+        
+        
+        //        Update traffic light
+        trafficLight?.countDown -= 1
+        if trafficLight?.countDown ?? 0 <= 0 {
+            trafficLight?.state = .green
+        } else if trafficLight?.countDown ?? 0 <= 200 {
+            trafficLight?.state = .yellow
+        } else {
+            trafficLight?.state = .red
         }
         
         frameCount += 1

@@ -76,6 +76,7 @@ class Road {
             self.segmentSizes.append(segment.size)
             
             segment.name = "roadSegment"
+            segment.lightingBitMask = TrafficLight.categoryBitMask
             self.node.addChild(segment)
             
 

@@ -11,7 +11,7 @@ import SpriteKit
 class PlayerCar {
     private let image: String = "car 2"
     private let width: CGFloat = 270
-    private let showBoundingBox: Bool = false
+    private let showBoundingBox: Bool = true
     
     private(set) var node = SKSpriteNode()
     
@@ -27,9 +27,9 @@ class PlayerCar {
         
         if showBoundingBox {
             let boundingBox = SKNode()
-            node.name = "boundingBox"
-            node.position = CGPoint(x: node.position.x, y: node.position.y)
-            node.userData = ["size": CGSize(width: 240, height: 140)]
+            boundingBox.name = "boundingBox"
+            boundingBox.position = CGPoint(x: node.position.x, y: node.position.y)
+            boundingBox.userData = ["size": CGSize(width: 240, height: 140)]
             node.addChild(boundingBox)
         }
     }
