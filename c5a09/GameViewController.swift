@@ -23,12 +23,14 @@ class GameViewController: UIViewController {
             // Present the scene
             view.presentScene(scene)
             
-            let directions: [UISwipeGestureRecognizer.Direction] = [.up, .down, .left, .right]
-            for direction in directions {
-                let swipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
-                swipe.direction = direction
-                view.addGestureRecognizer(swipe)
-            }
+//            let directions: [UISwipeGestureRecognizer.Direction] = [.up, .down, .left, .right]
+//            for direction in directions {
+//                let swipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+//                swipe.direction = direction
+//                view.addGestureRecognizer(swipe)
+//            }
+            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+            view.addGestureRecognizer(panGesture)
             
             view.ignoresSiblingOrder = true
             
@@ -41,6 +43,13 @@ class GameViewController: UIViewController {
         if let skView = self.view as? SKView,
            let gameScene = skView.scene as? GameScene {
             gameScene.handleSwipe(gesture)
+        }
+    }
+    
+    @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
+        if let skView = self.view as? SKView,
+           let gameScene = skView.scene as? GameScene {
+            gameScene.handlePan(gesture, view: view)
         }
     }
 
