@@ -51,8 +51,6 @@ struct LandingView: View {
             
             VStack {
                 Spacer()
-                
-
                 Button(action: {
                     playTapSound()
                     isPressed = true
@@ -117,7 +115,6 @@ func loadExplosionFrames(from imageName: String, frameCount: Int) -> [UIImage] {
 #Preview {
     LandingView(isGameStarted: .constant(false))
 }
-
 
 //            Button(action: {
 //                isGameStarted = true

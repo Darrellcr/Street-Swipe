@@ -10,9 +10,22 @@
 		2AC88F1C2E28D5430012C820 /* c5a09.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = c5a09.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2AF69CB22E2A5765009C7235 /* Exceptions for "c5a09" folder in "c5a09" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5B462DD72E215F1100E1E404 /* c5a09 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2AFEA7212E2794AE009BEA51 /* c5a09 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2AF69CB22E2A5765009C7235 /* Exceptions for "c5a09" folder in "c5a09" target */,
+			);
 			path = c5a09;
 			sourceTree = "<group>";
 		};

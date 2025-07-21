@@ -9,6 +9,7 @@ import SwiftUI
 struct GameOverView: View {
 //    var onRestart: () -> Void
     @Binding var isGameOver: Bool
+//    var onRestart: () -> Void
 
     var body: some View {
         VStack(spacing: 20) {

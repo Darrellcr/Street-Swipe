@@ -23,7 +23,7 @@ class GameViewController: UIViewController {
             // Present the scene
             view.presentScene(scene)
             
-            let directions: [UISwipeGestureRecognizer.Direction] = [.left, .right]
+            let directions: [UISwipeGestureRecognizer.Direction] = [.up, .down, .left, .right]
             for direction in directions {
                 let swipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
                 swipe.direction = direction
@@ -38,11 +38,11 @@ class GameViewController: UIViewController {
     }
     
     @objc func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
-            if let skView = self.view as? SKView,
-               let gameScene = skView.scene as? GameScene {
-                gameScene.handleHorizontalSwipe(gesture)
-            }
+        if let skView = self.view as? SKView,
+           let gameScene = skView.scene as? GameScene {
+            gameScene.handleSwipe(gesture)
         }
+    }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
