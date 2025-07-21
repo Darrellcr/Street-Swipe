@@ -59,14 +59,19 @@ class GameScene: SKScene {
         }
         entityManager.add(motorbikeSpawner)
         
-//        let leftTrafficLightSpawner = Spawner(for: .leftTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
-//            return RoadComponent.speed > 1 && obstacleCount < 1
-//        }
-//        entityManager.add(leftTrafficLightSpawner)
-        let rightTrafficLightSpawner = Spawner(for: .rightTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
+        let leftTrafficLightSpawner = Spawner(for: .leftTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
             return RoadComponent.speed > 1 && obstacleCount < 1
         }
-        entityManager.add(rightTrafficLightSpawner)
+        entityManager.add(leftTrafficLightSpawner)
+//        let rightTrafficLightSpawner = Spawner(for: .rightTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
+//            return RoadComponent.speed > 1 && obstacleCount < 1
+//        }
+//        entityManager.add(rightTrafficLightSpawner)
+        
+        let pocongSpawner = Spawner(for: .pocong, entityManager: entityManager, scene: self) { osbtacleCount, _ in
+            return RoadComponent.speed > 1 && osbtacleCount < 1
+        }
+        entityManager.add(pocongSpawner)
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {

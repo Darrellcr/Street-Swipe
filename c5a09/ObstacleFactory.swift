@@ -37,7 +37,7 @@ class ObstacleFactory {
             entity = TrafficLight(
                 texture: SKTexture(imageNamed: "L red light"),
                 index: roadLastIndex,
-                offsetPct: -0.12,
+                offsetPct: -0.2,
                 scene: scene,
                 width: 900,
                 entityManager: entityManager,
@@ -71,6 +71,15 @@ class ObstacleFactory {
                     .green: SKTexture(imageNamed: "green light")
                 ]
             )
+        case .pocong:
+            entity = Pocong(
+                texture: SKTexture(imageNamed: "pocong"),
+                index: roadLastIndex,
+                crossingFrom: .left,
+                scene: scene,
+                width: 130,
+                entityManager: entityManager
+            )
         }
         
         return entity
@@ -82,4 +91,5 @@ enum ObstacleType {
     case motorbike
     case leftTrafficLight
     case rightTrafficLight
+    case pocong
 }
