@@ -13,15 +13,11 @@ class BackgroundTop: GKEntity {
         super.init()
         
         let renderComponent = RenderComponent(texture: SKTexture(imageNamed: imageName))
+        renderComponent.node.lightingBitMask = TrafficLight.categoryBitMask
         addComponent(renderComponent)
         let positionComponent = PositionComponent(position: position, anchorPoint: anchorPoint)
         addComponent(positionComponent)
-
-        guard let texture = renderComponent.node.texture else { return }
-        
-        let aspectRatio = texture.size().width / texture.size().height
-        let height = width / aspectRatio
-        let sizeComponent = SizeComponent(size: CGSize(width: width, height: height))
+        let sizeComponent = SizeComponent(width: width)
         addComponent(sizeComponent)
     }
     

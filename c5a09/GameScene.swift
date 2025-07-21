@@ -51,6 +51,22 @@ class GameScene: SKScene {
         
         let playerCar = PlayerCar.create(scene: self)
         entityManager.add(playerCar)
+        
+        let chickenSpawner = Spawner(for: .chicken, entityManager: entityManager, scene: self)
+        entityManager.add(chickenSpawner)
+        let motorbikeSpawner = Spawner(for: .motorbike, entityManager: entityManager, scene: self) {obstacleCount,lastObstacleIndex in 
+            return Double.random(in: 0...1) < 0.003 && RoadComponent.speed > 1 && obstacleCount < 3 && lastObstacleIndex < 110
+        }
+        entityManager.add(motorbikeSpawner)
+        
+//        let leftTrafficLightSpawner = Spawner(for: .leftTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
+//            return RoadComponent.speed > 1 && obstacleCount < 1
+//        }
+//        entityManager.add(leftTrafficLightSpawner)
+        let rightTrafficLightSpawner = Spawner(for: .rightTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
+            return RoadComponent.speed > 1 && obstacleCount < 1
+        }
+        entityManager.add(rightTrafficLightSpawner)
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
@@ -87,8 +103,6 @@ class GameScene: SKScene {
         default:
             break
         }
-        
-//        print("dx \(dx), dy \(dy)")
     }
     
     func panAction(_ dx: Double, _ dy: Double) {
@@ -103,10 +117,10 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        let deltaTime = (lastUpdateTime == 0) ? currentTime : currentTime - lastUpdateTime
-        
+        let deltaTime = (lastUpdateTime == 0) ? 0 : currentTime - lastUpdateTime
+        lastUpdateTime = currentTime
+
 //        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
-//        print(gameCamera.x)
         entityManager.update(deltaTime)
         
         frameIndex = (frameIndex + 1) % speedConstants[0].count

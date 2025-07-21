@@ -14,6 +14,7 @@ class RoadSegment: GKEntity {
         super.init()
         
         let renderComponent = RenderComponent(texture: texture)
+        renderComponent.node.lightingBitMask = TrafficLight.categoryBitMask
         addComponent(renderComponent)
         let positionComponent = PositionComponent(position: position, anchorPoint: anchorPoint)
         addComponent(positionComponent)

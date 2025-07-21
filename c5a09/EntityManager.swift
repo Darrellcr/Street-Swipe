@@ -14,8 +14,15 @@ class EntityManager {
 
     lazy var componentSystems: [GKComponentSystem] = {
         let roadSystem = GKComponentSystem(componentClass: RoadComponent.self)
+        let positionRelativeSystem = GKComponentSystem(componentClass: PositionRelativeComponent.self)
+        let spawnerSystem = GKComponentSystem(componentClass: SpawnerComponent.self)
+        let positionSystem = GKComponentSystem(componentClass: PositionComponent.self)
+        let sizeSystem = GKComponentSystem(componentClass: SizeComponent.self)
         let renderSystem = GKComponentSystem(componentClass: RenderComponent.self)
-        return [roadSystem, renderSystem]
+        let speedSystem = GKComponentSystem(componentClass: SpeedComponent.self)
+        let lightSystem = GKComponentSystem(componentClass: LightComponent.self)
+        let trafficLightStateSystem = GKComponentSystem(componentClass: TrafficLightStateComponent.self)
+        return [ positionSystem, sizeSystem, roadSystem, positionRelativeSystem, lightSystem, trafficLightStateSystem, speedSystem, spawnerSystem, renderSystem]
     }()
     
     let scene: SKScene
@@ -55,6 +62,7 @@ class EntityManager {
                 componentSystem.removeComponent(foundIn: entity)
             }
         }
+        
         toRemove.removeAll()
     }
 }

@@ -12,8 +12,10 @@ import SpriteKit
 class RenderComponent: GKComponent {
     let node: SKSpriteNode
     
-    init(texture: SKTexture) {
+    init(texture: SKTexture, zPosition: CGFloat = 0) {
+        texture.filteringMode = .nearest
         node = SKSpriteNode(texture: texture)
+        node.zPosition = zPosition
         
         super.init()
     }
@@ -30,14 +32,15 @@ class RenderComponent: GKComponent {
     
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
+
         
-        guard let sizeComponent = entity?.component(ofType: SizeComponent.self)
-        else { return }
-        node.size = sizeComponent.size
-        
-        guard let positionComponent = entity?.component(ofType: PositionComponent.self)
-        else { return }
-        node.anchorPoint = positionComponent.anchorPoint
-        node.position = positionComponent.position
+//        guard let sizeComponent = entity?.component(ofType: SizeComponent.self)
+//        else { return }
+//        node.size = sizeComponent.size
+//        
+//        guard let positionComponent = entity?.component(ofType: PositionComponent.self)
+//        else { return }
+//        node.anchorPoint = positionComponent.anchorPoint
+//        node.position = positionComponent.position
     }
 }
