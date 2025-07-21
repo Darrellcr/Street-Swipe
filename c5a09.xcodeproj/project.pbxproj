@@ -7,12 +7,25 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		5B462DD82E215F1100E1E404 /* c5a09.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = c5a09.app; path = "/Users/feliciastevany/Desktop/SwiftUI XCode/ADA-C5-A09/build/Debug-iphoneos/c5a09.app"; sourceTree = "<absolute>"; };
+		2AC88F1C2E28D5430012C820 /* c5a09.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = c5a09.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2AF69CB22E2A5765009C7235 /* Exceptions for "c5a09" folder in "c5a09" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5B462DD72E215F1100E1E404 /* c5a09 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2AFEA7212E2794AE009BEA51 /* c5a09 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2AF69CB22E2A5765009C7235 /* Exceptions for "c5a09" folder in "c5a09" target */,
+			);
 			path = c5a09;
 			sourceTree = "<group>";
 		};
@@ -33,6 +46,7 @@
 			isa = PBXGroup;
 			children = (
 				2AFEA7212E2794AE009BEA51 /* c5a09 */,
+				2AC88F1C2E28D5430012C820 /* c5a09.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,7 +72,7 @@
 			packageProductDependencies = (
 			);
 			productName = c5a09;
-			productReference = 5B462DD82E215F1100E1E404 /* c5a09.app */;
+			productReference = 2AC88F1C2E28D5430012C820 /* c5a09.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -246,6 +260,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 69Y258ZWMH;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = c5a09/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -274,6 +289,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 69Y258ZWMH;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = c5a09/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
