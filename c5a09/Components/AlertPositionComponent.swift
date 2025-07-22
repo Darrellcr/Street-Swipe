@@ -9,7 +9,7 @@ import Foundation
 import GameplayKit
 
 class AlertPositionComponent: GKComponent {
-    let ROAD_INDEX = 8
+    let ROAD_INDEX = 11
     var offsetPct: CGFloat
     let scene: GameScene?
     private var node: SKSpriteNode!

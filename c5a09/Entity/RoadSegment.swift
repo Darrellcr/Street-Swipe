@@ -44,9 +44,9 @@ class RoadSegment: GKEntity {
     
     class func createRoad(scene: GameScene) -> [RoadSegment] {
         let numSegmentsPerRoad = 50
-        let numRepeat = 5
+        let numRepeat = 6
         let totalSegments = numSegmentsPerRoad * numRepeat
-        let roadHeight: CGFloat = 0.777
+        let roadHeight: CGFloat = 0.862
         
         let roadTexture = SKTexture(imageNamed: "night road")
         let roadSegmentTextures = createTextures(roadTexture: roadTexture, numSegmentsPerRoad: numSegmentsPerRoad)
@@ -60,7 +60,7 @@ class RoadSegment: GKEntity {
         let totalScales = RoadComponent.scales.reduce(0, +)
         let unitHeight = scene.size.height * roadHeight / totalScales
         
-        var currentY: CGFloat = 0.0
+        var currentY: CGFloat = -50.0
         var segments: [RoadSegment] = []
         for i in 0..<totalSegments {
             let segmentIndex = i % numSegmentsPerRoad
