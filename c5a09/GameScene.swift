@@ -53,6 +53,8 @@ class GameScene: SKScene {
         Self.playerCar = PlayerCar.create(scene: self)
         entityManager.add(Self.playerCar)
         
+        
+        /* OBSTACLES */
         let chickenSpawner = Spawner(for: .chicken, entityManager: entityManager, scene: self)
         entityManager.add(chickenSpawner)
         let motorbikeSpawner = Spawner(for: .motorbike, entityManager: entityManager, scene: self) {obstacleCount,lastObstacleIndex in 
@@ -60,22 +62,25 @@ class GameScene: SKScene {
         }
         entityManager.add(motorbikeSpawner)
         
-        let leftTrafficLightSpawner = Spawner(for: .leftTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
-            return RoadComponent.speed > 1 && obstacleCount < 1
-        }
-        entityManager.add(leftTrafficLightSpawner)
+        let trafficLightSpawner = Spawner(entityManager: entityManager, scene: self)
+        entityManager.add(trafficLightSpawner)
+        
+//        let zebraCrossSpawner = Spawner(for: .zebraCross, entityManager: entityManager, scene: self) { obstacleCount, _ in
+//            return RoadComponent.speed > 1 && obstacleCount < 1
+//        }
+//        entityManager.add(zebraCrossSpawner)
+//        let leftTrafficLightSpawner = Spawner(for: .leftTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
+//            return RoadComponent.speed > 1 && obstacleCount < 1
+//        }
+//        entityManager.add(leftTrafficLightSpawner)
 //        let rightTrafficLightSpawner = Spawner(for: .rightTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
 //            return RoadComponent.speed > 1 && obstacleCount < 1
 //        }
 //        entityManager.add(rightTrafficLightSpawner)
-        
-        let pocongSpawner = Spawner(for: .pocong, entityManager: entityManager, scene: self) { osbtacleCount, _ in
-            return RoadComponent.speed > 1 && osbtacleCount < 1
-        }
-        entityManager.add(pocongSpawner)
-        let zebraCross = ZebraCross(texture: SKTexture(imageNamed: "zebra cross"), numSegments: 15, index: RoadComponent.positions.count - 1, scene: self)
-        entityManager.add(zebraCross)
-        
+//        let pocongSpawner = Spawner(for: .pocong, entityManager: entityManager, scene: self) { osbtacleCount, _ in
+//            return RoadComponent.speed > 1 && osbtacleCount < 1
+//        }
+//        entityManager.add(pocongSpawner)
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {

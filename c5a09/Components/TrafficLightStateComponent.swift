@@ -19,7 +19,7 @@ class TrafficLightStateComponent: GKComponent {
     let yellowDuration: TimeInterval
     var timer: Double
     
-    init(state: TrafficLightState, positions: [TrafficLightState: CGPoint], textures: [TrafficLightState: SKTexture], redDuration: TimeInterval = 8.0, yellowDuration: TimeInterval = 2.0) {
+    init(state: TrafficLightState, positions: [TrafficLightState: CGPoint], textures: [TrafficLightState: SKTexture], redDuration: TimeInterval = 5.0, yellowDuration: TimeInterval = 1.5) {
         self.state = state
         self.positions = positions
         self.redDuration = redDuration

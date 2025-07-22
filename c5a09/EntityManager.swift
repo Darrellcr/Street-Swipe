@@ -25,7 +25,23 @@ class EntityManager {
         let crossingSystem = GKComponentSystem(componentClass: CrossingComponent.self)
         let zebraCrossSystem = GKComponentSystem(componentClass: ZebraCrossComponent.self)
         let collisionSystem = GKComponentSystem(componentClass: CollisionComponent.self)
-        return [positionSystem, sizeSystem, roadSystem, zebraCrossSystem, collisionSystem, crossingSystem, positionRelativeSystem, lightSystem, trafficLightStateSystem, speedSystem, spawnerSystem, renderSystem]
+        let trafficLightSpawnerSystem = GKComponentSystem(componentClass: TrafficLightSpawnerComponent.self)
+        let spawnerGCSystem = GKComponentSystem(componentClass: SpawnerGCComponent.self)
+        return [
+            positionSystem,
+            sizeSystem,
+            roadSystem,
+            spawnerSystem,
+            trafficLightSpawnerSystem,
+            zebraCrossSystem,
+            collisionSystem,
+            crossingSystem,
+            positionRelativeSystem,
+            lightSystem,
+            trafficLightStateSystem,
+            speedSystem,
+            spawnerGCSystem,
+            renderSystem]
     }()
     
     let scene: SKScene

@@ -13,7 +13,7 @@ class Pocong: GKEntity {
     init(texture: SKTexture, index: Int, crossingFrom: CrossingFrom, scene: GameScene, width: CGFloat, entityManager: EntityManager, onCollision: (() -> Void)? = nil) {
         super.init()
         
-        let renderComponent = RenderComponent(texture: texture, zPosition: 8)
+        let renderComponent = RenderComponent(texture: texture, zPosition: 9)
         addComponent(renderComponent)
         let sizeComponent = SizeComponent(width: width)
         addComponent(sizeComponent)
