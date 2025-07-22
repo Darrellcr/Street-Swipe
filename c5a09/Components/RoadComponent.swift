@@ -44,7 +44,7 @@ class RoadComponent: GKComponent {
         entity?.component(ofType: SizeComponent.self)?.size = size
         
         entity?.component(ofType: PositionComponent.self)?.position.y = RoadComponent.positions[index].y
-        let horizontalShiftPct = -0.3 + ((gameCamera.x - gameCamera.minX) * 0.6 / (gameCamera.maxX - gameCamera.minX))
+        let horizontalShiftPct = -0.36 + ((gameCamera.x - gameCamera.minX) * 0.72 / (gameCamera.maxX - gameCamera.minX))
         let roadShift = CGFloat(horizontalShiftPct) * size.width
         let positionX = scene.size.width / 2 - roadShift
         RoadComponent.positions[index].x = positionX

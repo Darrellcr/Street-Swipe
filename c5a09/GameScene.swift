@@ -61,7 +61,6 @@ class GameScene: SKScene {
             return Double.random(in: 0...1) < 0.003 && RoadComponent.speed > 1 && obstacleCount < 3 && lastObstacleIndex < 110
         }
         entityManager.add(motorbikeSpawner)
-        
         let trafficLightSpawner = Spawner(entityManager: entityManager, scene: self)
         entityManager.add(trafficLightSpawner)
         
@@ -81,19 +80,26 @@ class GameScene: SKScene {
 //            return RoadComponent.speed > 1 && osbtacleCount < 1
 //        }
 //        entityManager.add(pocongSpawner)
+        
+        let alert = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.15, scene: self)
+        entityManager.add(alert)
+        let alert2 = Alert(imageName: "ambulance-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.5, scene: self)
+        entityManager.add(alert2)
+        let alert3 = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.85, scene: self)
+        entityManager.add(alert3)
     }
     
-    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
-        if gesture.direction == .left {
-            gameCamera.moveLeft()
-        } else if gesture.direction == .right {
-            gameCamera.moveRight()
-        } else if gesture.direction == .up {
-            RoadComponent.speedBeforePan = min(speedConstants.count - 1, RoadComponent.speed + 1)
-        } else if gesture.direction == .down {
-            RoadComponent.speedBeforePan = max(0, RoadComponent.speed - 1)
-        }
-    }
+//    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+//        if gesture.direction == .left {
+//            gameCamera.moveLeft()
+//        } else if gesture.direction == .right {
+//            gameCamera.moveRight()
+//        } else if gesture.direction == .up {
+//            RoadComponent.speedBeforePan = min(speedConstants.count - 1, RoadComponent.speed + 1)
+//        } else if gesture.direction == .down {
+//            RoadComponent.speedBeforePan = max(0, RoadComponent.speed - 1)
+//        }
+//    }
     
     func handlePan(_ gesture: UIPanGestureRecognizer, view: UIView) {
         let translation = gesture.translation(in: view)
@@ -120,13 +126,13 @@ class GameScene: SKScene {
     }
     
     func panAction(_ dx: Double, _ dy: Double) {
-        if abs(dx) > abs(dy) {
-            let unit = 150.0 / Double(gameCamera.maxX)
-            gameCamera.xShift = dx / unit
-        } else {
-            let unit = 380.0 / Double(speedConstants.count)
-            RoadComponent.speedShift = Int(round(dy / unit))
-        }
+//        if abs(dx) > abs(dy) {
+        var unit = 150.0 / Double(gameCamera.maxX)
+        gameCamera.xShift = dx / unit
+//        } else {
+        unit = 380.0 / Double(speedConstants.count)
+        RoadComponent.speedShift = Int(round(dy / unit))
+//        }
         
     }
     
