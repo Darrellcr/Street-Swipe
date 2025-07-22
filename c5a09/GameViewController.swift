@@ -39,12 +39,12 @@ class GameViewController: UIViewController {
         }
     }
     
-    @objc func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
-        if let skView = self.view as? SKView,
-           let gameScene = skView.scene as? GameScene {
-            gameScene.handleSwipe(gesture)
-        }
-    }
+//    @objc func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+//        if let skView = self.view as? SKView,
+//           let gameScene = skView.scene as? GameScene {
+//            gameScene.handleSwipe(gesture)
+//        }
+//    }
     
     @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
         if let skView = self.view as? SKView,

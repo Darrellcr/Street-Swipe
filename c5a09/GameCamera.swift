@@ -10,21 +10,19 @@ import Foundation
 class GameCamera {
     let maxX: Double = 0.3
     let minX: Double = -0.3
-    private let targetPositions: [Double] = [-0.3, 0.0, 0.3]
-    private var positionIndex = 1
     var xBeforePan: Double = 0.0
     var xShift: Double = 0.0
     var x: Double {
         min(maxX, max(minX, xBeforePan + xShift))
     }
     
-    func moveLeft() {
-        self.positionIndex = max(self.positionIndex - 1, 0)
-    }
-    
-    func moveRight() {
-        self.positionIndex = min(self.positionIndex + 1, 2)
-    }
+//    func moveLeft() {
+//        self.positionIndex = max(self.positionIndex - 1, 0)
+//    }
+//    
+//    func moveRight() {
+//        self.positionIndex = min(self.positionIndex + 1, 2)
+//    }
     
 //    func updatePosition(segmentShift: Int) {
 //        let normalizedShift = max(segmentShift, 1)

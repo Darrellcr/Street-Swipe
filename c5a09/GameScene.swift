@@ -65,13 +65,13 @@ class GameScene: SKScene {
         }
         entityManager.add(leftTrafficLightSpawner)
         
-        let alert = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.2, scene: self)
+        let alert = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.15, scene: self)
         entityManager.add(alert)
         
         let alert2 = Alert(imageName: "ambulance-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.5, scene: self)
         entityManager.add(alert2)
         
-        let alert3 = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.8, scene: self)
+        let alert3 = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.85, scene: self)
         entityManager.add(alert3)
 
         let rightTrafficLightSpawner = Spawner(for: .rightTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
@@ -88,17 +88,17 @@ class GameScene: SKScene {
         entityManager.add(zebraCross)
     }
     
-    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
-        if gesture.direction == .left {
-            gameCamera.moveLeft()
-        } else if gesture.direction == .right {
-            gameCamera.moveRight()
-        } else if gesture.direction == .up {
-            RoadComponent.speedBeforePan = min(speedConstants.count - 1, RoadComponent.speed + 1)
-        } else if gesture.direction == .down {
-            RoadComponent.speedBeforePan = max(0, RoadComponent.speed - 1)
-        }
-    }
+//    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+//        if gesture.direction == .left {
+//            gameCamera.moveLeft()
+//        } else if gesture.direction == .right {
+//            gameCamera.moveRight()
+//        } else if gesture.direction == .up {
+//            RoadComponent.speedBeforePan = min(speedConstants.count - 1, RoadComponent.speed + 1)
+//        } else if gesture.direction == .down {
+//            RoadComponent.speedBeforePan = max(0, RoadComponent.speed - 1)
+//        }
+//    }
     
     func handlePan(_ gesture: UIPanGestureRecognizer, view: UIView) {
         let translation = gesture.translation(in: view)

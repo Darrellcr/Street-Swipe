@@ -32,7 +32,7 @@ class Alert: GKEntity {
         let aspect = frameW / frameH               // w ÷ h
 
         // target tampilan
-        let targetW: CGFloat = 110
+        let targetW: CGFloat = 60
         let targetH: CGFloat = targetW / aspect
 
         let sizeComponent = SizeComponent(size: size ?? CGSize(width: targetW, height: targetH))
