@@ -12,7 +12,6 @@ class GameScene: SKScene {
     var entityManager: EntityManager!
     var lastUpdateTime: TimeInterval = 0
     let gameCamera = GameCamera()
-    
     var frameIndex = 0
     var speedConstants = [
         [0, 0, 0, 0, 0, 0], // 0
@@ -67,6 +66,15 @@ class GameScene: SKScene {
             return RoadComponent.speed > 1 && obstacleCount < 1
         }
         entityManager.add(rightTrafficLightSpawner)
+        
+        let alert = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.2, scene: self)
+        entityManager.add(alert)
+        
+        let alert2 = Alert(imageName: "ambulance-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.5, scene: self)
+        entityManager.add(alert2)
+        
+        let alert3 = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.8, scene: self)
+        entityManager.add(alert3)
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
@@ -106,13 +114,13 @@ class GameScene: SKScene {
     }
     
     func panAction(_ dx: Double, _ dy: Double) {
-        if abs(dx) > abs(dy) {
-            let unit = 150.0 / Double(gameCamera.maxX)
-            gameCamera.xShift = dx / unit
-        } else {
-            let unit = 380.0 / Double(speedConstants.count)
-            RoadComponent.speedShift = Int(round(dy / unit))
-        }
+//        if abs(dx) > abs(dy) {
+        var unit = 150.0 / Double(gameCamera.maxX)
+        gameCamera.xShift = dx / unit
+//        } else {
+        unit = 380.0 / Double(speedConstants.count)
+        RoadComponent.speedShift = Int(round(dy / unit))
+//        }
         
     }
     
