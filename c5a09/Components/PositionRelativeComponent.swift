@@ -49,6 +49,7 @@ class PositionRelativeComponent: GKComponent {
         let roadStartX = roadPosition.x - (roadSize.width * 0.5)
         let offsetX = roadSize.width * offsetPct
         node.position = CGPoint(x: roadStartX + offsetX, y: roadPosition.y)
+        
         node.setScale(min(1.2 * roadScale, 0.75))
         
         let roadShift = scene.speedConstants[RoadComponent.speed][scene.frameIndex]

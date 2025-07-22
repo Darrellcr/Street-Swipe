@@ -61,7 +61,6 @@ class TrafficLightStateComponent: GKComponent {
         }
         
         node.texture = textures[state]!
-        print(node.size)
         let position = positions[state]!
         lightNode.position = CGPoint(x: position.x, y: position.y)
     }

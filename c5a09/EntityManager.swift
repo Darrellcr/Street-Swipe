@@ -24,7 +24,10 @@ class EntityManager {
         let trafficLightStateSystem = GKComponentSystem(componentClass: TrafficLightStateComponent.self)
         let spriteSheetSystem = GKComponentSystem(componentClass: SpriteSheetComponent.self)
         let alertPositionSystem = GKComponentSystem(componentClass: AlertPositionComponent.self)
-        return [ positionSystem, sizeSystem, roadSystem, positionRelativeSystem, alertPositionSystem, lightSystem, trafficLightStateSystem, speedSystem, spawnerSystem, spriteSheetSystem, renderSystem]
+        let crossingSystem = GKComponentSystem(componentClass: CrossingComponent.self)
+        let zebraCrossSystem = GKComponentSystem(componentClass: ZebraCrossComponent.self)
+        let collisionSystem = GKComponentSystem(componentClass: CollisionComponent.self)
+        return [positionSystem, sizeSystem, roadSystem, zebraCrossSystem, collisionSystem, crossingSystem, positionRelativeSystem, alertPositionSystem, lightSystem, trafficLightStateSystem, speedSystem, spawnerSystem, spriteSheetSystem, renderSystem]
     }()
     
     let scene: SKScene

@@ -12,6 +12,8 @@ class GameScene: SKScene {
     var entityManager: EntityManager!
     var lastUpdateTime: TimeInterval = 0
     let gameCamera = GameCamera()
+    static var playerCar: PlayerCar!
+    
     var frameIndex = 0
     var speedConstants = [
         [0, 0, 0, 0, 0, 0], // 0
@@ -48,8 +50,8 @@ class GameScene: SKScene {
             entityManager.add(roadSegment)
         }
         
-        let playerCar = PlayerCar.create(scene: self)
-        entityManager.add(playerCar)
+        Self.playerCar = PlayerCar.create(scene: self)
+        entityManager.add(Self.playerCar)
         
         let chickenSpawner = Spawner(for: .chicken, entityManager: entityManager, scene: self)
         entityManager.add(chickenSpawner)
@@ -58,14 +60,10 @@ class GameScene: SKScene {
         }
         entityManager.add(motorbikeSpawner)
         
-//        let leftTrafficLightSpawner = Spawner(for: .leftTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
-//            return RoadComponent.speed > 1 && obstacleCount < 1
-//        }
-//        entityManager.add(leftTrafficLightSpawner)
-        let rightTrafficLightSpawner = Spawner(for: .rightTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
+        let leftTrafficLightSpawner = Spawner(for: .leftTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
             return RoadComponent.speed > 1 && obstacleCount < 1
         }
-        entityManager.add(rightTrafficLightSpawner)
+        entityManager.add(leftTrafficLightSpawner)
         
         let alert = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.2, scene: self)
         entityManager.add(alert)
@@ -75,6 +73,19 @@ class GameScene: SKScene {
         
         let alert3 = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.8, scene: self)
         entityManager.add(alert3)
+
+        let rightTrafficLightSpawner = Spawner(for: .rightTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
+            return RoadComponent.speed > 1 && obstacleCount < 1
+        }
+        entityManager.add(rightTrafficLightSpawner)
+        
+        let pocongSpawner = Spawner(for: .pocong, entityManager: entityManager, scene: self) { osbtacleCount, _ in
+            return RoadComponent.speed > 1 && osbtacleCount < 1
+        }
+        entityManager.add(pocongSpawner)
+        
+        let zebraCross = ZebraCross(texture: SKTexture(imageNamed: "zebra cross"), numSegments: 15, index: RoadComponent.positions.count - 1, scene: self)
+        entityManager.add(zebraCross)
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {

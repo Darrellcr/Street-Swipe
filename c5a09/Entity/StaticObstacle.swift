@@ -10,7 +10,7 @@ import GameplayKit
 import SpriteKit
 
 class StaticObstacle: GKEntity {
-    init(texture: SKTexture, index: Int, offsetPct: CGFloat, scene: GameScene, width: CGFloat, entityManager: EntityManager) {
+    init(texture: SKTexture, index: Int, offsetPct: CGFloat, scene: GameScene, width: CGFloat, entityManager: EntityManager, collisionBoxSize: CGSize? = nil, onCollision: (() -> Void)? = nil) {
         super.init()
         
         let renderComponent = RenderComponent(texture: texture, zPosition: 9)
@@ -19,6 +19,8 @@ class StaticObstacle: GKEntity {
         addComponent(sizeComponent)
         let positionRelativeComponent = PositionRelativeComponent(index: index, offsetPct: offsetPct, scene: scene, entityManager: entityManager)
         addComponent(positionRelativeComponent)
+        let collisionComponent = CollisionComponent(customBoxSize: collisionBoxSize, onCollision: onCollision)
+        addComponent(collisionComponent)
     }
     
     required init?(coder aDecoder: NSCoder) {
