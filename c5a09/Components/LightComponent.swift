@@ -12,22 +12,26 @@ import SpriteKit
 class LightComponent: GKComponent {
     let lightNode: SKLightNode
     let position: CGPoint
-    let boundingBox: SKShapeNode
+    var boundingBox: SKShapeNode?
     var falloff: CGFloat = 3.5
     var node: SKSpriteNode!
+    
+    static let showBox = false
     
     init(lightNode: SKLightNode, position: CGPoint) {
         self.lightNode = lightNode
         self.position = position
         self.lightNode.falloff = falloff
         
-        let radius: CGFloat = 50 // or dynamic from falloff
-        boundingBox = SKShapeNode(circleOfRadius: radius)
-        boundingBox.strokeColor = .cyan
-        boundingBox.lineWidth = 1.0
-        boundingBox.zPosition = 1000 // Above lighted nodes
-        boundingBox.name = "debugLightBounds"
-        lightNode.addChild(boundingBox)
+        if Self.showBox {
+            let radius: CGFloat = 50 // or dynamic from falloff
+            boundingBox = SKShapeNode(circleOfRadius: radius)
+            boundingBox?.strokeColor = .cyan
+            boundingBox?.lineWidth = 1.0
+            boundingBox?.zPosition = 1000 // Above lighted nodes
+            boundingBox?.name = "debugLightBounds"
+            lightNode.addChild(boundingBox!)
+        }
         
         super.init()
     }
@@ -57,7 +61,8 @@ class LightComponent: GKComponent {
         lightNode.position = CGPoint(x: position.x, y: position.y)
 //        print("scale \(node.xScale) \(node.yScale)")
         
-        boundingBox.position = .zero
+        
+        boundingBox?.position = .zero
         
         guard let positionRelativeComponent = entity?.component(ofType: PositionRelativeComponent.self)
         else { return }

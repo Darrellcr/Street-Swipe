@@ -12,6 +12,13 @@ import SpriteKit
 class RenderComponent: GKComponent {
     let node: SKSpriteNode
     
+    init(zPosition: CGFloat = 0) {
+        node = SKSpriteNode()
+        node.zPosition = zPosition
+        
+        super.init()
+    }
+    
     init(texture: SKTexture, zPosition: CGFloat = 0) {
         texture.filteringMode = .nearest
         node = SKSpriteNode(texture: texture)

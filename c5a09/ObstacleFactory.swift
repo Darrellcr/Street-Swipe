@@ -20,9 +20,12 @@ class ObstacleFactory {
                 index: roadLastIndex,
                 offsetPct: offsetPct,
                 scene: scene,
-                width: 210,
-                entityManager: entityManager
-            )
+                width: 170,
+                entityManager: entityManager,
+                collisionBoxSize: CGSize(width: 140, height: 154)
+            ) {
+                print("nabrak ayam")
+            }
         case .motorbike:
             entity = DynamicObstacle(
                 texture: SKTexture(imageNamed: "motor"),
@@ -31,8 +34,11 @@ class ObstacleFactory {
                 speed: 1,
                 scene: scene,
                 width: 300,
-                entityManager: entityManager
-            )
+                entityManager: entityManager,
+                collisionBoxSize: CGSize(width: 144, height: 220)
+            ) {
+                print("nabrak motor")
+            }
         case .leftTrafficLight:
             entity = TrafficLight(
                 texture: SKTexture(imageNamed: "L red light"),
@@ -77,9 +83,11 @@ class ObstacleFactory {
                 index: roadLastIndex,
                 crossingFrom: .left,
                 scene: scene,
-                width: 130,
+                width: 110,
                 entityManager: entityManager
-            )
+            ) {
+                print("nabrak pocong")
+            }
         }
         
         return entity

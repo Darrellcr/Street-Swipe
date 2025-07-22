@@ -10,7 +10,7 @@ import GameplayKit
 import SpriteKit
 
 class Pocong: GKEntity {
-    init(texture: SKTexture, index: Int, crossingFrom: CrossingFrom, scene: GameScene, width: CGFloat, entityManager: EntityManager) {
+    init(texture: SKTexture, index: Int, crossingFrom: CrossingFrom, scene: GameScene, width: CGFloat, entityManager: EntityManager, onCollision: (() -> Void)? = nil) {
         super.init()
         
         let renderComponent = RenderComponent(texture: texture, zPosition: 8)
@@ -21,6 +21,8 @@ class Pocong: GKEntity {
         addComponent(positionRelativeComponent)
         let crossingComponent = CrossingComponent(crossingFrom: crossingFrom)
         addComponent(crossingComponent)
+        let collisionComponent = CollisionComponent(onCollision: onCollision)
+        addComponent(collisionComponent)
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -12,6 +12,7 @@ class GameScene: SKScene {
     var entityManager: EntityManager!
     var lastUpdateTime: TimeInterval = 0
     let gameCamera = GameCamera()
+    static var playerCar: PlayerCar!
     
     var frameIndex = 0
     var speedConstants = [
@@ -49,8 +50,8 @@ class GameScene: SKScene {
             entityManager.add(roadSegment)
         }
         
-        let playerCar = PlayerCar.create(scene: self)
-        entityManager.add(playerCar)
+        Self.playerCar = PlayerCar.create(scene: self)
+        entityManager.add(Self.playerCar)
         
         let chickenSpawner = Spawner(for: .chicken, entityManager: entityManager, scene: self)
         entityManager.add(chickenSpawner)
@@ -72,6 +73,9 @@ class GameScene: SKScene {
             return RoadComponent.speed > 1 && osbtacleCount < 1
         }
         entityManager.add(pocongSpawner)
+        let zebraCross = ZebraCross(texture: SKTexture(imageNamed: "zebra cross"), numSegments: 15, index: RoadComponent.positions.count - 1, scene: self)
+        entityManager.add(zebraCross)
+        
     }
     
     func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
