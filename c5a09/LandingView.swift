@@ -20,6 +20,8 @@ struct LandingView: View {
     @State private var animateTop = false
     @State private var animateBottom = false
     
+    private let soundManager = SoundManager()
+    
     let explosionFrames = loadExplosionFrames(from: "explosion", frameCount: 11)
     let logoFrames = loadExplosionFrames(from: "logoAnimation", frameCount: 35)
 
@@ -57,7 +59,7 @@ struct LandingView: View {
             VStack {
                 Spacer()
                 Button(action: {
-                    playTapSound()
+                    soundManager.playTapSound()
                     isPressed = true
                     isAnimating = true
                     
@@ -85,16 +87,16 @@ struct LandingView: View {
         }
         .ignoresSafeArea()
     }
-    func playTapSound() {
-        guard let url = Bundle.main.url(forResource: "startengine", withExtension: "mp3") else { return }
-        do {
-            startSound = try AVAudioPlayer(contentsOf: url)
-            startSound?.volume = 1
-            startSound?.play()
-        } catch {
-            print("Error playing sound")
-        }
-    }
+//    func playTapSound() {
+//        guard let url = Bundle.main.url(forResource: "startengine", withExtension: "mp3") else { return }
+//        do {
+//            startSound = try AVAudioPlayer(contentsOf: url)
+//            startSound?.volume = 1
+//            startSound?.play()
+//        } catch {
+//            print("Error playing sound")
+//        }
+//    }
 }
 
 func loadExplosionFrames(from imageName: String, frameCount: Int) -> [UIImage] {

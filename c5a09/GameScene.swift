@@ -89,8 +89,6 @@ class GameScene: SKScene {
         let yPosition: CGFloat = -16.7
         
         speedometer.createSpeedSegments(startX: startX, y: yPosition, segmentSize: segmentSize, groupSpacing: groupSpacing)
-        
-//        speedometer.updateSpeedSegments(value: 7)
 
     }
     
