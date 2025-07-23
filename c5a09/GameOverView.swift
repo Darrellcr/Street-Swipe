@@ -7,33 +7,92 @@
 import SwiftUI
 
 struct GameOverView: View {
-//    var onRestart: () -> Void
     @Binding var isGameOver: Bool
-//    var onRestart: () -> Void
+    @Binding var isGameStarted: Bool
+    
+    @State private var isPressed = false
+    @State private var isAnimating = false
+    
+    @State private var animateTop = false
+    @State private var animateBottom = false
+    
+    @State private var gameScene = GameScene(size: UIScreen.main.bounds.size)
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("💥 Game Over")
-                .font(.largeTitle.bold())
-                .foregroundColor(.white)
+        ZStack {
+            Color.black.opacity(0.5) // background yang menyeluruh
+                .ignoresSafeArea()
+            
+            Image("game over")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 280)
+                .offset(x: 0, y: -160)
 
-
-            Button("Try Again") {
-                isGameOver = false
+            Image("score box")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 350)
+            
+            HStack {
+                VStack(alignment: . leading, spacing: 10) {
+                    Image("score")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 90)
+                    
+                    Text("0")
+                        .font(.custom("Mini Mouse Regular", size: 25))
+                        .foregroundColor(.white)
+                    
+                    Image("best")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 70)
+                    
+                    Text("0")
+                        .font(.custom("Mini Mouse Regular", size: 25))
+                        .foregroundColor(.white)
+                }
+                
+                Spacer()
+                
+                ZStack {
+                    Image("engine start bg")
+                        .resizable()
+                        .frame(width: 110, height: 110)
+                        .animation(.easeOut(duration: 1.5), value: animateBottom)
+                    
+                    Button(action: {
+                        isPressed = true
+                        isAnimating = true
+                        
+                        gameScene.resetGame()
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            isPressed = false
+                            isAnimating = false
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                animateTop = true
+                                animateBottom = true
+                                isGameStarted = true
+                                isGameOver = false
+                                
+                            }
+                        }
+                    }) {
+                        Image("engine start button")
+                            .resizable()
+                            .frame(width: isAnimating ? 100 : 110, height: isAnimating ? 100 : 110)
+                            .animation(.easeOut(duration: 1.5), value: animateBottom)
+                    }
+                }
             }
-            .padding()
-            .background(Color.red)
-            .foregroundColor(.white)
-            .cornerRadius(12)
+            .padding(.horizontal, 70)
         }
-        .padding()
-        .frame(maxWidth: 300)
-        .background(Color.black.opacity(0.8))
-        .cornerRadius(20)
-        .shadow(radius: 10)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 #Preview {
-    GameOverView(isGameOver: .constant(true))
+    GameOverView(isGameOver: .constant(true), isGameStarted: .constant(false))
 }

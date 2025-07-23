@@ -16,10 +16,13 @@ struct ExplosionAnimationView: View {
         Image(uiImage: frames[currentFrame])
             .resizable()
             .scaledToFit()
-            .frame(width: 200, height: 200)
+            .frame(width: 500, height: 500)
             .onReceive(timer) { _ in
                 if currentFrame < frames.count - 1 {
                     currentFrame += 1
+                }
+                else if currentFrame == frames.count - 1 {
+                    currentFrame = 6
                 }
             }
     }

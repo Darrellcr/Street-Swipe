@@ -39,22 +39,26 @@ struct ContentView: View {
             
             
             if !isGameStarted {
-                LandingView(isGameStarted: $isGameStarted)
+                LandingView(isGameStarted: $isGameStarted, isGameOver: $isGameOver)
                     .transition(.scale)
                     .zIndex(1)
             }
             
             if isGameStarted && !isGameOver {
                 VStack {
-                    Text("Distance: \(distance) m")
+                    Text("Score: \(distance)")
                         .padding()
                         .background(.green.opacity(0.6))
-                        .font(.title.bold())
+                        .font(.custom("Mini Mouse Regular", size: 20))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                     
                     Button("Play Again") {
-                        gameScene.resetGame()  // akan memicu ulang fungsi playAgain()
+                        isGameOver = true
+//                        isGameStarted = false
+                        
+                        gameScene.resetGame()  // akan memicu ulang fungsi
+                        
                     }
                     .padding()
                     .background(Color.red)
@@ -70,7 +74,7 @@ struct ContentView: View {
             }
             
             if isGameOver {
-                GameOverView(isGameOver: $isGameOver)
+                GameOverView(isGameOver: $isGameOver, isGameStarted: $isGameStarted)
                     .zIndex(3)
                     .transition(.scale)
             }

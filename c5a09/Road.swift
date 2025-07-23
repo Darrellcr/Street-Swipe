@@ -79,6 +79,7 @@ class Road {
             self.segmentSizes.append(segment.size)
             
             segment.name = "roadSegment"
+            segment.lightingBitMask = TrafficLight.categoryBitMask
             self.node.addChild(segment)
             
 
@@ -86,8 +87,7 @@ class Road {
         }
     }
     
-
-    func update(gameCamera: GameCamera) {
+    func update(gameCamera: GameCamera, segmentShift: Int) {
         var i = 0
         let numNode = self.segmentPositions.count
         
@@ -100,16 +100,17 @@ class Road {
 
             node.position.y = self.segmentPositions[idx].y
             let roadShiftPct = -0.3 + ((gameCamera.x - gameCamera.minX) * 0.6 / (gameCamera.maxX - gameCamera.minX))
+            
+            node.xScale = self.segmentScales[idx]
             let roadShift = CGFloat(roadShiftPct) * node.size.width
             node.position.x = self.sceneSize.width / 2 - roadShift
             self.segmentPositions[idx].x = node.position.x
             node.size.height = self.segmentSizes[idx].height
-            node.xScale = self.segmentScales[idx]
+            
             i += 1
         }
         
-
-        bottom += 1
+        bottom += segmentShift
         bottom %= numNode
     }
 }

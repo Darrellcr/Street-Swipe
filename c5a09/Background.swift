@@ -9,18 +9,26 @@ import Foundation
 import SpriteKit
 
 class Background {
-    let node: SKSpriteNode
+    let node = SKNode()
     
     init(sceneSize: CGSize) {
         let backgroundTexture = SKTexture(imageNamed: "night sky")
-        node = SKSpriteNode(texture: backgroundTexture)
-        node.anchorPoint = CGPoint(x: 0.0, y: 1.0)
-        node.position = CGPoint(x: 0.0, y: sceneSize.height)
+        let background = SKSpriteNode(texture: backgroundTexture)
+        background.anchorPoint = CGPoint(x: 0.0, y: 1.0)
+        background.position = CGPoint(x: 0.0, y: sceneSize.height)
         let backgroundAspectRatio = backgroundTexture.size().width / backgroundTexture.size().height
-        node.size.width = sceneSize.width
-        node.size.height = sceneSize.width / backgroundAspectRatio
-        node.zPosition = 1 // Place behind everything
-        node.lightingBitMask = 0b1 // React to light
+        background.size.width = sceneSize.width
+        background.size.height = sceneSize.width / backgroundAspectRatio
+        background.zPosition = 2 // Place behind everything
+        background.lightingBitMask = TrafficLight.categoryBitMask // React to light
         
+        node.addChild(background)
+        
+        let baseBackground = SKSpriteNode(color: .black, size: sceneSize)
+        baseBackground.anchorPoint = CGPoint(x: 0.0, y: 0.0)
+        baseBackground.position = CGPoint(x: 0.0, y: 0.0)
+        baseBackground.lightingBitMask = TrafficLight.categoryBitMask 
+        baseBackground.zPosition = 1
+        node.addChild(baseBackground)
     }
 }

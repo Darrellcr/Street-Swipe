@@ -11,6 +11,7 @@ import SwiftUI
 
 struct LandingView: View {
     @Binding var isGameStarted: Bool
+    @Binding var isGameOver: Bool
     
     @State private var isPressed = false
     @State private var isAnimating = false
@@ -20,6 +21,7 @@ struct LandingView: View {
     @State private var animateBottom = false
     
     let explosionFrames = loadExplosionFrames(from: "explosion", frameCount: 11)
+    let logoFrames = loadExplosionFrames(from: "logoAnimation", frameCount: 35)
 
     var body: some View {
         ZStack {
@@ -33,7 +35,7 @@ struct LandingView: View {
                 
                 Spacer()
                 
-                Image("ac and screen")
+                Image("dashboard")
                     .resizable()
                     .scaledToFit()
                     .frame(width: UIScreen.main.bounds.width + 50, height: 380)
@@ -41,6 +43,9 @@ struct LandingView: View {
                     .animation(.easeOut(duration: 2), value: animateBottom)
                 
             }
+            
+            ExplosionAnimationView(frames: logoFrames)
+                .position(x: UIScreen.main.bounds.width / 2 - 65, y: UIScreen.main.bounds.height / 2 - 60)
             
             Image("engine start bg")
                 .resizable()
@@ -75,7 +80,7 @@ struct LandingView: View {
                         .animation(.easeOut(duration: 1.5), value: animateBottom)
                 }
                 
-                ExplosionAnimationView(frames: explosionFrames)
+//                ExplosionAnimationView(frames: explosionFrames)
             }
         }
         .ignoresSafeArea()
@@ -113,7 +118,7 @@ func loadExplosionFrames(from imageName: String, frameCount: Int) -> [UIImage] {
 
 
 #Preview {
-    LandingView(isGameStarted: .constant(false))
+    LandingView(isGameStarted: .constant(false), isGameOver: .constant(false))
 }
 
 //            Button(action: {
