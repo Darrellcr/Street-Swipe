@@ -65,13 +65,10 @@ class GameScene: SKScene {
         }
         entityManager.add(leftTrafficLightSpawner)
         
-        let alert = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.15, scene: self)
-        entityManager.add(alert)
-        
-        let alert2 = Alert(imageName: "ambulance-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.5, scene: self)
+        let alert2 = AmbulanceAlert(ambulancePosition: .right, zPosition: 100, scene: self)
         entityManager.add(alert2)
         
-        let alert3 = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.85, scene: self)
+        let alert3 = PoliceAlert(zPosition: 100, scene: self)
         entityManager.add(alert3)
 
         let rightTrafficLightSpawner = Spawner(for: .rightTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
