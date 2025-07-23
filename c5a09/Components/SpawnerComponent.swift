@@ -50,10 +50,10 @@ class SpawnerComponent: GKComponent {
             obstacles.append(obstacle)
 //            print("spawned obstacle")
         }
-        entityManager.toRemove.forEach { entity in
-            guard obstacles.contains(where: { $0 === entity }) else { return }
-        
-            obstacles.removeAll(where: { $0 === entity })
-        }
+//        entityManager.toRemove.forEach { entity in
+//            guard obstacles.contains(where: { $0 === entity }) else { return }
+//        
+//            obstacles.removeAll(where: { $0 === entity })
+//        }
     }
 }

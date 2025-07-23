@@ -14,12 +14,14 @@ class ZebraCrossComponent: GKComponent {
     let numSegments: Int
     var index: Int
     let scene: GameScene
+    let entityManager: EntityManager
     
-    init(texture: SKTexture, numSegments: Int, index: Int, scene: GameScene) {
+    init(texture: SKTexture, numSegments: Int, index: Int, scene: GameScene, entityManager: EntityManager) {
         self.texture = texture
         self.numSegments = numSegments
         self.index = index
         self.scene = scene
+        self.entityManager = entityManager
         
         super.init()
     }
@@ -53,6 +55,9 @@ class ZebraCrossComponent: GKComponent {
             let positionX = scene.size.width / 2 - roadShift
             node.position.x = positionX
             parentNode.addChild(node)
+        }
+        if index + numSegmentsShown - 1 < 0 {
+            entityManager.remove(entity!)
         }
         
         let shift = scene.speedConstants[RoadComponent.speed][scene.frameIndex]

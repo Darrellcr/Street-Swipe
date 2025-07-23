@@ -20,6 +20,21 @@ class Spawner: GKEntity {
             customSpawnCondition: customSpawnCondition
         )
         addComponent(spawnerComponent)
+        let spawnerGCComponent = SpawnerGCComponent(entityManager: entityManager)
+        addComponent(spawnerGCComponent)
+    }
+    
+    init(entityManager: EntityManager, scene: GameScene) {
+        super.init()
+
+        let trafficLightSpawnerComponent = TrafficLightSpawnerComponent(
+            entityManager: entityManager,
+            obstacleFactory: ObstacleFactory(),
+            scene: scene
+        )
+        addComponent(trafficLightSpawnerComponent)
+        let spawnerGCComponent = SpawnerGCComponent(entityManager: entityManager)
+        addComponent(spawnerGCComponent)
     }
     
     required init?(coder aDecoder: NSCoder) {

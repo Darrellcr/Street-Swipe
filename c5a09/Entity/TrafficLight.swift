@@ -15,7 +15,7 @@ class TrafficLight: GKEntity {
     init(texture: SKTexture, index: Int, offsetPct: CGFloat, scene: GameScene, width: CGFloat, entityManager: EntityManager, positions: [TrafficLightState: CGPoint], textures: [TrafficLightState: SKTexture]) {
         super.init()
         
-        let renderComponent = RenderComponent(texture: texture, zPosition: 9)
+        let renderComponent = RenderComponent(texture: texture, zPosition: 8)
         addComponent(renderComponent)
         let sizeComponent = SizeComponent(width: width)
         addComponent(sizeComponent)

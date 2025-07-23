@@ -47,7 +47,6 @@ class CollisionComponent: GKComponent {
         collisionBox.zPosition = 999  // High enough to always be visible
         collisionBox.name = "debugCollisionBox"
         node.addChild(collisionBox)
-    
     }
     
     override func update(deltaTime seconds: TimeInterval) {

@@ -10,15 +10,23 @@ import GameplayKit
 import SpriteKit
 
 class ZebraCross: GKEntity {
-    init(texture: SKTexture, numSegments: Int, index: Int, scene: GameScene) {
+    init(texture: SKTexture, numSegments: Int, index: Int, scene: GameScene, entityManager: EntityManager) {
         super.init()
         
         let renderComponent = RenderComponent(zPosition: 1)
         addComponent(renderComponent)
-        let zebraCrossComponent = ZebraCrossComponent(texture: texture, numSegments: numSegments, index: index, scene: scene)
+        let zebraCrossComponent = ZebraCrossComponent(texture: texture, numSegments: numSegments, index: index, scene: scene, entityManager: entityManager)
         addComponent(zebraCrossComponent)
-        let collisionComponent = CollisionComponent()
-        addComponent(collisionComponent)
+        let zebraCrossCollisionComponent = ZebraCrossCollisionComponent() {
+            print("bad stop")
+        } onGoodStop: {
+            print("good stop")
+        } onPerfectStop: {
+            print("perfect stop")
+        } onCollision: {
+            print("tinu2")
+        }
+//        addComponent(zebraCrossCollisionComponent)
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -9,7 +9,7 @@ import Foundation
 import GameplayKit
 
 class ObstacleFactory {
-    func create(_ type: ObstacleType, scene: GameScene, entityManager: EntityManager) -> GKEntity {
+    func create(_ type: ObstacleType, scene: GameScene, entityManager: EntityManager, index: Int? = nil) -> GKEntity {
         let roadLastIndex = RoadComponent.positions.count - 1
         let offsetPct: CGFloat = CGFloat.random(in: 0...1)
         var entity: GKEntity
@@ -17,7 +17,7 @@ class ObstacleFactory {
         case .chicken:
             entity = StaticObstacle(
                 texture: SKTexture(imageNamed: "chicken"),
-                index: roadLastIndex,
+                index: index ?? roadLastIndex,
                 offsetPct: offsetPct,
                 scene: scene,
                 width: 170,
@@ -29,7 +29,7 @@ class ObstacleFactory {
         case .motorbike:
             entity = DynamicObstacle(
                 texture: SKTexture(imageNamed: "motor"),
-                index: roadLastIndex,
+                index: index ?? roadLastIndex,
                 offsetPct: offsetPct,
                 speed: 1,
                 scene: scene,
@@ -42,7 +42,7 @@ class ObstacleFactory {
         case .leftTrafficLight:
             entity = TrafficLight(
                 texture: SKTexture(imageNamed: "L red light"),
-                index: roadLastIndex,
+                index: index ?? roadLastIndex,
                 offsetPct: -0.2,
                 scene: scene,
                 width: 900,
@@ -61,7 +61,7 @@ class ObstacleFactory {
         case .rightTrafficLight:
             entity = TrafficLight(
                 texture: SKTexture(imageNamed: "red light"),
-                index: roadLastIndex,
+                index: index ?? roadLastIndex,
                 offsetPct: 1.6,
                 scene: scene,
                 width: 900,
@@ -80,14 +80,22 @@ class ObstacleFactory {
         case .pocong:
             entity = Pocong(
                 texture: SKTexture(imageNamed: "pocong"),
-                index: roadLastIndex,
-                crossingFrom: .left,
+                index: index ?? roadLastIndex,
+                crossingFrom: (Double.random(in: 0...1) < 0.5) ? .right : .left,
                 scene: scene,
                 width: 110,
                 entityManager: entityManager
             ) {
                 print("nabrak pocong")
             }
+        case .zebraCross:
+            entity = ZebraCross(
+                texture: SKTexture(imageNamed: "zebra cross"),
+                numSegments: 17,
+                index: index ?? roadLastIndex,
+                scene: scene,
+                entityManager: entityManager
+            )
         }
         
         return entity
@@ -100,4 +108,5 @@ enum ObstacleType {
     case leftTrafficLight
     case rightTrafficLight
     case pocong
+    case zebraCross
 }

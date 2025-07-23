@@ -14,10 +14,11 @@ class CrossingComponent: GKComponent {
     var delaySeconds: TimeInterval
     let speed: CGFloat
     
+    var trafficLight: TrafficLight?
     static let minOffset: CGFloat = -0.5
     static let maxOffset: CGFloat = 1.42
     
-    init(crossingFrom: CrossingFrom, delaySeconds: TimeInterval = 4, speed: CGFloat = 0.01) {
+    init(crossingFrom: CrossingFrom, delaySeconds: TimeInterval = 1, speed: CGFloat = 0.01) {
         self.crossingFrom = crossingFrom
         self.delaySeconds = delaySeconds
         self.speed = speed
@@ -38,11 +39,17 @@ class CrossingComponent: GKComponent {
         guard crossingFrom == .right else { return }
         guard let node = entity?.component(ofType: RenderComponent.self)?.node
         else { return }
+        
         node.xScale *= -1
     }
     
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
+        
+        guard let trafficLight,
+              let trafficLightState = trafficLight.component(ofType: TrafficLightStateComponent.self)?.state
+        else { return }
+        guard trafficLightState == .green else { return }
         
         guard delaySeconds == .zero else {
             delaySeconds = max(delaySeconds - seconds, .zero)
