@@ -12,7 +12,7 @@ import SpriteKit
 class PoliceAlert: GKEntity {
     let IMAGE_NAME: String = "police-Sheet"
     
-    init(size: CGSize? = nil, zPosition: CGFloat = 0, scene: GameScene? = nil) {
+    init(size: CGSize? = nil, zPosition: CGFloat = 0, duration: CGFloat = 5.0, scene: GameScene? = nil, entityManager: EntityManager? = nil) {
         super.init()
         let renderComponent = RenderComponent(texture: SKTexture(imageNamed: IMAGE_NAME), zPosition: zPosition)
         addComponent(renderComponent)
@@ -38,6 +38,9 @@ class PoliceAlert: GKEntity {
 
         let sizeComponent = SizeComponent(size: size ?? CGSize(width: targetW, height: targetH))
         addComponent(sizeComponent)
+        
+        let countDownComponent = CountDownComponent(duration: duration, entityManager: entityManager!)
+        addComponent(countDownComponent)
     }
     
     required init?(coder aDecoder: NSCoder) {

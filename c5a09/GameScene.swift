@@ -13,6 +13,9 @@ class GameScene: SKScene {
     var lastUpdateTime: TimeInterval = 0
     let gameCamera = GameCamera()
     static var playerCar: PlayerCar!
+    var ambulance: Ambulance? = nil
+    var ambulanceAlert: AmbulanceAlert? = nil
+    var policeAlert: PoliceAlert? = nil
     
     var frameIndex = 0
     var speedConstants = [
@@ -80,12 +83,6 @@ class GameScene: SKScene {
 //            return RoadComponent.speed > 1 && osbtacleCount < 1
 //        }
 //        entityManager.add(pocongSpawner)
-        
-        let alert2 = AmbulanceAlert(ambulancePosition: .right, zPosition: 100, scene: self)
-        entityManager.add(alert2)
-        
-        let alert3 = PoliceAlert(zPosition: 100, scene: self)
-        entityManager.add(alert3)
     }
     
 //    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
@@ -138,7 +135,62 @@ class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         let deltaTime = (lastUpdateTime == 0) ? 0 : currentTime - lastUpdateTime
         lastUpdateTime = currentTime
+        
+//        AMBULANCE SPAWNING
+//        CASE 1: Start ambulance alert
+        if ambulanceAlert == nil && ambulance == nil && Double.random(in: 0...1) <= 0.05 {
+            let ambulancePosition: AmbulancePosition
+            let randomzier = Double.random(in: 0...1)
+            if randomzier <= 0.33 {
+                ambulancePosition = .left
+            } else if randomzier <= 0.67 {
+                ambulancePosition = .middle
+            } else {
+                ambulancePosition = .right
+            }
+            
+            ambulanceAlert = AmbulanceAlert(ambulancePosition: ambulancePosition, zPosition: 100, scene: self, entityManager: entityManager)
+            entityManager.add(ambulanceAlert!)
+        }
+//        CASE 2: Alert is done & spawn ambulance
+        if ambulanceAlert != nil && ambulanceAlert!.component(ofType: CountDownComponent.self)!.state == .done && ambulance == nil {
+            let ambulancePosition: AmbulancePosition
+            let offsetPct = ambulanceAlert!.component(ofType: AlertPositionComponent.self)!.offsetPct
+            
+            if offsetPct <= 0.15 {
+                ambulancePosition = .left
+            } else if offsetPct <= 0.5 {
+                ambulancePosition = .middle
+            } else {
+                ambulancePosition = .right
+            }
+            
+            ambulance = Ambulance(ambulancePosition: ambulancePosition, scene: self, entityManager: entityManager) {
+                print("nabrak ambulance")
+            }
+            entityManager.add(ambulance!)
+        }
+//        CASE 3: Alert is done & ambulance already passed
+        if ambulanceAlert != nil && ambulanceAlert!.component(ofType: CountDownComponent.self)!.state == .done && ambulance != nil && ambulance!.component(ofType: PositionRelativeComponent.self)!.index >= RoadComponent.positions.count - 5 {
+            ambulanceAlert = nil
+            ambulance = nil
+        }
 
+       
+        
+//        POLICE SPAWNING (NANTI DIGANTI)
+//        CASE 1: Start police alert
+        if policeAlert == nil && Double.random(in: 0...1) <= 0.05 {
+            policeAlert = PoliceAlert(zPosition: 100, scene: self, entityManager: entityManager)
+            entityManager.add(policeAlert!)
+        }
+//        CASE 2: Alert is done & reset
+        if policeAlert != nil && policeAlert!.component(ofType: CountDownComponent.self)!.state == .done {
+            policeAlert = nil
+        }
+        
+        
+        
 //        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
         entityManager.update(deltaTime)
         

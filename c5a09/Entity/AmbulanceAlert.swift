@@ -19,7 +19,7 @@ class AmbulanceAlert: GKEntity {
     let IMAGE_NAME: String = "ambulance-Sheet"
 
     
-    init(size: CGSize? = nil, ambulancePosition: AmbulancePosition = .middle, zPosition: CGFloat = 0, scene: GameScene? = nil) {
+    init(size: CGSize? = nil, ambulancePosition: AmbulancePosition = .middle, zPosition: CGFloat = 0, duration: CGFloat = 3.0, scene: GameScene? = nil, entityManager: EntityManager? = nil) {
         super.init()
         
         let renderComponent = RenderComponent(texture: SKTexture(imageNamed: IMAGE_NAME), zPosition: zPosition)
@@ -55,6 +55,9 @@ class AmbulanceAlert: GKEntity {
 
         let sizeComponent = SizeComponent(size: size ?? CGSize(width: targetW, height: targetH))
         addComponent(sizeComponent)
+        
+        let countDownComponent = CountDownComponent(duration: duration, entityManager: entityManager!)
+        addComponent(countDownComponent)
     }
     
     required init?(coder aDecoder: NSCoder) {
