@@ -14,6 +14,10 @@ class GameScene: SKScene {
     let gameCamera = GameCamera()
     static var playerCar: PlayerCar!
     
+    let scoreLabel = SKLabelNode(fontNamed: "Helvetica")
+    
+    var score: Int = 0
+    
     var frameIndex = 0
     var speedConstants = [
         [0, 0, 0, 0, 0, 0], // 0
@@ -44,7 +48,7 @@ class GameScene: SKScene {
         
         let backgroundTop = BackgroundTop.create(scene: self)
         entityManager.add(backgroundTop)
-
+        
         let roadSegments = RoadSegment.createRoad(scene: self)
         for roadSegment in roadSegments {
             entityManager.add(roadSegment)
@@ -55,7 +59,7 @@ class GameScene: SKScene {
         
         let chickenSpawner = Spawner(for: .chicken, entityManager: entityManager, scene: self)
         entityManager.add(chickenSpawner)
-        let motorbikeSpawner = Spawner(for: .motorbike, entityManager: entityManager, scene: self) {obstacleCount,lastObstacleIndex in 
+        let motorbikeSpawner = Spawner(for: .motorbike, entityManager: entityManager, scene: self) {obstacleCount,lastObstacleIndex in
             return Double.random(in: 0...1) < 0.003 && RoadComponent.speed > 1 && obstacleCount < 3 && lastObstacleIndex < 110
         }
         entityManager.add(motorbikeSpawner)
@@ -70,7 +74,7 @@ class GameScene: SKScene {
         
         let alert3 = PoliceAlert(zPosition: 100, scene: self)
         entityManager.add(alert3)
-
+        
         let rightTrafficLightSpawner = Spawner(for: .rightTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
             return RoadComponent.speed > 1 && obstacleCount < 1
         }
@@ -83,23 +87,30 @@ class GameScene: SKScene {
         
         let zebraCross = ZebraCross(texture: SKTexture(imageNamed: "zebra cross"), numSegments: 15, index: RoadComponent.positions.count - 1, scene: self)
         entityManager.add(zebraCross)
+        
+        scoreLabel.fontSize = 24
+        scoreLabel.fontColor = .white
+        scoreLabel.position = CGPoint(x: size.width * 0.5, y: size.height - 100)
+        scoreLabel.zPosition = 1000
+        addChild(scoreLabel)
+
     }
     
-//    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
-//        if gesture.direction == .left {
-//            gameCamera.moveLeft()
-//        } else if gesture.direction == .right {
-//            gameCamera.moveRight()
-//        } else if gesture.direction == .up {
-//            RoadComponent.speedBeforePan = min(speedConstants.count - 1, RoadComponent.speed + 1)
-//        } else if gesture.direction == .down {
-//            RoadComponent.speedBeforePan = max(0, RoadComponent.speed - 1)
-//        }
-//    }
+    //    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+    //        if gesture.direction == .left {
+    //            gameCamera.moveLeft()
+    //        } else if gesture.direction == .right {
+    //            gameCamera.moveRight()
+    //        } else if gesture.direction == .up {
+    //            RoadComponent.speedBeforePan = min(speedConstants.count - 1, RoadComponent.speed + 1)
+    //        } else if gesture.direction == .down {
+    //            RoadComponent.speedBeforePan = max(0, RoadComponent.speed - 1)
+    //        }
+    //    }
     
     func handlePan(_ gesture: UIPanGestureRecognizer, view: UIView) {
         let translation = gesture.translation(in: view)
-//        let velocity = gesture.velocity(in: self.view)
+        //        let velocity = gesture.velocity(in: self.view)
         let dx = translation.x
         let dy = -translation.y
         
@@ -122,23 +133,40 @@ class GameScene: SKScene {
     }
     
     func panAction(_ dx: Double, _ dy: Double) {
-//        if abs(dx) > abs(dy) {
+        //        if abs(dx) > abs(dy) {
         var unit = 150.0 / Double(gameCamera.maxX)
         gameCamera.xShift = dx / unit
-//        } else {
+        //        } else {
         unit = 380.0 / Double(speedConstants.count)
         RoadComponent.speedShift = Int(round(dy / unit))
-//        }
+        //        }
         
     }
     
     override func update(_ currentTime: TimeInterval) {
         let deltaTime = (lastUpdateTime == 0) ? 0 : currentTime - lastUpdateTime
         lastUpdateTime = currentTime
-
-//        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
+        
+        //Update Scoring
+        let increment = speedConstants[RoadComponent.speed][frameIndex]
+        GameState.shared.score += increment
+        print("Score: \(GameState.shared.score)")
+        
+        scoreLabel.text = "\(GameState.shared.score)"
+        
+        //        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
         entityManager.update(deltaTime)
         
         frameIndex = (frameIndex + 1) % speedConstants[0].count
     }
 }
+
+//// Update scoring
+//if !GameState.isGameOver {
+//    let scoreIndex = min(RoadComponent.speed, speedConstants.count - 1)
+//    let frameValues = speedConstants[RoadComponent.speed][frameIndex]
+//    
+//    let point = frameValues
+//    GameState.score += point
+//
+////            scoreFrameIndex = (scoreFrameIndex + 1) % frameValues.count
