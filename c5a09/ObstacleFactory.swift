@@ -10,7 +10,7 @@ import GameplayKit
 
 class ObstacleFactory {
     func create(_ type: ObstacleType, scene: GameScene, entityManager: EntityManager, index: Int? = nil) -> GKEntity {
-        let roadLastIndex = RoadComponent.positions.count - 1
+        let roadLastIndex = RoadComponent.positions.count - 6
         let offsetPct: CGFloat = CGFloat.random(in: 0...1)
         var entity: GKEntity
         switch type {

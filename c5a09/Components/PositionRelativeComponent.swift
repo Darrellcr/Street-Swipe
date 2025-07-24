@@ -58,7 +58,8 @@ class PositionRelativeComponent: GKComponent {
         
         let roadShift = scene.speedConstants[RoadComponent.speed][scene.frameIndex]
         index -= roadShift
-        if index < 5 {
+        index = max(0, min(RoadComponent.positions.count - 1, index))
+        if index <= 0 || index >= RoadComponent.positions.count - 5 {
             entityManager.remove(entity!)
         }
     }

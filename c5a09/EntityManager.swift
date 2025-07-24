@@ -20,6 +20,7 @@ class EntityManager {
         let sizeSystem = GKComponentSystem(componentClass: SizeComponent.self)
         let renderSystem = GKComponentSystem(componentClass: RenderComponent.self)
         let speedSystem = GKComponentSystem(componentClass: SpeedComponent.self)
+        let ambulanceSpeedSystem = GKComponentSystem(componentClass: AmbulanceSpeedComponent.self)
         let lightSystem = GKComponentSystem(componentClass: LightComponent.self)
         let trafficLightStateSystem = GKComponentSystem(componentClass: TrafficLightStateComponent.self)
         let spriteSheetSystem = GKComponentSystem(componentClass: SpriteSheetComponent.self)
@@ -31,8 +32,10 @@ class EntityManager {
         let trafficLightSpawnerSystem = GKComponentSystem(componentClass: TrafficLightSpawnerComponent.self)
         let spawnerGCSystem = GKComponentSystem(componentClass: SpawnerGCComponent.self)
         let playerCarSFXSystem = GKComponentSystem(componentClass: PlayerCarSFXComponent.self)
-        
+        let countDownSystem = GKComponentSystem(componentClass: CountDownComponent.self)
         return [
+            countDownSystem,
+            ambulanceSpeedSystem,
             positionSystem,
             sizeSystem,
             roadSystem,

@@ -60,7 +60,7 @@ class RoadSegment: GKEntity {
         let totalScales = RoadComponent.scales.reduce(0, +)
         let unitHeight = scene.size.height * roadHeight / totalScales
         
-        var currentY: CGFloat = -50
+        var currentY: CGFloat = -50.0
         var segments: [RoadSegment] = []
         for i in 0..<totalSegments {
             let segmentIndex = i % numSegmentsPerRoad
