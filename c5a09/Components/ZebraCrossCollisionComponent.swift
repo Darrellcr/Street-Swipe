@@ -15,6 +15,7 @@ class ZebraCrossCollisionComponent: GKComponent {
     let onPerfectStop: () -> Void
     let onCollision: () -> Void
     
+    var trafficLight: TrafficLight?
     static let badStopIndex: Int = 36
     static let goodStopIndex: Int = 28
     static let perfectStopIndex: Int = 23
@@ -38,18 +39,20 @@ class ZebraCrossCollisionComponent: GKComponent {
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
         
-        guard let zebraCrossComponent = entity?.component(ofType: ZebraCrossComponent.self)
-        else { return }
-        
-        let zebraCrossPosition = zebraCrossComponent.index
-        if zebraCrossPosition >= Self.badStopIndex {
-            onBadStop()
-        } else if zebraCrossPosition >= Self.goodStopIndex {
-            onGoodStop()
-        } else if zebraCrossPosition >= Self.perfectStopIndex {
-            onPerfectStop()
-        } else {
-            onCollision()
-        }
+//        guard let zebraCrossComponent = entity?.component(ofType: ZebraCrossComponent.self),
+//              let trafficLight
+//        else { return }
+//        guard trafficLight.state == .g
+//        
+//        let zebraCrossPosition = zebraCrossComponent.index
+//        if zebraCrossPosition >= Self.badStopIndex {
+//            onBadStop()
+//        } else if zebraCrossPosition >= Self.goodStopIndex {
+//            onGoodStop()
+//        } else if zebraCrossPosition >= Self.perfectStopIndex {
+//            onPerfectStop()
+//        } else {
+//            onCollision()
+//        }
     }
 }

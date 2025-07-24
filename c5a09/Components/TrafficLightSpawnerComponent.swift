@@ -18,6 +18,7 @@ class TrafficLightSpawnerComponent: GKComponent {
     static var pocong: GKEntity?
     static var leftTrafficLight: GKEntity?
     static var rightTrafficLight: GKEntity?
+    static var sfx: SKAudioNode?
     
     init(entityManager: EntityManager, obstacleFactory: ObstacleFactory, scene: GameScene) {
         self.entityManager = entityManager
@@ -49,6 +50,14 @@ class TrafficLightSpawnerComponent: GKComponent {
         spawnZebraCross()
         spawnPocong()
         spawnTrafficLights()
+        spawnSFX()
+        
+        guard let sfxNode = Self.sfx,
+              let traficLightState = Self.leftTrafficLight?.component(ofType: TrafficLightStateComponent.self)?.state
+        else { return }
+        if traficLightState == .green {
+            sfxNode.removeFromParent()
+        }
     }
     
     private func spawnZebraCross() {
@@ -89,8 +98,29 @@ class TrafficLightSpawnerComponent: GKComponent {
         entityManager.add(Self.rightTrafficLight!)
         
         guard let crossingComponent = Self.pocong?.component(ofType: CrossingComponent.self),
+              let zebraCrossCollisionComponent = Self.zebraCross?.component(ofType: ZebraCrossCollisionComponent.self),
               let trafficLight = Self.leftTrafficLight as? TrafficLight
         else { return }
+    
         crossingComponent.trafficLight = trafficLight
+        zebraCrossCollisionComponent.trafficLight = trafficLight
+    }
+    
+    func spawnSFX() {
+        guard let trafficLight = Self.leftTrafficLight as? TrafficLight
+        else { return }
+        guard Self.sfx == nil else { return }
+        print("spawn sfx")
+        let crossingSfx = Bundle.main.url(forResource: "nyebrang beep beep", withExtension: "wav")
+        let node = SKAudioNode(url: crossingSfx!)
+        node.autoplayLooped = true
+        node.run(SKAction.sequence([
+            SKAction.changeVolume(to: 0.0, duration: 0.0),
+            SKAction.play(),
+            SKAction.changeVolume(to: 0.03, duration: 1.0)
+        ]))
+        node.name = "trafficLightSFX"
+        Self.sfx = node
+        scene.addChild(node)
     }
 }

@@ -29,10 +29,13 @@ class EntityManager {
         let collisionSystem = GKComponentSystem(componentClass: CollisionComponent.self)
         let trafficLightSpawnerSystem = GKComponentSystem(componentClass: TrafficLightSpawnerComponent.self)
         let spawnerGCSystem = GKComponentSystem(componentClass: SpawnerGCComponent.self)
+        let playerCarSFXSystem = GKComponentSystem(componentClass: PlayerCarSFXComponent.self)
+        
         return [
             positionSystem,
             sizeSystem,
             roadSystem,
+            playerCarSFXSystem,
             spawnerSystem,
             trafficLightSpawnerSystem,
             zebraCrossSystem,
@@ -59,6 +62,10 @@ class EntityManager {
         
         if let spriteNode = entity.component(ofType: RenderComponent.self)?.node {
             scene.addChild(spriteNode)
+        }
+        if let playerSFXComponent = entity.component(ofType: PlayerCarSFXComponent.self) {
+            scene.addChild(playerSFXComponent.accelerationNode)
+            scene.addChild(playerSFXComponent.decelerationNode)
         }
         
         for componentSystem in componentSystems {

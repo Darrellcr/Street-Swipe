@@ -47,6 +47,8 @@ class SpawnerGCComponent: GKComponent {
                 TrafficLightSpawnerComponent.pocong = nil
             } else if entity === TrafficLightSpawnerComponent.leftTrafficLight {
                 TrafficLightSpawnerComponent.leftTrafficLight = nil
+                TrafficLightSpawnerComponent.sfx?.removeFromParent()
+                TrafficLightSpawnerComponent.sfx = nil
             } else if entity === TrafficLightSpawnerComponent.rightTrafficLight {
                 TrafficLightSpawnerComponent.rightTrafficLight = nil
             }

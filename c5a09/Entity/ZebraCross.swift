@@ -26,7 +26,7 @@ class ZebraCross: GKEntity {
         } onCollision: {
             print("tinu2")
         }
-//        addComponent(zebraCrossCollisionComponent)
+        addComponent(zebraCrossCollisionComponent)
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -7,6 +7,7 @@
 
 import SpriteKit
 import GameplayKit
+import AVKit
 
 class GameScene: SKScene {
     var entityManager: EntityManager!
@@ -87,6 +88,15 @@ class GameScene: SKScene {
         entityManager.add(alert2)
         let alert3 = Alert(imageName: "police-Sheet", sheetColumns: 2, sheetRows: 1, zPosition: 100, offsetPct: 0.85, scene: self)
         entityManager.add(alert3)
+        
+        
+        // BGM
+//        let bgmUrl = Bundle.main.url(forResource: "street_swipe_BGM1_no_vocal", withExtension: "wav")
+//        let bgmNode = SKAudioNode(url: bgmUrl!)
+//        bgmNode.autoplayLooped = true
+//        addChild(bgmNode)
+//        bgmNode.run(SKAction.sequence([SKAction.changeVolume(to: 0.01, duration: 0),
+//                                       SKAction.play()]))
     }
     
 //    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
@@ -103,9 +113,12 @@ class GameScene: SKScene {
     
     func handlePan(_ gesture: UIPanGestureRecognizer, view: UIView) {
         let translation = gesture.translation(in: view)
-//        let velocity = gesture.velocity(in: self.view)
+        let velocity = gesture.velocity(in: self.view)
         let dx = translation.x
         let dy = -translation.y
+        
+        guard let playerCarSFXComponent = Self.playerCar.component(ofType: PlayerCarSFXComponent.self)
+        else { return }
         
         switch gesture.state {
         case .began:
@@ -114,26 +127,40 @@ class GameScene: SKScene {
             panAction(dx, dy)
         case .changed:
             panAction(dx, dy)
+            
+            if abs(velocity.y) < 2 {
+                playerCarSFXComponent.accelerationShouldPlay = false
+                playerCarSFXComponent.decelerationShouldPlay = false
+            } else if velocity.y > 0 {
+                // handle pan downward
+                playerCarSFXComponent.decelerationShouldPlay = true
+                playerCarSFXComponent.accelerationShouldPlay = false
+            } else {
+                // handle pan upward
+                playerCarSFXComponent.accelerationShouldPlay = true
+                playerCarSFXComponent.decelerationShouldPlay = false
+            }
         case .ended:
             panAction(dx, dy)
             RoadComponent.speedBeforePan = RoadComponent.speed
             RoadComponent.speedShift = 0
             gameCamera.xBeforePan = gameCamera.x
             gameCamera.xShift = 0
+            
+            print("ended")
+            playerCarSFXComponent.accelerationShouldPlay = false
+            playerCarSFXComponent.decelerationShouldPlay = false
+            print(playerCarSFXComponent.accelerationShouldPlay)
         default:
             break
         }
     }
     
     func panAction(_ dx: Double, _ dy: Double) {
-//        if abs(dx) > abs(dy) {
         var unit = 150.0 / Double(gameCamera.maxX)
         gameCamera.xShift = dx / unit
-//        } else {
         unit = 380.0 / Double(speedConstants.count)
         RoadComponent.speedShift = Int(round(dy / unit))
-//        }
-        
     }
     
     override func update(_ currentTime: TimeInterval) {
