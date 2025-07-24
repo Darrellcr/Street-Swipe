@@ -27,7 +27,8 @@ class EntityManager {
         let crossingSystem = GKComponentSystem(componentClass: CrossingComponent.self)
         let zebraCrossSystem = GKComponentSystem(componentClass: ZebraCrossComponent.self)
         let collisionSystem = GKComponentSystem(componentClass: CollisionComponent.self)
-        return [positionSystem, sizeSystem, roadSystem, zebraCrossSystem, collisionSystem, crossingSystem, positionRelativeSystem, alertPositionSystem, lightSystem, trafficLightStateSystem, speedSystem, spawnerSystem, spriteSheetSystem, renderSystem]
+        let renderlabeLSystem = GKComponentSystem(componentClass: RenderLabelComponent.self)
+        return [positionSystem, sizeSystem, roadSystem, zebraCrossSystem, collisionSystem, crossingSystem, positionRelativeSystem, alertPositionSystem, lightSystem, trafficLightStateSystem, speedSystem, spawnerSystem, spriteSheetSystem, renderSystem, renderlabeLSystem]
     }()
     
     let scene: SKScene
@@ -41,6 +42,10 @@ class EntityManager {
         
         if let spriteNode = entity.component(ofType: RenderComponent.self)?.node {
             scene.addChild(spriteNode)
+        }
+        
+        if let labelNode = entity.component(ofType: RenderLabelComponent.self)?.label {
+            scene.addChild(labelNode)
         }
         
         for componentSystem in componentSystems {

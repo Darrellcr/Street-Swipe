@@ -5,6 +5,7 @@
 //  Created by Darrell Cornelius Rivaldo on 11/07/25.
 //
 
+import AVFoundation
 import SpriteKit
 import GameplayKit
 
@@ -13,8 +14,13 @@ class GameScene: SKScene {
     var lastUpdateTime: TimeInterval = 0
     let gameCamera = GameCamera()
     static var playerCar: PlayerCar!
+    static var speedometer: Speedometer!
+    static var scoreEntity: ScoreLabel!
+    static var speedEntity: SpeedLabel!
     
-    let scoreLabel = SKLabelNode(fontNamed: "Helvetica")
+    private let soundManager = SoundManager()
+    
+    let scoreLabel = SKLabelNode(fontNamed: "Mini Mouse Regular")
     
     var score: Int = 0
     
@@ -41,6 +47,8 @@ class GameScene: SKScene {
     ]
     
     override func didMove(to view: SKView) {
+        //        soundManager.playBackgroundMusic()
+        
         entityManager = EntityManager(scene: self)
         
         let backgroundBottom = BackgroundBottom.create(scene: self)
@@ -56,6 +64,9 @@ class GameScene: SKScene {
         
         Self.playerCar = PlayerCar.create(scene: self)
         entityManager.add(Self.playerCar)
+        
+        Self.speedometer = Speedometer.create(scene: self)
+        entityManager.add(Self.speedometer)
         
         let chickenSpawner = Spawner(for: .chicken, entityManager: entityManager, scene: self)
         entityManager.add(chickenSpawner)
@@ -88,11 +99,20 @@ class GameScene: SKScene {
         let zebraCross = ZebraCross(texture: SKTexture(imageNamed: "zebra cross"), numSegments: 15, index: RoadComponent.positions.count - 1, scene: self)
         entityManager.add(zebraCross)
         
-        scoreLabel.fontSize = 24
-        scoreLabel.fontColor = .white
-        scoreLabel.position = CGPoint(x: size.width * 0.5, y: size.height - 100)
-        scoreLabel.zPosition = 1000
-        addChild(scoreLabel)
+        let scorePosition = CGPoint(x: size.width / 2, y: size.height - 100)
+        Self.scoreEntity = ScoreLabel(text: 0, fontName: "Mine Mouse Regular", position: scorePosition)
+        entityManager.add(Self.scoreEntity)
+        
+        let speedPosition = CGPoint(x: size.width / 2 - 110, y: size.height - 815)
+        Self.speedEntity = SpeedLabel(text: 0, fontName: "Mine Mouse Regular", position: speedPosition)
+        entityManager.add(Self.speedEntity)
+        
+//        scoreLabel.fontName = "Mine Mouse Regular"
+//        scoreLabel.fontSize = 35
+//        scoreLabel.fontColor = .white
+//        scoreLabel.position = CGPoint(x: size.width * 0.5, y: size.height - 100)
+//        scoreLabel.zPosition = 1000
+//        addChild(scoreLabel)
 
     }
     
@@ -150,9 +170,19 @@ class GameScene: SKScene {
         //Update Scoring
         let increment = speedConstants[RoadComponent.speed][frameIndex]
         GameState.shared.score += increment
-        print("Score: \(GameState.shared.score)")
+//        print("Score: \(GameState.shared.score)")
+//        
+//        scoreLabel.text = "\(GameState.shared.score)"
         
-        scoreLabel.text = "\(GameState.shared.score)"
+        // 2. Update label skor
+        if let scoreLabelComponent = GameScene.scoreEntity.component(ofType: RenderLabelComponent.self) {
+            scoreLabelComponent.updateLabelText(with: GameState.shared.score)
+        }
+        
+        // 3. Update label kecepatan (misalnya dari GameState.shared.speed)
+        if let speedLabelComponent = GameScene.speedEntity.component(ofType: RenderLabelComponent.self) {
+            speedLabelComponent.updateLabelText(with: RoadComponent.speed)
+        }
         
         //        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
         entityManager.update(deltaTime)
@@ -160,6 +190,7 @@ class GameScene: SKScene {
         frameIndex = (frameIndex + 1) % speedConstants[0].count
     }
 }
+
 
 //// Update scoring
 //if !GameState.isGameOver {
