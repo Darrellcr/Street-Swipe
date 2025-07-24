@@ -24,6 +24,7 @@ class ZebraCross: GKEntity {
         } onPerfectStop: {
             print("perfect stop")
         } onCollision: {
+            scene.spawnPoliceAlert()
             print("tinu2")
         }
         addComponent(zebraCrossCollisionComponent)

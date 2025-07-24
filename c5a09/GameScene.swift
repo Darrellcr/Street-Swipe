@@ -46,6 +46,14 @@ class GameScene: SKScene, ObservableObject {
         [3, 3, 3, 3, 3, 3], // 17: 180
     ]
     
+    func spawnPoliceAlert() {
+        if policeAlert == nil {
+            policeAlert = PoliceAlert(zPosition: 100, scene: self, entityManager: entityManager)
+            entityManager.add(policeAlert!)
+        }
+        else { isGameOver = true }
+    }
+    
     override func didMove(to view: SKView) {
         entityManager = EntityManager(scene: self)
         
@@ -194,10 +202,10 @@ class GameScene: SKScene, ObservableObject {
         
 //        POLICE SPAWNING (NANTI DIGANTI)
 //        CASE 1: Start police alert
-        if policeAlert == nil && Double.random(in: 0...1) <= 0.05 {
-            policeAlert = PoliceAlert(zPosition: 100, scene: self, entityManager: entityManager)
-            entityManager.add(policeAlert!)
-        }
+//        if policeAlert == nil && Double.random(in: 0...1) <= 0.05 {
+//            policeAlert = PoliceAlert(zPosition: 100, scene: self, entityManager: entityManager)
+//            entityManager.add(policeAlert!)
+//        }
 //        CASE 2: Alert is done & reset
         if policeAlert != nil && policeAlert!.component(ofType: CountDownComponent.self)!.state == .done {
             policeAlert = nil

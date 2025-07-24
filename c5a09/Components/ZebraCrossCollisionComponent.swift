@@ -18,6 +18,7 @@ class ZebraCrossCollisionComponent: GKComponent {
     var trafficLight: TrafficLight?
     var hasCollided: Bool = false
     var hasStopped: Bool = false
+    static let stopIndex: Int = 100
     static let badStopIndex: Int = 37
     static let goodStopIndex: Int = 28
     static let perfectStopIndex: Int = 22
@@ -48,6 +49,7 @@ class ZebraCrossCollisionComponent: GKComponent {
         guard trafficLightState == .red
         else { return }
         let zebraCrossPosition = zebraCrossComponent.index
+        if zebraCrossPosition > Self.stopIndex { return }
         if zebraCrossPosition < Self.perfectStopIndex && !hasCollided {
             hasCollided = true
             onCollision()
