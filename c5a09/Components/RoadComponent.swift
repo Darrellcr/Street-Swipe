@@ -13,7 +13,7 @@ class RoadComponent: GKComponent {
     var index: Int
     let scene: GameScene
     
-    static var speedBeforePan: Int = 2
+    static var speedBeforePan: Int = 0
     static var speedShift: Int = 0
     static var speed: Int {
         max(min(speedBeforePan + speedShift, 17), 0)

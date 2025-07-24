@@ -12,7 +12,7 @@ import SpriteKit
 class CrossingComponent: GKComponent {
     let crossingFrom: CrossingFrom
     var delaySeconds: TimeInterval
-    let speed: CGFloat
+    var speed: CGFloat
     
     var trafficLight: TrafficLight?
     static let minOffset: CGFloat = -0.5
@@ -46,13 +46,14 @@ class CrossingComponent: GKComponent {
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
         
-        guard let trafficLight,
-              let trafficLightState = trafficLight.component(ofType: TrafficLightStateComponent.self)?.state
-        else { return }
-        guard trafficLightState == .green else { return }
+//        guard let trafficLight,
+//              let trafficLightState = trafficLight.component(ofType: TrafficLightStateComponent.self)?.state
+//        else { return }
+//        guard trafficLightState == .green else { return }
         
         guard delaySeconds == .zero else {
             delaySeconds = max(delaySeconds - seconds, .zero)
+
             return
         }
         

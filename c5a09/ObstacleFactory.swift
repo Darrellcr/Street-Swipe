@@ -23,8 +23,10 @@ class ObstacleFactory {
                 width: 170,
                 entityManager: entityManager,
                 collisionBoxSize: CGSize(width: 140, height: 154)
-            ) {
+            ) { position in
                 print("nabrak ayam")
+                self.spawnExplosion(position: position, entityManager: entityManager)
+                scene.gameOver()
             }
         case .motorbike:
             entity = DynamicObstacle(
@@ -36,8 +38,10 @@ class ObstacleFactory {
                 width: 300,
                 entityManager: entityManager,
                 collisionBoxSize: CGSize(width: 144, height: 220)
-            ) {
+            ) { position in
                 print("nabrak motor")
+                self.spawnExplosion(position: position, entityManager: entityManager)
+                scene.gameOver()
             }
         case .leftTrafficLight:
             entity = TrafficLight(
@@ -83,10 +87,12 @@ class ObstacleFactory {
                 index: index ?? roadLastIndex,
                 crossingFrom: (Double.random(in: 0...1) < 0.5) ? .right : .left,
                 scene: scene,
-                width: 110,
+                width: 90,
                 entityManager: entityManager
-            ) {
+            ) { position in
                 print("nabrak pocong")
+                self.spawnExplosion(position: position, entityManager: entityManager)
+                scene.gameOver()
             }
         case .zebraCross:
             entity = ZebraCross(
@@ -100,6 +106,12 @@ class ObstacleFactory {
         
         return entity
     }
+    
+    private func spawnExplosion(position: CGPoint, entityManager: EntityManager) {
+        let explosion = Explosion(position: position)
+
+        entityManager.add(explosion)
+    }
 }
 
 enum ObstacleType {
@@ -110,3 +122,4 @@ enum ObstacleType {
     case pocong
     case zebraCross
 }
+

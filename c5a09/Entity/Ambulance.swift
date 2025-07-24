@@ -10,7 +10,7 @@ import SpriteKit
 import GameplayKit
 
 class Ambulance: GKEntity {
-    init(ambulancePosition: AmbulancePosition, scene: GameScene, entityManager: EntityManager, onCollision: (() -> Void)? = nil) {
+    init(ambulancePosition: AmbulancePosition, scene: GameScene, entityManager: EntityManager, onCollision: ((CGPoint) -> Void)? = nil) {
         super.init()
         
         let renderComponent = RenderComponent(texture: SKTexture(imageNamed: "obstacle_ambulance"), zPosition: 9)

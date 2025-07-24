@@ -20,6 +20,8 @@ class PlayerCar: GKEntity {
         addComponent(positionComponent)
         let sizeComponent = SizeComponent(size: size ?? renderComponent.node.size)
         addComponent(sizeComponent)
+        let playerCarSFXComponent = PlayerCarSFXComponent(accelerateSoundFilePath: "SFX/gas.wav")
+        addComponent(playerCarSFXComponent)
     }
     
     required init?(coder aDecoder: NSCoder) {

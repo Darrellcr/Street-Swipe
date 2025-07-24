@@ -28,8 +28,10 @@ class EntityManager {
         let crossingSystem = GKComponentSystem(componentClass: CrossingComponent.self)
         let zebraCrossSystem = GKComponentSystem(componentClass: ZebraCrossComponent.self)
         let collisionSystem = GKComponentSystem(componentClass: CollisionComponent.self)
+        let zebraCrossCollisionSystem = GKComponentSystem(componentClass: ZebraCrossCollisionComponent.self)
         let trafficLightSpawnerSystem = GKComponentSystem(componentClass: TrafficLightSpawnerComponent.self)
         let spawnerGCSystem = GKComponentSystem(componentClass: SpawnerGCComponent.self)
+        let playerCarSFXSystem = GKComponentSystem(componentClass: PlayerCarSFXComponent.self)
         let countDownSystem = GKComponentSystem(componentClass: CountDownComponent.self)
         return [
             countDownSystem,
@@ -37,12 +39,14 @@ class EntityManager {
             positionSystem,
             sizeSystem,
             roadSystem,
+            playerCarSFXSystem,
             spawnerSystem,
             trafficLightSpawnerSystem,
             zebraCrossSystem,
-            collisionSystem,
+            zebraCrossCollisionSystem,
             crossingSystem,
             positionRelativeSystem,
+            collisionSystem,
             alertPositionSystem,
             lightSystem,
             trafficLightStateSystem,
@@ -63,6 +67,10 @@ class EntityManager {
         
         if let spriteNode = entity.component(ofType: RenderComponent.self)?.node {
             scene.addChild(spriteNode)
+        }
+        if let playerSFXComponent = entity.component(ofType: PlayerCarSFXComponent.self) {
+            scene.addChild(playerSFXComponent.accelerationNode)
+            scene.addChild(playerSFXComponent.decelerationNode)
         }
         
         for componentSystem in componentSystems {
@@ -91,5 +99,24 @@ class EntityManager {
         }
         
         toRemove.removeAll()
+    }
+    
+    func reset() {
+        let entityTypesToRemove: [GKEntity.Type] = [
+            DynamicObstacle.self,
+            ZebraCross.self,
+            StaticObstacle.self,
+            Pocong.self,
+            ZebraCross.self,
+            TrafficLight.self,
+            Spawner.self,
+            Explosion.self
+        ]
+
+        entities.forEach { entity in
+            if entityTypesToRemove.contains(where: { t in type(of: entity).isSubclass(of: t) }) {
+                remove(entity)
+            }
+        }
     }
 }
