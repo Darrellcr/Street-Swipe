@@ -46,6 +46,9 @@ class GameScene: SKScene, ObservableObject {
         [3, 3, 3, 3, 3, 3], // 17: 180
     ]
     
+    static var crashAudioNode: SKAudioNode!
+    static var gameOverAudioNode: SKAudioNode!
+    
     override func didMove(to view: SKView) {
         entityManager = EntityManager(scene: self)
         
@@ -71,6 +74,18 @@ class GameScene: SKScene, ObservableObject {
         addChild(bgmNode)
         bgmNode.run(SKAction.sequence([SKAction.changeVolume(to: 0.4, duration: 0),
                                        SKAction.play()]))
+        
+        let crashUrl = Bundle.main.url(forResource: "car crash", withExtension: "mp3")
+        let crashSfx = SKAudioNode(url: crashUrl!)
+        crashSfx.autoplayLooped = false
+        addChild(crashSfx)
+        Self.crashAudioNode = crashSfx
+        
+        let gameOverSoundUrl = Bundle.main.url(forResource: "game over", withExtension: "wav")
+        let gameOverSoundNode = SKAudioNode(url: gameOverSoundUrl!)
+        gameOverSoundNode.autoplayLooped = false
+        addChild(gameOverSoundNode)
+        Self.gameOverAudioNode = gameOverSoundNode
         
         scoreLabel.fontSize = 24
         scoreLabel.fontColor = .white
@@ -247,7 +262,9 @@ class GameScene: SKScene, ObservableObject {
         RoadComponent.speedBeforePan = 0
         RoadComponent.speedShift = 0
         
-        isGameOver = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.isGameOver = true
+        }
     }
 }
 

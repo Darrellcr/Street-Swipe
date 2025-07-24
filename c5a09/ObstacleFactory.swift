@@ -25,8 +25,7 @@ class ObstacleFactory {
                 collisionBoxSize: CGSize(width: 140, height: 154)
             ) { position in
                 print("nabrak ayam")
-                self.spawnExplosion(position: position, entityManager: entityManager)
-                scene.gameOver()
+                self.onCollision(scene: scene, entityManager: entityManager, position: position)
             }
         case .motorbike:
             entity = DynamicObstacle(
@@ -40,8 +39,7 @@ class ObstacleFactory {
                 collisionBoxSize: CGSize(width: 144, height: 220)
             ) { position in
                 print("nabrak motor")
-                self.spawnExplosion(position: position, entityManager: entityManager)
-                scene.gameOver()
+                self.onCollision(scene: scene, entityManager: entityManager, position: position)
             }
         case .leftTrafficLight:
             entity = TrafficLight(
@@ -91,8 +89,7 @@ class ObstacleFactory {
                 entityManager: entityManager
             ) { position in
                 print("nabrak pocong")
-                self.spawnExplosion(position: position, entityManager: entityManager)
-                scene.gameOver()
+                self.onCollision(scene: scene, entityManager: entityManager, position: position)
             }
         case .zebraCross:
             entity = ZebraCross(
@@ -105,6 +102,17 @@ class ObstacleFactory {
         }
         
         return entity
+    }
+    
+    private func onCollision(scene: GameScene, entityManager: EntityManager, position: CGPoint) {
+        self.spawnExplosion(position: position, entityManager: entityManager)
+        GameScene.crashAudioNode.run(SKAction.play())
+        GameScene.gameOverAudioNode.run(SKAction.sequence([
+            SKAction.wait(forDuration: 0.5),
+            SKAction.play()
+        ]))
+        
+        scene.gameOver()
     }
     
     private func spawnExplosion(position: CGPoint, entityManager: EntityManager) {
