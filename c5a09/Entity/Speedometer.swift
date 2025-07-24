@@ -32,22 +32,77 @@ class Speedometer: GKEntity {
         fatalError("init(coder:) has not been implemented")
     }
     
+//    class func create(scene: SKScene) -> Speedometer {
+//        let entity = Speedometer(imageName: "speedometer", zPosition: 100)
+//        
+//        guard let spriteTextureSize = entity.component(ofType: RenderComponent.self)?.node.texture?.size(),
+//              let sizeComponent = entity.component(ofType: SizeComponent.self),
+//              let positionComponent = entity.component(ofType: PositionComponent.self)
+//        else { return entity }
+//        
+//        let aspectRatio = spriteTextureSize.width / spriteTextureSize.height
+//        let width: CGFloat = scene.size.width - 60
+//        let height: CGFloat = width / aspectRatio
+//        sizeComponent.size = CGSize(width: width, height: height)
+//        positionComponent.position = CGPoint(x: scene.size.width / 2, y: 50)
+//        
+//        
+//        let barHeight: CGFloat = height * 0.2
+//        let barY = positionComponent.position.y + height * 0.5 - barHeight * 0.5
+//        let segmentWidth: CGFloat = (width - (8 * 4)) / 18 // 18 segments, 8 gaps
+//        let segmentSize = CGSize(width: segmentWidth, height: barHeight)
+//
+//        let speedBar = SpeedBarComponent(
+//            node: spriteTextureSize.node,
+//            startX: -(width / 2) + segmentWidth / 2,
+//            y: barY - positionComponent.anchorPoint.y * height,
+//            segmentSize: segmentSize,
+//            groupSpacing: 4
+//        )
+//        entity.addComponent(speedBar)
+//        
+//        return entity
+//    }
+    
     class func create(scene: SKScene) -> Speedometer {
         let entity = Speedometer(imageName: "speedometer", zPosition: 100)
         
-        guard let spriteTextureSize = entity.component(ofType: RenderComponent.self)?.node.texture?.size(),
+        // Ambil komponen-komponen yang dibutuhkan
+        guard let renderComponent = entity.component(ofType: RenderComponent.self),
+              let spriteNode = renderComponent.node as? SKSpriteNode,
               let sizeComponent = entity.component(ofType: SizeComponent.self),
               let positionComponent = entity.component(ofType: PositionComponent.self)
         else { return entity }
-        
+
+        // Hitung ulang ukuran berdasarkan texture
+        let spriteTextureSize = spriteNode.texture?.size() ?? CGSize(width: 100, height: 50) // default jika nil
         let aspectRatio = spriteTextureSize.width / spriteTextureSize.height
         let width: CGFloat = scene.size.width - 60
         let height: CGFloat = width / aspectRatio
         sizeComponent.size = CGSize(width: width, height: height)
+
+        // Atur posisi
         positionComponent.position = CGPoint(x: scene.size.width / 2, y: 50)
-        
+
+        // Hitung ukuran dan posisi bar
+        let barHeight: CGFloat = height * 0.26
+        let barY = positionComponent.position.y - 33.2
+        let segmentWidth: CGFloat = (width - (8 * 3)) / 18 - 7.5 // 18 segments, 8 gaps
+        let segmentSize = CGSize(width: segmentWidth, height: barHeight)
+
+        // Tambahkan SpeedBarComponent
+        let speedBar = SpeedBarComponent(
+            node: spriteNode,
+            startX: -(width / 2) + segmentWidth / 2 + 126.5,
+            y: barY - positionComponent.anchorPoint.y * height,
+            segmentSize: segmentSize,
+            groupSpacing: 3
+        )
+        entity.addComponent(speedBar)
+
         return entity
     }
+
 }
     
 //    init(sceneSize: CGSize) {

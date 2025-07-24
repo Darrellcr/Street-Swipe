@@ -184,6 +184,10 @@ class GameScene: SKScene {
             speedLabelComponent.updateLabelText(with: RoadComponent.speed)
         }
         
+        if let speedBar = GameScene.speedometer.component(ofType: SpeedBarComponent.self) {
+            speedBar.updateSpeedLevel(to: RoadComponent.speed)
+        }
+        
         //        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
         entityManager.update(deltaTime)
         
