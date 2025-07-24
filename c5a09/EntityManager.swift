@@ -41,9 +41,9 @@ class EntityManager {
             trafficLightSpawnerSystem,
             zebraCrossSystem,
             zebraCrossCollisionSystem,
-            collisionSystem,
             crossingSystem,
             positionRelativeSystem,
+            collisionSystem,
             alertPositionSystem,
             lightSystem,
             trafficLightStateSystem,
@@ -96,5 +96,24 @@ class EntityManager {
         }
         
         toRemove.removeAll()
+    }
+    
+    func reset() {
+        let entityTypesToRemove: [GKEntity.Type] = [
+            DynamicObstacle.self,
+            ZebraCross.self,
+            StaticObstacle.self,
+            Pocong.self,
+            ZebraCross.self,
+            TrafficLight.self,
+            Spawner.self,
+            Explosion.self
+        ]
+
+        entities.forEach { entity in
+            if entityTypesToRemove.contains(where: { t in type(of: entity).isSubclass(of: t) }) {
+                remove(entity)
+            }
+        }
     }
 }

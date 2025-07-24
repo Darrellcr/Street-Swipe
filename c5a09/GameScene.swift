@@ -9,7 +9,9 @@ import SpriteKit
 import GameplayKit
 import AVKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, ObservableObject {
+    @Published var isGameOver: Bool = false
+    
     var entityManager: EntityManager!
     var lastUpdateTime: TimeInterval = 0
     let gameCamera = GameCamera()
@@ -55,16 +57,6 @@ class GameScene: SKScene {
         entityManager.add(Self.playerCar)
         
         
-        /* OBSTACLES */
-        let chickenSpawner = Spawner(for: .chicken, entityManager: entityManager, scene: self)
-        entityManager.add(chickenSpawner)
-        let motorbikeSpawner = Spawner(for: .motorbike, entityManager: entityManager, scene: self) {obstacleCount,lastObstacleIndex in 
-            return Double.random(in: 0...1) < 0.003 && RoadComponent.speed > 1 && obstacleCount < 3 && lastObstacleIndex < 110
-        }
-        entityManager.add(motorbikeSpawner)
-        let trafficLightSpawner = Spawner(entityManager: entityManager, scene: self)
-        entityManager.add(trafficLightSpawner)
-        
 //        let zebraCrossSpawner = Spawner(for: .zebraCross, entityManager: entityManager, scene: self) { obstacleCount, _ in
 //            return RoadComponent.speed > 1 && obstacleCount < 1
 //        }
@@ -91,12 +83,12 @@ class GameScene: SKScene {
         
         
         // BGM
-//        let bgmUrl = Bundle.main.url(forResource: "street_swipe_BGM1_no_vocal", withExtension: "wav")
-//        let bgmNode = SKAudioNode(url: bgmUrl!)
-//        bgmNode.autoplayLooped = true
-//        addChild(bgmNode)
-//        bgmNode.run(SKAction.sequence([SKAction.changeVolume(to: 0.01, duration: 0),
-//                                       SKAction.play()]))
+        let bgmUrl = Bundle.main.url(forResource: "street_swipe_BGM1_no_vocal", withExtension: "wav")
+        let bgmNode = SKAudioNode(url: bgmUrl!)
+        bgmNode.autoplayLooped = true
+        addChild(bgmNode)
+        bgmNode.run(SKAction.sequence([SKAction.changeVolume(to: 0.4, duration: 0),
+                                       SKAction.play()]))
     }
     
 //    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
@@ -111,16 +103,20 @@ class GameScene: SKScene {
 //        }
 //    }
     
-    func handlePan(_ gesture: UIPanGestureRecognizer, view: UIView) {
-        let translation = gesture.translation(in: view)
-        let velocity = gesture.velocity(in: self.view)
-        let dx = translation.x
-        let dy = -translation.y
+    func handlePan(translation: CGSize, velocity: CGSize, state: UIPanGestureRecognizer.State) {
+        let dx = translation.width
+        let dy = -translation.height
         
         guard let playerCarSFXComponent = Self.playerCar.component(ofType: PlayerCarSFXComponent.self)
         else { return }
         
-        switch gesture.state {
+        guard !isGameOver else {
+            playerCarSFXComponent.accelerationShouldPlay = false
+            playerCarSFXComponent.decelerationShouldPlay = false
+            return
+        }
+        
+        switch state {
         case .began:
             RoadComponent.speedShift = 0
             gameCamera.xShift = 0
@@ -128,10 +124,10 @@ class GameScene: SKScene {
         case .changed:
             panAction(dx, dy)
             
-            if abs(velocity.y) < 2 {
+            if abs(velocity.height) < 2 {
                 playerCarSFXComponent.accelerationShouldPlay = false
                 playerCarSFXComponent.decelerationShouldPlay = false
-            } else if velocity.y > 0 {
+            } else if velocity.height > 0 {
                 // handle pan downward
                 playerCarSFXComponent.decelerationShouldPlay = true
                 playerCarSFXComponent.accelerationShouldPlay = false
@@ -169,5 +165,36 @@ class GameScene: SKScene {
         entityManager.update(deltaTime)
         
         frameIndex = (frameIndex + 1) % speedConstants[0].count
+    }
+    
+    func resetGame() {
+        entityManager.reset()
+//        distance = 0
+//        timer = 0
+//        isGameRunning = true
+//        
+//        NotificationCenter.default.post(name: .distanceDidUpdate, object: nil, userInfo: ["distance": distance])
+    }
+    
+    func startGame() {
+        let chickenSpawner = Spawner(for: .chicken, entityManager: entityManager, scene: self)
+        entityManager.add(chickenSpawner)
+        let motorbikeSpawner = Spawner(for: .motorbike, entityManager: entityManager, scene: self) {obstacleCount,lastObstacleIndex in
+            return Double.random(in: 0...1) < 0.003 && RoadComponent.speed > 1 && obstacleCount < 3 && lastObstacleIndex < 110
+        }
+        entityManager.add(motorbikeSpawner)
+        let trafficLightSpawner = Spawner(entityManager: entityManager, scene: self)
+        entityManager.add(trafficLightSpawner)
+        
+        gameCamera.xBeforePan = 0
+        gameCamera.xShift = 0
+        RoadComponent.speedBeforePan = 2
+    }
+    
+    func gameOver() {
+        RoadComponent.speedBeforePan = 0
+        RoadComponent.speedShift = 0
+        
+        isGameOver = true
     }
 }

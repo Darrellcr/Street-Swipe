@@ -29,8 +29,8 @@ class GameViewController: UIViewController {
 //                swipe.direction = direction
 //                view.addGestureRecognizer(swipe)
 //            }
-            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-            view.addGestureRecognizer(panGesture)
+//            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+//            view.addGestureRecognizer(panGesture)
             
             view.ignoresSiblingOrder = true
             
@@ -46,12 +46,12 @@ class GameViewController: UIViewController {
 //        }
 //    }
     
-    @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-        if let skView = self.view as? SKView,
-           let gameScene = skView.scene as? GameScene {
-            gameScene.handlePan(gesture, view: view)
-        }
-    }
+//    @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
+//        if let skView = self.view as? SKView,
+//           let gameScene = skView.scene as? GameScene {
+//            gameScene.handlePan(gesture, view: view)
+//        }
+//    }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {

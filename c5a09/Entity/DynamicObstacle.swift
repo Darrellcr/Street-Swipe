@@ -10,7 +10,7 @@ import SpriteKit
 import GameplayKit
 
 class DynamicObstacle: GKEntity {
-    init(texture: SKTexture, index: Int, offsetPct: CGFloat, speed: Int, scene: GameScene, width: CGFloat, entityManager: EntityManager, collisionBoxSize: CGSize? = nil, onCollision: (() -> Void)? = nil) {
+    init(texture: SKTexture, index: Int, offsetPct: CGFloat, speed: Int, scene: GameScene, width: CGFloat, entityManager: EntityManager, collisionBoxSize: CGSize? = nil, onCollision: ((CGPoint) -> Void)? = nil) {
         super.init()
         
         let renderComponent = RenderComponent(texture: texture, zPosition: 9)

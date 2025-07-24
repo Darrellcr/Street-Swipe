@@ -12,7 +12,7 @@ import SpriteKit
 class CrossingComponent: GKComponent {
     let crossingFrom: CrossingFrom
     var delaySeconds: TimeInterval
-    let speed: CGFloat
+    var speed: CGFloat
     
     var trafficLight: TrafficLight?
     static let minOffset: CGFloat = -0.5

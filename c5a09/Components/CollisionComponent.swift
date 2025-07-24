@@ -11,14 +11,14 @@ import SpriteKit
 
 class CollisionComponent: GKComponent {
     var customBoxSize: CGSize?
-    var onCollision: (() -> Void)?
+    var onCollision: ((CGPoint) -> Void)?
     var collided: Bool = false
     
     static let playerCarIndexTop = 24
     static let playerCarIndexBottom = 14
     static let showCollisionBox = true
     
-    init(customBoxSize: CGSize? = nil, onCollision: (() -> Void)? = nil) {
+    init(customBoxSize: CGSize? = nil, onCollision: ((CGPoint) -> Void)? = nil) {
         self.customBoxSize = customBoxSize
         self.onCollision = onCollision
         
@@ -59,15 +59,29 @@ class CollisionComponent: GKComponent {
         else { return }
         
         let entityIndex = positionRelativeComponent.index
-        
+        playerCarNode.size.width *= 0.75
         guard !collided
                 && entityIndex <= Self.playerCarIndexTop
                 && entityIndex >= Self.playerCarIndexBottom
                 && playerCarNode.intersects(collisionBox)
-        else { return }
+        else {
+            playerCarNode.size.width *= 1 / 0.75
+            return
+        }
+        playerCarNode.size.width *= 1 / 0.75
         guard let onCollision else { return }
         
-        onCollision()
+        onCollision(node.position)
+        RoadComponent.speedBeforePan = 0
+        RoadComponent.speedShift = 0
+        
         collided = true
+        
+        if let speedComponent = entity?.component(ofType: SpeedComponent.self) {
+            speedComponent.speed = 0
+        }
+        if let crossingComponent = entity?.component(ofType: CrossingComponent.self) {
+            crossingComponent.speed = 0
+        }
     }
 }
