@@ -20,6 +20,10 @@ class GameScene: SKScene, ObservableObject {
     var ambulanceAlert: AmbulanceAlert? = nil
     var policeAlert: PoliceAlert? = nil
     
+    let scoreLabel = SKLabelNode(fontNamed: "Helvetica")
+    
+    var score: Int = 0
+    
     var frameIndex = 0
     var speedConstants = [
         [0, 0, 0, 0, 0, 0], // 0
@@ -50,7 +54,7 @@ class GameScene: SKScene, ObservableObject {
         
         let backgroundTop = BackgroundTop.create(scene: self)
         entityManager.add(backgroundTop)
-
+        
         let roadSegments = RoadSegment.createRoad(scene: self)
         for roadSegment in roadSegments {
             entityManager.add(roadSegment)
@@ -60,23 +64,6 @@ class GameScene: SKScene, ObservableObject {
         entityManager.add(Self.playerCar)
         
         
-//        let zebraCrossSpawner = Spawner(for: .zebraCross, entityManager: entityManager, scene: self) { obstacleCount, _ in
-//            return RoadComponent.speed > 1 && obstacleCount < 1
-//        }
-//        entityManager.add(zebraCrossSpawner)
-//        let leftTrafficLightSpawner = Spawner(for: .leftTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
-//            return RoadComponent.speed > 1 && obstacleCount < 1
-//        }
-//        entityManager.add(leftTrafficLightSpawner)
-//        let rightTrafficLightSpawner = Spawner(for: .rightTrafficLight, entityManager: entityManager, scene: self) { obstacleCount, _ in
-//            return RoadComponent.speed > 1 && obstacleCount < 1
-//        }
-//        entityManager.add(rightTrafficLightSpawner)
-//        let pocongSpawner = Spawner(for: .pocong, entityManager: entityManager, scene: self) { osbtacleCount, _ in
-//            return RoadComponent.speed > 1 && osbtacleCount < 1
-//        }
-//        entityManager.add(pocongSpawner)
-        
         // BGM
         let bgmUrl = Bundle.main.url(forResource: "street_swipe_BGM1_no_vocal", withExtension: "wav")
         let bgmNode = SKAudioNode(url: bgmUrl!)
@@ -84,24 +71,31 @@ class GameScene: SKScene, ObservableObject {
         addChild(bgmNode)
         bgmNode.run(SKAction.sequence([SKAction.changeVolume(to: 0.4, duration: 0),
                                        SKAction.play()]))
+        
+        scoreLabel.fontSize = 24
+        scoreLabel.fontColor = .white
+        scoreLabel.position = CGPoint(x: size.width * 0.5, y: size.height - 100)
+        scoreLabel.zPosition = 1000
+        addChild(scoreLabel)
+
     }
     
-//    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
-//        if gesture.direction == .left {
-//            gameCamera.moveLeft()
-//        } else if gesture.direction == .right {
-//            gameCamera.moveRight()
-//        } else if gesture.direction == .up {
-//            RoadComponent.speedBeforePan = min(speedConstants.count - 1, RoadComponent.speed + 1)
-//        } else if gesture.direction == .down {
-//            RoadComponent.speedBeforePan = max(0, RoadComponent.speed - 1)
-//        }
-//    }
+    //    func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+    //        if gesture.direction == .left {
+    //            gameCamera.moveLeft()
+    //        } else if gesture.direction == .right {
+    //            gameCamera.moveRight()
+    //        } else if gesture.direction == .up {
+    //            RoadComponent.speedBeforePan = min(speedConstants.count - 1, RoadComponent.speed + 1)
+    //        } else if gesture.direction == .down {
+    //            RoadComponent.speedBeforePan = max(0, RoadComponent.speed - 1)
+    //        }
+    //    }
     
     func handlePan(translation: CGSize, velocity: CGSize, state: UIPanGestureRecognizer.State) {
         let dx = translation.width
         let dy = -translation.height
-        
+
         guard let playerCarSFXComponent = Self.playerCar.component(ofType: PlayerCarSFXComponent.self)
         else { return }
         
@@ -185,7 +179,7 @@ class GameScene: SKScene, ObservableObject {
                 ambulancePosition = .right
             }
             
-            ambulance = Ambulance(ambulancePosition: ambulancePosition, scene: self, entityManager: entityManager) {
+            ambulance = Ambulance(ambulancePosition: ambulancePosition, scene: self, entityManager: entityManager) { position in
                 print("nabrak ambulance")
             }
             entityManager.add(ambulance!)
@@ -212,6 +206,14 @@ class GameScene: SKScene, ObservableObject {
         
         
 //        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
+        //Update Scoring
+        let increment = speedConstants[RoadComponent.speed][frameIndex]
+        GameState.shared.score += increment
+//        print("Score: \(GameState.shared.score)")
+        
+        scoreLabel.text = "\(GameState.shared.score)"
+        
+        //        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
         entityManager.update(deltaTime)
         
         frameIndex = (frameIndex + 1) % speedConstants[0].count
@@ -248,3 +250,13 @@ class GameScene: SKScene, ObservableObject {
         isGameOver = true
     }
 }
+
+//// Update scoring
+//if !GameState.isGameOver {
+//    let scoreIndex = min(RoadComponent.speed, speedConstants.count - 1)
+//    let frameValues = speedConstants[RoadComponent.speed][frameIndex]
+//    
+//    let point = frameValues
+//    GameState.score += point
+//
+////            scoreFrameIndex = (scoreFrameIndex + 1) % frameValues.count
