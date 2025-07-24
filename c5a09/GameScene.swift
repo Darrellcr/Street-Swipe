@@ -147,10 +147,8 @@ class GameScene: SKScene {
             gameCamera.xBeforePan = gameCamera.x
             gameCamera.xShift = 0
             
-            print("ended")
             playerCarSFXComponent.accelerationShouldPlay = false
             playerCarSFXComponent.decelerationShouldPlay = false
-            print(playerCarSFXComponent.accelerationShouldPlay)
         default:
             break
         }

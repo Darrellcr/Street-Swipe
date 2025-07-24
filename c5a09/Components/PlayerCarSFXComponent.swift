@@ -56,7 +56,6 @@ class PlayerCarSFXComponent: GKComponent {
     }
     
     func playAcceleration() {
-        print("play acceleration")
         let setVolumeToZero = SKAction.changeVolume(to: 0.0, duration: 0)
         let play = SKAction.run {
             self.accelerationNode.run(SKAction.play())
@@ -70,7 +69,6 @@ class PlayerCarSFXComponent: GKComponent {
     }
     
     func stopAcceleration() {
-        print("stop acceleration")
         let fadeOut = SKAction.changeVolume(to: 0.0, duration: 0.2)
         let stop = SKAction.run {
             self.accelerationNode.run(SKAction.stop())

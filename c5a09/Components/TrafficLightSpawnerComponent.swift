@@ -110,7 +110,7 @@ class TrafficLightSpawnerComponent: GKComponent {
         guard let trafficLight = Self.leftTrafficLight as? TrafficLight
         else { return }
         guard Self.sfx == nil else { return }
-        print("spawn sfx")
+        
         let crossingSfx = Bundle.main.url(forResource: "nyebrang beep beep", withExtension: "wav")
         let node = SKAudioNode(url: crossingSfx!)
         node.autoplayLooped = true

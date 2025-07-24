@@ -16,9 +16,11 @@ class ZebraCrossCollisionComponent: GKComponent {
     let onCollision: () -> Void
     
     var trafficLight: TrafficLight?
-    static let badStopIndex: Int = 36
+    var hasCollided: Bool = false
+    var hasStopped: Bool = false
+    static let badStopIndex: Int = 37
     static let goodStopIndex: Int = 28
-    static let perfectStopIndex: Int = 23
+    static let perfectStopIndex: Int = 22
     
     init(onBadStop: @escaping () -> Void,
          onGoodStop: @escaping () -> Void,
@@ -39,20 +41,26 @@ class ZebraCrossCollisionComponent: GKComponent {
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
         
-//        guard let zebraCrossComponent = entity?.component(ofType: ZebraCrossComponent.self),
-//              let trafficLight
-//        else { return }
-//        guard trafficLight.state == .g
-//        
-//        let zebraCrossPosition = zebraCrossComponent.index
-//        if zebraCrossPosition >= Self.badStopIndex {
-//            onBadStop()
-//        } else if zebraCrossPosition >= Self.goodStopIndex {
-//            onGoodStop()
-//        } else if zebraCrossPosition >= Self.perfectStopIndex {
-//            onPerfectStop()
-//        } else {
-//            onCollision()
-//        }
+        guard let zebraCrossComponent = entity?.component(ofType: ZebraCrossComponent.self),
+              let trafficLightState = trafficLight?.component(ofType: TrafficLightStateComponent.self)?.state
+        else { return }
+        
+        guard trafficLightState == .red
+        else { return }
+        let zebraCrossPosition = zebraCrossComponent.index
+        if zebraCrossPosition < Self.perfectStopIndex && !hasCollided {
+            hasCollided = true
+            onCollision()
+        }
+        
+        guard !hasStopped && RoadComponent.speed == 0 else { return }
+        hasStopped = true
+        if zebraCrossPosition >= Self.badStopIndex {
+            onBadStop()
+        } else if zebraCrossPosition >= Self.goodStopIndex {
+            onGoodStop()
+        } else if zebraCrossPosition >= Self.perfectStopIndex {
+            onPerfectStop()
+        }
     }
 }
