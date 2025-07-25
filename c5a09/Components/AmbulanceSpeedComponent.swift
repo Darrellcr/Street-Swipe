@@ -27,7 +27,7 @@ class AmbulanceSpeedComponent: GKComponent {
         guard let positionRelativeComponent = entity?.component(ofType: PositionRelativeComponent.self)
         else { return }
         
-        let shift = scene.speedConstants[RoadComponent.speed][scene.frameIndex] + 1
+        let shift = scene.speedConstants[RoadComponent.speed][scene.frameIndex] + scene.frameIndex % 3 % 2
         positionRelativeComponent.index = min(positionRelativeComponent.index + shift, RoadComponent.positions.count - 1)
     }
 }
