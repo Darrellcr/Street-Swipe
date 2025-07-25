@@ -25,7 +25,7 @@ class DynamicObstacle: GKEntity {
         addComponent(collisionComponent)
         
         guard canMoveSideways else { return }
-        let moveSidewaysComponent = MoveSidewaysComponent(speed: 0.0025)
+        let moveSidewaysComponent = MoveSidewaysComponent(speed: 0.005)
         addComponent(moveSidewaysComponent)
     }
     
