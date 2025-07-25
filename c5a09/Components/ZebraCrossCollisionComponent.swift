@@ -19,9 +19,9 @@ class ZebraCrossCollisionComponent: GKComponent {
     var hasCollided: Bool = false
     var hasStopped: Bool = false
     static let stopIndex: Int = 100
-    static let badStopIndex: Int = 37
+    static let badStopIndex: Int = 40
     static let goodStopIndex: Int = 28
-    static let perfectStopIndex: Int = 22
+    static let perfectStopIndex: Int = 20
     
     init(onBadStop: @escaping () -> Void,
          onGoodStop: @escaping () -> Void,
