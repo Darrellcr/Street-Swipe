@@ -119,8 +119,17 @@ class EntityManager {
             ZebraCross.self,
             TrafficLight.self,
             Spawner.self,
-            Explosion.self
+            Explosion.self,
+            Ambulance.self,
+            AmbulanceAlert.self,
+            PoliceAlert.self
         ]
+        
+        if let gameScene = scene as? GameScene {
+            gameScene.ambulance = nil
+            gameScene.ambulanceAlert = nil
+            gameScene.policeAlert = nil
+        }
 
         entities.forEach { entity in
             if entityTypesToRemove.contains(where: { t in type(of: entity).isSubclass(of: t) }) {

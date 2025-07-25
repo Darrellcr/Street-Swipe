@@ -194,7 +194,7 @@ class GameScene: SKScene, ObservableObject {
         let deltaTime = (lastUpdateTime == 0) ? 0 : currentTime - lastUpdateTime
         lastUpdateTime = currentTime
         
-        guard GameState.shared.isRunning else {
+        guard GameState.shared.isRunning && !GameState.shared.isGameOver else {
             entityManager.update(deltaTime)
             frameIndex = (frameIndex + 1) % speedConstants[0].count
             return

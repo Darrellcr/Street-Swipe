@@ -14,7 +14,7 @@ class CollisionComponent: GKComponent {
     var onCollision: ((CGPoint) -> Void)?
     var collided: Bool = false
     
-    static let playerCarIndexTop = 30
+    static let playerCarIndexTop = 28
     static let playerCarIndexBottom = 14
     static let showCollisionBox = true
     
