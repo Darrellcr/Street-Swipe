@@ -18,10 +18,16 @@ class ZebraCross: GKEntity {
         let zebraCrossComponent = ZebraCrossComponent(texture: texture, numSegments: numSegments, index: index, scene: scene, entityManager: entityManager)
         addComponent(zebraCrossComponent)
         let zebraCrossCollisionComponent = ZebraCrossCollisionComponent() {
+            GameState.shared.score += 100
+            entityManager.add(GradingLabelEntity(grade: .bad, parent: scene))
             print("bad stop")
         } onGoodStop: {
+            entityManager.add(GradingLabelEntity(grade: .good, parent: scene))
+            GameState.shared.score += 250
             print("good stop")
         } onPerfectStop: {
+            entityManager.add(GradingLabelEntity(grade: .perfect, parent: scene))
+            GameState.shared.score += 500
             print("perfect stop")
         } onCollision: {
             scene.spawnPoliceAlert()

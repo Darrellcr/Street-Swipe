@@ -62,7 +62,11 @@ class GameScene: SKScene, ObservableObject {
             policeAlert = PoliceAlert(zPosition: 100, scene: self, entityManager: entityManager)
             entityManager.add(policeAlert!)
         }
-        else { GameState.shared.isGameOver = true }
+        else {
+            RoadComponent.speedBeforePan = 0
+            RoadComponent.speedShift = 0
+            GameState.shared.isGameOver = true
+        }
     }
     
     override func didMove(to view: SKView) {
@@ -184,6 +188,7 @@ class GameScene: SKScene, ObservableObject {
     }
     
     func panAction(_ dx: Double, _ dy: Double) {
+        if GameState.shared.isGameOver { return }
         var unit = 150.0 / Double(gameCamera.maxX)
         gameCamera.xShift = dx / unit
         unit = 380.0 / Double(speedConstants.count)

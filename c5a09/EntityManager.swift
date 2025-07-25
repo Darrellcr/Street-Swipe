@@ -34,6 +34,7 @@ class EntityManager {
         let playerCarSFXSystem = GKComponentSystem(componentClass: PlayerCarSFXComponent.self)
         let countDownSystem = GKComponentSystem(componentClass: CountDownComponent.self)
         let moveSidewaysSystem = GKComponentSystem(componentClass: MoveSidewaysComponent.self)
+        let gradingLabelSystem = GKComponentSystem(componentClass: GradingLabelComponent.self)
         let renderlabeLSystem = GKComponentSystem(componentClass: RenderLabelComponent.self)
         return [
             countDownSystem,
@@ -57,6 +58,7 @@ class EntityManager {
             spriteSheetSystem,
             spawnerGCSystem,
             renderlabeLSystem,
+            gradingLabelSystem,
             renderSystem
         ]
     }()
