@@ -52,7 +52,6 @@ class GameState: ObservableObject {
     
     func reset() {
         score = 0
-        bestScore = 0
         speed = 0
         isRunning = true
         isGameOver = false

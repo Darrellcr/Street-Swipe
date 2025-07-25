@@ -309,10 +309,14 @@ class GameScene: SKScene, ObservableObject {
     func startGame() {
 //        let chickenSpawner = Spawner(for: .chicken, entityManager: entityManager, scene: self)
 //        entityManager.add(chickenSpawner)
-        let truckSpawner = Spawner(for: . truck, entityManager: entityManager, scene: self) { obstacleCount, lastObstacleIndex in
+        let truckSpawner = Spawner(for: .truck, entityManager: entityManager, scene: self) { obstacleCount, lastObstacleIndex in
             return Double.random(in: 0...1) < 0.006 && RoadComponent.speed > 4 && obstacleCount < 3 && lastObstacleIndex < 110
         }
         entityManager.add(truckSpawner)
+        let carSpawner = Spawner(for: .car, entityManager: entityManager, scene: self) { obstacleCount, lastObstacleIndex in
+            return Double.random(in: 0...1) < 1 && RoadComponent.speed > 4 && obstacleCount < 3 && lastObstacleIndex < 110
+        }
+        entityManager.add(carSpawner)
         let motorbikeSpawner = Spawner(for: .motorbike, entityManager: entityManager, scene: self) {obstacleCount,lastObstacleIndex in
             return Double.random(in: 0...1) < 0.006 && RoadComponent.speed > 2 && obstacleCount < 3 && lastObstacleIndex < 70
         }

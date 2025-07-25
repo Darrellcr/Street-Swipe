@@ -55,6 +55,19 @@ class ObstacleFactory {
                 print("nabrak truck")
                 self.onCollision(scene: scene, entityManager: entityManager, position: position)
             }
+        case .car:
+            entity = DynamicObstacle(
+                texture: SKTexture(imageNamed: "obstacle_car"),
+                index: index ?? roadLastIndex,
+                offsetPct: offsetPct,
+                speed: 6,
+                scene: scene,
+                width: 300,
+                entityManager: entityManager,
+            ) { position in
+                print("nabrak mobil")
+                self.onCollision(scene: scene, entityManager: entityManager, position: position)
+            }
         case .leftTrafficLight:
             entity = TrafficLight(
                 texture: SKTexture(imageNamed: "L red light"),
@@ -134,6 +147,7 @@ class ObstacleFactory {
 
 enum ObstacleType {
     case chicken
+    case car
     case motorbike
     case leftTrafficLight
     case rightTrafficLight
