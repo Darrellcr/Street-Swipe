@@ -11,6 +11,7 @@ import AVKit
 
 class GameScene: SKScene, ObservableObject {
     @Published var isGameOver: Bool = false
+    var gameOverStop: Bool = false
     
     var entityManager: EntityManager!
     var lastUpdateTime: TimeInterval = 0
@@ -68,12 +69,12 @@ class GameScene: SKScene, ObservableObject {
         
         
         // BGM
-        let bgmUrl = Bundle.main.url(forResource: "street_swipe_BGM1_no_vocal", withExtension: "wav")
-        let bgmNode = SKAudioNode(url: bgmUrl!)
-        bgmNode.autoplayLooped = true
-        addChild(bgmNode)
-        bgmNode.run(SKAction.sequence([SKAction.changeVolume(to: 0.4, duration: 0),
-                                       SKAction.play()]))
+//        let bgmUrl = Bundle.main.url(forResource: "street_swipe_full_BGM", withExtension: "wav")
+//        let bgmNode = SKAudioNode(url: bgmUrl!)
+//        bgmNode.autoplayLooped = true
+//        addChild(bgmNode)
+//        bgmNode.run(SKAction.sequence([SKAction.changeVolume(to: 0.4, duration: 0),
+//                                       SKAction.play()]))
         
         let crashUrl = Bundle.main.url(forResource: "car crash", withExtension: "mp3")
         let crashSfx = SKAudioNode(url: crashUrl!)
@@ -114,7 +115,7 @@ class GameScene: SKScene, ObservableObject {
         guard let playerCarSFXComponent = Self.playerCar.component(ofType: PlayerCarSFXComponent.self)
         else { return }
         
-        guard !isGameOver else {
+        guard !gameOverStop else {
             playerCarSFXComponent.accelerationShouldPlay = false
             playerCarSFXComponent.decelerationShouldPlay = false
             return
@@ -196,6 +197,15 @@ class GameScene: SKScene, ObservableObject {
             
             ambulance = Ambulance(ambulancePosition: ambulancePosition, scene: self, entityManager: entityManager) { position in
                 print("nabrak ambulance")
+                guard let speedComponent = self.ambulance?.component(ofType: AmbulanceSpeedComponent.self)
+                else { return }
+                
+                speedComponent.crashed = true
+                
+                let explosion = Explosion(position: position)
+                self.entityManager.add(explosion)
+                GameScene.crashAudioNode.run(SKAction.play())
+                self.gameOver(crashSoundPlayed: true)
             }
             entityManager.add(ambulance!)
         }
@@ -256,11 +266,18 @@ class GameScene: SKScene, ObservableObject {
         gameCamera.xBeforePan = 0
         gameCamera.xShift = 0
         RoadComponent.speedBeforePan = 2
+        gameOverStop = false
     }
     
-    func gameOver() {
+    func gameOver(crashSoundPlayed: Bool = false) {
+        GameScene.gameOverAudioNode.run(SKAction.sequence([
+            SKAction.wait(forDuration: (crashSoundPlayed) ? 0.5 : 0.0),
+            SKAction.play()
+        ]))
+        
         RoadComponent.speedBeforePan = 0
         RoadComponent.speedShift = 0
+        gameOverStop = true
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.isGameOver = true

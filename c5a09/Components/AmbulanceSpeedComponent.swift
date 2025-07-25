@@ -10,6 +10,7 @@ import GameplayKit
 
 class AmbulanceSpeedComponent: GKComponent {
     let scene: GameScene
+    var crashed: Bool = false
     
     init(scene: GameScene) {
         self.scene = scene
@@ -26,6 +27,8 @@ class AmbulanceSpeedComponent: GKComponent {
         
         guard let positionRelativeComponent = entity?.component(ofType: PositionRelativeComponent.self)
         else { return }
+        
+        guard !crashed else { return }
         
         let shift = scene.speedConstants[RoadComponent.speed][scene.frameIndex] + 1
         positionRelativeComponent.index = min(positionRelativeComponent.index + shift, RoadComponent.positions.count - 1)

@@ -20,10 +20,17 @@ struct LandingView: View {
     @State private var animateTop = false
     @State private var animateBottom = false
     
-    private let soundManager = SoundManager()
+    static let soundManager = SoundManager()
     
     let explosionFrames = loadExplosionFrames(from: "explosion", frameCount: 11)
     let logoFrames = loadExplosionFrames(from: "logoAnimation", frameCount: 35)
+    
+    init(isGameStarted: Binding<Bool>, gameScene: GameScene) {
+        self._isGameStarted = isGameStarted
+        self.gameScene = gameScene
+        
+        Self.soundManager.playBackgroundMusic()
+    }
 
     var body: some View {
         ZStack {
@@ -59,7 +66,7 @@ struct LandingView: View {
             VStack {
                 Spacer()
                 Button(action: {
-                    soundManager.playTapSound()
+                    Self.soundManager.playTapSound()
                     isPressed = true
                     isAnimating = true
                     

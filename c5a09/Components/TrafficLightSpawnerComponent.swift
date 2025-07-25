@@ -117,7 +117,7 @@ class TrafficLightSpawnerComponent: GKComponent {
         node.run(SKAction.sequence([
             SKAction.changeVolume(to: 0.0, duration: 0.0),
             SKAction.play(),
-            SKAction.changeVolume(to: 0.03, duration: 1.0)
+            SKAction.changeVolume(to: 0.07, duration: 1.0)
         ]))
         node.name = "trafficLightSFX"
         Self.sfx = node

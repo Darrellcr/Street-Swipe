@@ -107,12 +107,8 @@ class ObstacleFactory {
     private func onCollision(scene: GameScene, entityManager: EntityManager, position: CGPoint) {
         self.spawnExplosion(position: position, entityManager: entityManager)
         GameScene.crashAudioNode.run(SKAction.play())
-        GameScene.gameOverAudioNode.run(SKAction.sequence([
-            SKAction.wait(forDuration: 0.5),
-            SKAction.play()
-        ]))
         
-        scene.gameOver()
+        scene.gameOver(crashSoundPlayed: true)
     }
     
     private func spawnExplosion(position: CGPoint, entityManager: EntityManager) {

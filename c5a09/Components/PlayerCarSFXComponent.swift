@@ -60,8 +60,8 @@ class PlayerCarSFXComponent: GKComponent {
         let play = SKAction.run {
             self.accelerationNode.run(SKAction.play())
         }
-        let fadeIn1 = SKAction.changeVolume(to: 0.4, duration: 0.2)
-        let fadeIn2 = SKAction.changeVolume(to: 1.0, duration: 0.2)
+        let fadeIn1 = SKAction.changeVolume(to: 0.5, duration: 0.2)
+        let fadeIn2 = SKAction.changeVolume(to: 1.5, duration: 0.2)
         let fadeIn3 = SKAction.changeVolume(to: 3.0, duration: 0.5)
         let sequence = SKAction.sequence([setVolumeToZero, play, fadeIn1, fadeIn2, fadeIn3])
         accelerationNode.run(sequence)
@@ -80,7 +80,7 @@ class PlayerCarSFXComponent: GKComponent {
     
     func playDeceleration() {
         let sequence = SKAction.sequence([
-            SKAction.changeVolume(to: 0.5, duration: 0),
+            SKAction.changeVolume(to: 1.0, duration: 0),
             SKAction.play()
         ])
         decelerationNode.run(sequence)

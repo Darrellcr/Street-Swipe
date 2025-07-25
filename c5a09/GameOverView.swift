@@ -68,6 +68,7 @@ struct GameOverView: View {
                         
                         gameScene.resetGame()
                         gameScene.startGame()
+                        LandingView.soundManager.playTapSound()
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             isPressed = false

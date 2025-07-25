@@ -40,14 +40,12 @@ class RenderComponent: GKComponent {
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
 
-        
-//        guard let sizeComponent = entity?.component(ofType: SizeComponent.self)
-//        else { return }
-//        node.size = sizeComponent.size
-//        
-//        guard let positionComponent = entity?.component(ofType: PositionComponent.self)
-//        else { return }
-//        node.anchorPoint = positionComponent.anchorPoint
-//        node.position = positionComponent.position
+        if let ambulance = entity as? Ambulance {
+            if let positionRelativeComponent = ambulance.component(ofType: PositionRelativeComponent.self) {
+                if positionRelativeComponent.index > 18 {
+                    self.node.zPosition = 9
+                }
+            }
+        }
     }
 }

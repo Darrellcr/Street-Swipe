@@ -13,7 +13,7 @@ class SoundManager: ObservableObject {
     var startSound: AVAudioPlayer?
     
     func playBackgroundMusic() {
-        guard let url = Bundle.main.url(forResource: "bgm", withExtension: "mp3") else {
+        guard let url = Bundle.main.url(forResource: "street_swipe_full_BGM", withExtension: "wav") else {
             print("Music file not found")
             return
         }
@@ -21,7 +21,7 @@ class SoundManager: ObservableObject {
         do {
             backgroundMusicPlayer = try AVAudioPlayer(contentsOf: url)
             backgroundMusicPlayer?.numberOfLoops = -1 // Loop forever
-            backgroundMusicPlayer?.volume = 0.5
+            backgroundMusicPlayer?.volume = 0.2
             backgroundMusicPlayer?.play()
         } catch {
             print("Error loading music: \(error)")
@@ -32,7 +32,7 @@ class SoundManager: ObservableObject {
         guard let url = Bundle.main.url(forResource: "startengine", withExtension: "mp3") else { return }
         do {
             startSound = try AVAudioPlayer(contentsOf: url)
-            startSound?.volume = 1
+            startSound?.volume = 0.7
             startSound?.play()
         } catch {
             print("Error playing sound")

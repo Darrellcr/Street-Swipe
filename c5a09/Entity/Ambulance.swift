@@ -13,7 +13,7 @@ class Ambulance: GKEntity {
     init(ambulancePosition: AmbulancePosition, scene: GameScene, entityManager: EntityManager, onCollision: ((CGPoint) -> Void)? = nil) {
         super.init()
         
-        let renderComponent = RenderComponent(texture: SKTexture(imageNamed: "obstacle_ambulance"), zPosition: 9)
+        let renderComponent = RenderComponent(texture: SKTexture(imageNamed: "obstacle_ambulance"), zPosition: 11)
         addComponent(renderComponent)
         
         let sizeComponent = SizeComponent(width: 260)
