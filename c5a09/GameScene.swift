@@ -28,6 +28,8 @@ class GameScene: SKScene, ObservableObject {
     
     private let soundManager = SoundManager()
     
+    let perfectAudio = SKAudioNode(url: Bundle.main.url(forResource: "perfect", withExtension: "wav")!)
+    
     let scoreLabel = SKLabelNode(fontNamed: "Mini Mouse Regular")
     
     var score: Int = 0
@@ -74,6 +76,8 @@ class GameScene: SKScene, ObservableObject {
         
         entityManager = EntityManager(scene: self)
         AudioManager.shared.attach(to: self)
+        perfectAudio.autoplayLooped = false
+        addChild(perfectAudio)
         
         let backgroundBottom = BackgroundBottom.create(scene: self)
         entityManager.add(backgroundBottom)
@@ -289,6 +293,11 @@ class GameScene: SKScene, ObservableObject {
         
         if let speedBar = GameScene.speedometer.component(ofType: SpeedBarComponent.self) {
             speedBar.updateSpeedLevel(to: RoadComponent.speed)
+        }
+        
+        if GameState.shared.updateTargetScore() {
+//            print("WOWWW")
+            perfectAudio.run(SKAction.play())
         }
         
         //        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
