@@ -16,7 +16,7 @@ class GameState: ObservableObject {
             updateBestScoreIfNeeded()
         }
     }
-    @Published var bestScore: Int = 100
+    @Published var bestScore: Int = 0
     @Published var speed: Int = 0
     @Published var isGameOver: Bool = false
     @Published var isRunning: Bool = false
