@@ -20,6 +20,7 @@ struct LandingView: View {
     @State private var animateBottom = false
     
     static let soundManager = SoundManager()
+    static let hapticManager = HapticManager()
     
     let logoFrames = loadExplosionFrames(from: "logoAnimation", frameCount: 35)
     
@@ -31,6 +32,7 @@ struct LandingView: View {
 
     var body: some View {
         ZStack {
+
             VStack() {
                 Image("rear")
                     .resizable()
@@ -44,64 +46,65 @@ struct LandingView: View {
                 Image("dashboard")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: UIScreen.main.bounds.width + 50, height: 380)
+//                    .frame(width: UIScreen.main.bounds.width + 50, height: 380)
                     .offset(y: animateBottom ? UIScreen.main.bounds.height : 0)
                     .animation(.easeOut(duration: 2), value: animateBottom)
                 
             }
             
             ExplosionAnimationView(frames: logoFrames)
-                .position(x: UIScreen.main.bounds.width / 2 - 65, y: UIScreen.main.bounds.height / 2 - 60)
+                .position(x: UIScreen.main.bounds.width / 2 - 90, y: UIScreen.main.bounds.height / 2 - 60)
             
-            Image("engine start bg")
-                .resizable()
-                .frame(width: 120, height: 120)
-                .position(x: UIScreen.main.bounds.width / 2 + 25, y: UIScreen.main.bounds.height - 180)
-                .offset(y: animateBottom ? UIScreen.main.bounds.height - 180 : 0)
-                .animation(.easeOut(duration: 1.5), value: animateBottom)
-            
-            VStack {
-                Spacer()
-                Button(action: {
-                    Self.soundManager.playTapSound()
-                    isPressed = true
-                    isAnimating = true
-                    
-                    gameScene.startGame()
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        isPressed = false
-                        isAnimating = false
+            ZStack {
+                Image("engine start bg")
+                    .resizable()
+                    .frame(width: 120, height: 120)
+                    .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height - 180)
+                    .offset(y: animateBottom ? UIScreen.main.bounds.height - 180 : 0)
+                    .animation(.easeOut(duration: 1.5), value: animateBottom)
+                
+                VStack {
+                    Button(action: {
+                        Self.soundManager.playTapSound()
+                        isPressed = true
+                        isAnimating = true
+                        
+//                        let feedback = UINotificationFeedbackGenerator()
+//                        feedback.prepare()
+//                        feedback.notificationOccurred(.error)
+                        
+                        Self.hapticManager.playCrashHaptic(duration: 0.3)
+                        
+                        gameScene.startGame()
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            animateTop = true
-                            animateBottom = true
-                            GameState.shared.isRunning = true
+                            isPressed = false
+                            isAnimating = false
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                animateTop = true
+                                animateBottom = true
+                                GameState.shared.isRunning = true
+                            }
                         }
+                    }) {
+                        Image("engine start button")
+                            .resizable()
+                            .frame(width: isAnimating ? 110 : 120, height: isAnimating ? 110 : 120)
+                            .position(x: 45, y: 45)
+                            .offset(y: animateBottom ? UIScreen.main.bounds.height - 180 : 0)
+                            .animation(.easeOut(duration: 1.5), value: animateBottom)
                     }
-                }) {
-                    Image("engine start button")
-                        .resizable()
-                        .frame(width: isAnimating ? 110 : 120, height: isAnimating ? 110 : 120)
-                        .position(x: UIScreen.main.bounds.width / 2 + 25, y: UIScreen.main.bounds.height - 188)
-                        .offset(y: animateBottom ? UIScreen.main.bounds.height - 180 : 0)
-                        .animation(.easeOut(duration: 1.5), value: animateBottom)
                 }
-            
+                .frame(width: 90, height: 90)
+                
+//                .background(Color.white)
+                .clipShape(.circle)
+                .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height - 180)
             }
         }
         .ignoresSafeArea()
     }
-//    func playTapSound() {
-//        guard let url = Bundle.main.url(forResource: "startengine", withExtension: "mp3") else { return }
-//        do {
-//            startSound = try AVAudioPlayer(contentsOf: url)
-//            startSound?.volume = 1
-//            startSound?.play()
-//        } catch {
-//            print("Error playing sound")
-//        }
-//    }
 }
 
 func loadExplosionFrames(from imageName: String, frameCount: Int) -> [UIImage] {

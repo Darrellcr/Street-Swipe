@@ -14,7 +14,7 @@ struct GameOverView: View {
     @State private var animateBottom = false
     
     @ObservedObject var gameScene: GameScene
-    private let soundManager = SoundManager()
+//    private let soundManager = SoundManager()
 
     var body: some View {
         ZStack {
@@ -64,6 +64,12 @@ struct GameOverView: View {
                     Button(action: {
                         isPressed = true
                         isAnimating = true
+                        
+//                        let feedback = UINotificationFeedbackGenerator()
+//                            feedback.prepare()
+//                            feedback.notificationOccurred(.error)
+                        
+                        LandingView.hapticManager.playCrashHaptic(duration: 0.3)
                         
                         gameScene.resetGame()
                         gameScene.startGame()

@@ -15,6 +15,7 @@ class ZebraCrossCollisionComponent: GKComponent {
     let onPerfectStop: () -> Void
     let onCollision: () -> Void
     
+    private let hapticManager = HapticManager()
     var trafficLight: TrafficLight?
     var hasCollided: Bool = false
     var hasStopped: Bool = false
@@ -53,6 +54,13 @@ class ZebraCrossCollisionComponent: GKComponent {
         if zebraCrossPosition < Self.perfectStopIndex && !hasCollided {
             hasCollided = true
             onCollision()
+            
+            // haptic
+//            let feedback = UINotificationFeedbackGenerator()
+//                feedback.prepare()
+//                feedback.notificationOccurred(.error)
+            
+            hapticManager.playCrashHaptic(duration: 0.2)
         }
         
         guard !hasStopped && RoadComponent.speed == 0 else { return }

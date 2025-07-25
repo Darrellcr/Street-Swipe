@@ -48,7 +48,6 @@ struct ContentView: View {
                         }
                 )
             
-            
             if !gameState.isRunning {
                 LandingView(gameScene: gameScene)
                     .transition(.scale)
