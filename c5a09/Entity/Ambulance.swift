@@ -16,6 +16,11 @@ class Ambulance: GKEntity {
         let renderComponent = RenderComponent(texture: SKTexture(imageNamed: "obstacle_ambulance"), zPosition: 11)
         addComponent(renderComponent)
         
+//        let audioNode = SKAudioNode(url: Bundle.main.url(forResource: "ambulance siren", withExtension: "wav")!)
+//        audioNode.autoplayLooped = true
+//        audioNode.run(SKAction.play())
+//        renderComponent.node.addChild(audioNode)
+        
         let sizeComponent = SizeComponent(width: 260)
         addComponent(sizeComponent)
         
