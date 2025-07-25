@@ -21,7 +21,7 @@ class SoundManager: ObservableObject {
         do {
             backgroundMusicPlayer = try AVAudioPlayer(contentsOf: url)
             backgroundMusicPlayer?.numberOfLoops = -1 // Loop forever
-            backgroundMusicPlayer?.volume = 0.2
+            backgroundMusicPlayer?.volume = 0.4
             backgroundMusicPlayer?.play()
         } catch {
             print("Error loading music: \(error)")
