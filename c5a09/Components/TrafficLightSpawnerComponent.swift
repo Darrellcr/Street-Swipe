@@ -65,7 +65,7 @@ class TrafficLightSpawnerComponent: GKComponent {
                 && Self.leftTrafficLight == nil
                 && Self.rightTrafficLight == nil
                 && Self.pocong == nil
-                && Double.random(in: 0...1) < 0.002
+//                && Double.random(in: 0...1) < 0.002
         else { return }
         
         Self.zebraCross = obstacleFactory.create(.zebraCross, scene: scene, entityManager: entityManager)
