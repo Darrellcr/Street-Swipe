@@ -14,7 +14,7 @@ class CollisionComponent: GKComponent {
     var onCollision: ((CGPoint) -> Void)?
     var collided: Bool = false
     
-    static let playerCarIndexTop = 24
+    static let playerCarIndexTop = 30
     static let playerCarIndexBottom = 14
     static let showCollisionBox = true
     
@@ -82,6 +82,9 @@ class CollisionComponent: GKComponent {
         }
         if let crossingComponent = entity?.component(ofType: CrossingComponent.self) {
             crossingComponent.speed = 0
+        }
+        if let moveSidewaysComponent = entity?.component(ofType: MoveSidewaysComponent.self) {
+            moveSidewaysComponent.speed = 0
         }
     }
 }

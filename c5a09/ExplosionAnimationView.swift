@@ -10,7 +10,7 @@ import SwiftUI
 struct ExplosionAnimationView: View {
     @State private var currentFrame = 0
     let frames: [UIImage]
-    let timer = Timer.publish(every: 0.075, on: .main, in: .common).autoconnect()
+    @State var timer = Timer.publish(every: 0.075, on: .main, in: .common).autoconnect()
 
     var body: some View {
         Image(uiImage: frames[currentFrame])

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct StreetSwiper: App {
@@ -13,5 +14,6 @@ struct StreetSwiper: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: BestScoreRecord.self)
     }
 }

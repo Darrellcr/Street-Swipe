@@ -194,6 +194,12 @@ class GameScene: SKScene, ObservableObject {
         let deltaTime = (lastUpdateTime == 0) ? 0 : currentTime - lastUpdateTime
         lastUpdateTime = currentTime
         
+        guard GameState.shared.isRunning else {
+            entityManager.update(deltaTime)
+            frameIndex = (frameIndex + 1) % speedConstants[0].count
+            return
+        }
+        
 //        AMBULANCE SPAWNING
 //        CASE 1: Start ambulance alert
         if ambulanceAlert == nil && ambulance == nil && Double.random(in: 0...1) <= 0.05 {

@@ -10,11 +10,12 @@ import SwiftUI
 import SpriteKit
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var distance: Int = 0
     @StateObject private var gameScene = GameScene(size: UIScreen.main.bounds.size)
     @State private var isPanning: Bool = false
     
-    @StateObject private var gameState = GameState.shared
+    @ObservedObject private var gameState = GameState.shared
     
     var body: some View {
         ZStack {
@@ -48,17 +49,20 @@ struct ContentView: View {
                 )
             
             
-            if !GameState.shared.isRunning {
-                Text("asdasd")
+            if !gameState.isRunning {
                 LandingView(gameScene: gameScene)
                     .transition(.scale)
                     .zIndex(1)
             }
-            if GameState.shared.isGameOver {
+            if gameState.isGameOver {
                 GameOverView(gameScene: gameScene)
                     .zIndex(3)
                     .transition(.scale)
             }
+        }
+        .task {
+            GameState.shared.modelContext = modelContext
+            GameState.shared.loadBestScore()
         }
     }
 }
