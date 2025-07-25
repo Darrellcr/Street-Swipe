@@ -32,13 +32,27 @@ class ObstacleFactory {
                 texture: SKTexture(imageNamed: "motor"),
                 index: index ?? roadLastIndex,
                 offsetPct: offsetPct,
-                speed: 1,
+                speed: 2,
                 scene: scene,
                 width: 300,
                 entityManager: entityManager,
-                collisionBoxSize: CGSize(width: 144, height: 220)
+                collisionBoxSize: CGSize(width: 144, height: 220),
+                canMoveSideways: true
             ) { position in
                 print("nabrak motor")
+                self.onCollision(scene: scene, entityManager: entityManager, position: position)
+            }
+        case .truck:
+            entity = DynamicObstacle(
+                texture: SKTexture(imageNamed: "obstacle_truck"),
+                index: index ?? roadLastIndex,
+                offsetPct: offsetPct,
+                speed: 4,
+                scene: scene,
+                width: 400,
+                entityManager: entityManager,
+            ) { position in
+                print("nabrak truck")
                 self.onCollision(scene: scene, entityManager: entityManager, position: position)
             }
         case .leftTrafficLight:
@@ -125,5 +139,6 @@ enum ObstacleType {
     case rightTrafficLight
     case pocong
     case zebraCross
+    case truck
 }
 

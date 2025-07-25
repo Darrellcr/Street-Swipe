@@ -33,6 +33,7 @@ class EntityManager {
         let spawnerGCSystem = GKComponentSystem(componentClass: SpawnerGCComponent.self)
         let playerCarSFXSystem = GKComponentSystem(componentClass: PlayerCarSFXComponent.self)
         let countDownSystem = GKComponentSystem(componentClass: CountDownComponent.self)
+        let moveSidewaysSystem = GKComponentSystem(componentClass: MoveSidewaysComponent.self)
         return [
             countDownSystem,
             ambulanceSpeedSystem,
@@ -45,6 +46,7 @@ class EntityManager {
             zebraCrossSystem,
             zebraCrossCollisionSystem,
             crossingSystem,
+            moveSidewaysSystem,
             positionRelativeSystem,
             collisionSystem,
             alertPositionSystem,
