@@ -7,8 +7,6 @@
 import SwiftUI
 
 struct GameOverView: View {
-    @Binding var isGameStarted: Bool
-    
     @State private var isPressed = false
     @State private var isAnimating = false
     
@@ -16,6 +14,7 @@ struct GameOverView: View {
     @State private var animateBottom = false
     
     @ObservedObject var gameScene: GameScene
+    private let soundManager = SoundManager()
 
     var body: some View {
         ZStack {
@@ -40,17 +39,17 @@ struct GameOverView: View {
                         .scaledToFit()
                         .frame(width: 90)
                     
-                    Text("0")
-                        .font(.custom("Mini Mouse Regular", size: 25))
+                    Text("\(GameState.shared.score)")
+                        .font(.custom("Mine Mouse Regular", size: 25))
                         .foregroundColor(.white)
                     
                     Image("best")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 70)
-                    
-                    Text("0")
-                        .font(.custom("Mini Mouse Regular", size: 25))
+
+                    Text("\(GameState.shared.bestScore)")
+                        .font(.custom("Mine Mouse Regular", size: 25))
                         .foregroundColor(.white)
                 }
                 
@@ -68,6 +67,7 @@ struct GameOverView: View {
                         
                         gameScene.resetGame()
                         gameScene.startGame()
+                        GameState.shared.reset()
                         LandingView.soundManager.playTapSound()
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -77,9 +77,8 @@ struct GameOverView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 animateTop = true
                                 animateBottom = true
-                                isGameStarted = true
-                                gameScene.isGameOver = false
-                                
+                                GameState.shared.isRunning = true
+                                GameState.shared.isGameOver = false
                             }
                         }
                     }) {
@@ -95,5 +94,5 @@ struct GameOverView: View {
     }
 }
 #Preview {
-    GameOverView(isGameStarted: .constant(false), gameScene: GameScene(size: UIScreen.main.bounds.size))
+    GameOverView(gameScene: GameScene(size: UIScreen.main.bounds.size))
 }

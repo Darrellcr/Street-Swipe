@@ -5,23 +5,30 @@
 //  Created by Darrell Cornelius Rivaldo on 11/07/25.
 //
 
+import AVFoundation
 import SpriteKit
 import GameplayKit
 import AVKit
 
 class GameScene: SKScene, ObservableObject {
-    @Published var isGameOver: Bool = false
     var gameOverStop: Bool = false
     
     var entityManager: EntityManager!
     var lastUpdateTime: TimeInterval = 0
     let gameCamera = GameCamera()
     static var playerCar: PlayerCar!
+    
     var ambulance: Ambulance? = nil
     var ambulanceAlert: AmbulanceAlert? = nil
     var policeAlert: PoliceAlert? = nil
     
-    let scoreLabel = SKLabelNode(fontNamed: "Helvetica")
+    static var speedometer: Speedometer!
+    static var scoreEntity: ScoreLabel!
+    static var speedEntity: SpeedLabel!
+    
+    private let soundManager = SoundManager()
+    
+    let scoreLabel = SKLabelNode(fontNamed: "Mini Mouse Regular")
     
     var score: Int = 0
     
@@ -55,10 +62,12 @@ class GameScene: SKScene, ObservableObject {
             policeAlert = PoliceAlert(zPosition: 100, scene: self, entityManager: entityManager)
             entityManager.add(policeAlert!)
         }
-        else { isGameOver = true }
+        else { GameState.shared.isGameOver = true }
     }
     
     override func didMove(to view: SKView) {
+        //        soundManager.playBackgroundMusic()
+        
         entityManager = EntityManager(scene: self)
         
         let backgroundBottom = BackgroundBottom.create(scene: self)
@@ -75,6 +84,8 @@ class GameScene: SKScene, ObservableObject {
         Self.playerCar = PlayerCar.create(scene: self)
         entityManager.add(Self.playerCar)
         
+        Self.speedometer = Speedometer.create(scene: self)
+        entityManager.add(Self.speedometer)
         
         // BGM
 //        let bgmUrl = Bundle.main.url(forResource: "street_swipe_full_BGM", withExtension: "wav")
@@ -96,11 +107,20 @@ class GameScene: SKScene, ObservableObject {
         addChild(gameOverSoundNode)
         Self.gameOverAudioNode = gameOverSoundNode
         
-        scoreLabel.fontSize = 24
-        scoreLabel.fontColor = .white
-        scoreLabel.position = CGPoint(x: size.width * 0.5, y: size.height - 100)
-        scoreLabel.zPosition = 1000
-        addChild(scoreLabel)
+        let scorePosition = CGPoint(x: size.width / 2, y: size.height - 100)
+        Self.scoreEntity = ScoreLabel(text: 0, fontName: "Mine Mouse Regular", position: scorePosition)
+        entityManager.add(Self.scoreEntity)
+        
+        let speedPosition = CGPoint(x: size.width / 2 - 110, y: size.height - 815)
+        Self.speedEntity = SpeedLabel(text: 0, fontName: "Mine Mouse Regular", position: speedPosition)
+        entityManager.add(Self.speedEntity)
+        
+//        scoreLabel.fontName = "Mine Mouse Regular"
+//        scoreLabel.fontSize = 35
+//        scoreLabel.fontColor = .white
+//        scoreLabel.position = CGPoint(x: size.width * 0.5, y: size.height - 100)
+//        scoreLabel.zPosition = 1000
+//        addChild(scoreLabel)
 
     }
     
@@ -244,7 +264,19 @@ class GameScene: SKScene, ObservableObject {
         GameState.shared.score += increment
 //        print("Score: \(GameState.shared.score)")
         
-        scoreLabel.text = "\(GameState.shared.score)"
+        // 2. Update label skor
+        if let scoreLabelComponent = GameScene.scoreEntity.component(ofType: RenderLabelComponent.self) {
+            scoreLabelComponent.updateLabelText(with: GameState.shared.score)
+        }
+        
+        // 3. Update label kecepatan (misalnya dari GameState.shared.speed)
+        if let speedLabelComponent = GameScene.speedEntity.component(ofType: RenderLabelComponent.self) {
+            speedLabelComponent.updateLabelText(with: RoadComponent.speed)
+        }
+        
+        if let speedBar = GameScene.speedometer.component(ofType: SpeedBarComponent.self) {
+            speedBar.updateSpeedLevel(to: RoadComponent.speed)
+        }
         
         //        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
         entityManager.update(deltaTime)
@@ -292,10 +324,11 @@ class GameScene: SKScene, ObservableObject {
         gameOverStop = true
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.isGameOver = true
+            GameState.shared.isGameOver = true
         }
     }
 }
+
 
 //// Update scoring
 //if !GameState.isGameOver {

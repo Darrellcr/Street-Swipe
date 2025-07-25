@@ -10,7 +10,6 @@ import AVFoundation
 import SwiftUI
 
 struct LandingView: View {
-    @Binding var isGameStarted: Bool
     @ObservedObject var gameScene: GameScene
     
     @State private var isPressed = false
@@ -22,11 +21,9 @@ struct LandingView: View {
     
     static let soundManager = SoundManager()
     
-    let explosionFrames = loadExplosionFrames(from: "explosion", frameCount: 11)
     let logoFrames = loadExplosionFrames(from: "logoAnimation", frameCount: 35)
     
-    init(isGameStarted: Binding<Bool>, gameScene: GameScene) {
-        self._isGameStarted = isGameStarted
+    init(gameScene: GameScene) {
         self.gameScene = gameScene
         
         Self.soundManager.playBackgroundMusic()
@@ -71,6 +68,7 @@ struct LandingView: View {
                     isAnimating = true
                     
                     gameScene.startGame()
+                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         isPressed = false
                         isAnimating = false
@@ -78,7 +76,7 @@ struct LandingView: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             animateTop = true
                             animateBottom = true
-                            isGameStarted = true
+                            GameState.shared.isRunning = true
                         }
                     }
                 }) {
@@ -89,8 +87,7 @@ struct LandingView: View {
                         .offset(y: animateBottom ? UIScreen.main.bounds.height - 180 : 0)
                         .animation(.easeOut(duration: 1.5), value: animateBottom)
                 }
-                
-//                ExplosionAnimationView(frames: explosionFrames)
+            
             }
         }
         .ignoresSafeArea()
@@ -128,28 +125,6 @@ func loadExplosionFrames(from imageName: String, frameCount: Int) -> [UIImage] {
 
 
 #Preview {
-//    LandingView(isGameStarted: .constant(false), isGameOver: .constant(false))
-    LandingView(isGameStarted: .constant(false), gameScene: GameScene(size: UIScreen.main.bounds.size))
+    LandingView(gameScene: GameScene(size: UIScreen.main.bounds.size))
 }
 
-//            Button(action: {
-//                isGameStarted = true
-//            }) {
-//                Image("engine start button")
-//                    .resizable()
-//                    .frame(width: isAnimating ? 115 : 130, height: isAnimating ? 115 : 130)
-//                    .position(x: UIScreen.main.bounds.width / 2 + 25, y: UIScreen.main.bounds.height - 181)
-//                    .scaleEffect(isPressed ? 0.7 : 1.0)
-//                    .offset(y: isAnimating ? 80 : 0.8)
-//                    .animation(.spring(response: 1), value: isPressed)
-//                //                    .onTapGesture {
-//                //                        playTapSound()
-//                //                        isAnimating = true
-//                //                        isPressed = true
-//                //                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-//                //                            isPressed = false
-//                //                            isAnimating = false
-//                //                            isGameStarted = true // lanjut ke game
-//                //                        }
-//                //                    }
-//            }

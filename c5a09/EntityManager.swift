@@ -34,6 +34,7 @@ class EntityManager {
         let playerCarSFXSystem = GKComponentSystem(componentClass: PlayerCarSFXComponent.self)
         let countDownSystem = GKComponentSystem(componentClass: CountDownComponent.self)
         let moveSidewaysSystem = GKComponentSystem(componentClass: MoveSidewaysComponent.self)
+        let renderlabeLSystem = GKComponentSystem(componentClass: RenderLabelComponent.self)
         return [
             countDownSystem,
             ambulanceSpeedSystem,
@@ -55,7 +56,9 @@ class EntityManager {
             speedSystem,
             spriteSheetSystem,
             spawnerGCSystem,
-            renderSystem]
+            renderlabeLSystem,
+            renderSystem
+        ]
     }()
     
     let scene: SKScene
@@ -73,6 +76,10 @@ class EntityManager {
         if let playerSFXComponent = entity.component(ofType: PlayerCarSFXComponent.self) {
             scene.addChild(playerSFXComponent.accelerationNode)
             scene.addChild(playerSFXComponent.decelerationNode)
+        }
+        
+        if let labelNode = entity.component(ofType: RenderLabelComponent.self)?.label {
+            scene.addChild(labelNode)
         }
         
         for componentSystem in componentSystems {

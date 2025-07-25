@@ -5,6 +5,7 @@
 //  Created by Darrell Cornelius Rivaldo on 11/07/25.
 //
 
+import SwiftUI
 import UIKit
 
 //@main
