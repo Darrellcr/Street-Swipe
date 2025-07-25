@@ -54,7 +54,9 @@ class SpeedBarComponent: GKComponent {
     /// Update warna berdasarkan level speed (0-18)
     func updateSpeedLevel(to level: Int) {
         for (i, segment) in segments.enumerated() {
-            if i <= level {
+            if level == 0 {
+                segment.fillColor = .clear  // Semua kosong jika level 0
+            } else if i <= level {
                 switch i {
                 case 0..<6:
                     segment.fillColor = .speedLow

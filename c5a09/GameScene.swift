@@ -255,25 +255,24 @@ class GameScene: SKScene, ObservableObject {
         if policeAlert != nil && policeAlert!.component(ofType: CountDownComponent.self)!.state == .done {
             policeAlert = nil
         }
-        
-        
-        
 //        gameCamera.updatePosition(segmentShift: speedConstants[RoadComponent.speed][frameIndex])
-        //Update Scoring
+        
+        // Update Scoring
         let increment = speedConstants[RoadComponent.speed][frameIndex]
         GameState.shared.score += increment
 //        print("Score: \(GameState.shared.score)")
         
-        // 2. Update label skor
+        // Update label skor
         if let scoreLabelComponent = GameScene.scoreEntity.component(ofType: RenderLabelComponent.self) {
             scoreLabelComponent.updateLabelText(with: GameState.shared.score)
         }
         
-        // 3. Update label kecepatan (misalnya dari GameState.shared.speed)
+        // Update label speed
         if let speedLabelComponent = GameScene.speedEntity.component(ofType: RenderLabelComponent.self) {
             speedLabelComponent.updateLabelText(with: RoadComponent.speed)
         }
         
+        // Update Speed Bar
         if let speedBar = GameScene.speedometer.component(ofType: SpeedBarComponent.self) {
             speedBar.updateSpeedLevel(to: RoadComponent.speed)
         }

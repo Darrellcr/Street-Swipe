@@ -49,7 +49,6 @@ struct ContentView: View {
             
             
             if !GameState.shared.isRunning {
-                Text("asdasd")
                 LandingView(gameScene: gameScene)
                     .transition(.scale)
                     .zIndex(1)

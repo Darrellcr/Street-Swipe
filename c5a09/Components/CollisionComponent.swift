@@ -14,6 +14,7 @@ class CollisionComponent: GKComponent {
     var onCollision: ((CGPoint) -> Void)?
     var collided: Bool = false
     
+    private let hapticManager = HapticManager()
     static let playerCarIndexTop = 24
     static let playerCarIndexBottom = 14
     static let showCollisionBox = true
@@ -74,6 +75,19 @@ class CollisionComponent: GKComponent {
         onCollision(node.position)
         RoadComponent.speedBeforePan = 0
         RoadComponent.speedShift = 0
+        
+        // haptic
+        // 🎯 Haptics untuk collision
+//            let feedback = UINotificationFeedbackGenerator()
+//            feedback.prepare()
+//            feedback.notificationOccurred(.error)
+        
+//        let impact = UIImpactFeedbackGenerator(style: .heavy)
+//        impact.prepare()
+//        impact.impactOccurred()
+        
+        hapticManager.playCrashHaptic(duration: 0.1)
+        
         
         collided = true
         
