@@ -208,7 +208,7 @@ class GameScene: SKScene, ObservableObject {
         
 //        AMBULANCE SPAWNING
 //        CASE 1: Start ambulance alert
-        if ambulanceAlert == nil && ambulance == nil && Double.random(in: 0...1) <= 0.05 {
+        if ambulanceAlert == nil && ambulance == nil && Double.random(in: 0...1) <= 0.0005 {
             let ambulancePosition: AmbulancePosition
             let randomzier = Double.random(in: 0...1)
             if randomzier <= 0.33 {
