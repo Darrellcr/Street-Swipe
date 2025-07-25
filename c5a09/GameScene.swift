@@ -73,6 +73,7 @@ class GameScene: SKScene, ObservableObject {
         //        soundManager.playBackgroundMusic()
         
         entityManager = EntityManager(scene: self)
+        AudioManager.shared.attach(to: self)
         
         let backgroundBottom = BackgroundBottom.create(scene: self)
         entityManager.add(backgroundBottom)
@@ -220,6 +221,7 @@ class GameScene: SKScene, ObservableObject {
             
             ambulanceAlert = AmbulanceAlert(ambulancePosition: ambulancePosition, zPosition: 100, scene: self, entityManager: entityManager)
             entityManager.add(ambulanceAlert!)
+            AudioManager.shared.play("ambulance siren.wav", 2)
         }
 //        CASE 2: Alert is done & spawn ambulance
         if ambulanceAlert != nil && ambulanceAlert!.component(ofType: CountDownComponent.self)!.state == .done && ambulance == nil {
