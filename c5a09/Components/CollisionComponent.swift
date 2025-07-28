@@ -17,7 +17,7 @@ class CollisionComponent: GKComponent {
     static let playerCarIndexTop = 27
     private let hapticManager = HapticManager()
     static let playerCarIndexBottom = 14
-    static let showCollisionBox = true
+    static let showCollisionBox = false
     
     init(customBoxSize: CGSize? = nil, onCollision: ((CGPoint) -> Void)? = nil) {
         self.customBoxSize = customBoxSize
