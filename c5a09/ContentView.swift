@@ -23,7 +23,7 @@ struct ContentView: View {
                 .ignoresSafeArea()
                 .zIndex(0)
                 .gesture(
-                    DragGesture(minimumDistance: 10)
+                    DragGesture(minimumDistance: 0)
                         .onChanged { value in
                             if !isPanning {
                                 isPanning = true

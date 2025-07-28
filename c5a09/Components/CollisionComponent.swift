@@ -14,7 +14,7 @@ class CollisionComponent: GKComponent {
     var onCollision: ((CGPoint) -> Void)?
     var collided: Bool = false
     
-    static let playerCarIndexTop = 28
+    static let playerCarIndexTop = 27
     private let hapticManager = HapticManager()
     static let playerCarIndexBottom = 14
     static let showCollisionBox = true
@@ -60,16 +60,16 @@ class CollisionComponent: GKComponent {
         else { return }
         
         let entityIndex = positionRelativeComponent.index
-        playerCarNode.size.width *= 0.75
+        playerCarNode.size.width *= 0.7
         guard !collided
                 && entityIndex <= Self.playerCarIndexTop
                 && entityIndex >= Self.playerCarIndexBottom
                 && playerCarNode.intersects(collisionBox)
         else {
-            playerCarNode.size.width *= 1 / 0.75
+            playerCarNode.size.width *= 1 / 0.7
             return
         }
-        playerCarNode.size.width *= 1 / 0.75
+        playerCarNode.size.width *= 1 / 0.7
         guard let onCollision else { return }
         
         onCollision(node.position)

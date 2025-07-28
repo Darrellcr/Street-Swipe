@@ -58,6 +58,7 @@ class GameScene: SKScene, ObservableObject {
     
     static var crashAudioNode: SKAudioNode!
     static var gameOverAudioNode: SKAudioNode!
+    static var hornAudioNode: SKAudioNode!
     
     func spawnPoliceAlert() {
         if policeAlert == nil {
@@ -116,6 +117,13 @@ class GameScene: SKScene, ObservableObject {
         addChild(gameOverSoundNode)
         Self.gameOverAudioNode = gameOverSoundNode
         
+        let hornUrl = Bundle.main.url(forResource: "car horn", withExtension: "mp3")
+        Self.hornAudioNode = SKAudioNode(url: hornUrl!)
+        Self.hornAudioNode.autoplayLooped = true
+        Self.hornAudioNode.run(SKAction.stop())
+        addChild(Self.hornAudioNode)
+        
+        
         let scorePosition = CGPoint(x: size.width / 2, y: size.height - 100)
         Self.scoreEntity = ScoreLabel(text: 0, fontName: "Mine Mouse Regular", position: scorePosition)
         entityManager.add(Self.scoreEntity)
@@ -145,9 +153,27 @@ class GameScene: SKScene, ObservableObject {
     //        }
     //    }
     
+    func handleHorn(_ state: UIPanGestureRecognizer.State) {
+        switch state {
+        case .began:
+            Self.hornAudioNode.run(SKAction.play())
+        case .ended:
+            Self.hornAudioNode.run(SKAction.stop())
+        default:
+            break
+        }
+    }
+    
     func handlePan(translation: CGSize, velocity: CGSize, state: UIPanGestureRecognizer.State) {
         let dx = translation.width
         let dy = -translation.height
+        let minimumDistance: CGFloat = 10
+        
+        guard abs(dx) > minimumDistance || abs(dy) > minimumDistance else {
+            handleHorn(state)
+            return
+        }
+        Self.hornAudioNode.run(SKAction.stop())
 
         guard let playerCarSFXComponent = Self.playerCar.component(ofType: PlayerCarSFXComponent.self)
         else { return }
