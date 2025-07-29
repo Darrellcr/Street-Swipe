@@ -31,7 +31,10 @@ final class AudioManager {
         guard times > 0 else { return }
         let sfx = SKAction.playSoundFileNamed(name, waitForCompletion: true)
         let rep = SKAction.repeat(sfx, count: times)
-        scene?.run(rep)
+        scene?.run(.sequence([
+            SKAction.changeVolume(to: 0.8, duration: 0),
+            rep
+        ]))
     }
 
     // Loop (stoppable) — keep a node per key

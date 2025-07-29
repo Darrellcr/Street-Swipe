@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>Street Swiper</string>
+	<string>Street Swipe</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>MineMouseRegular.ttf</string>
