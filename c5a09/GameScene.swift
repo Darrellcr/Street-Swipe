@@ -72,6 +72,14 @@ class GameScene: SKScene, ObservableObject {
         }
     }
     
+    func spawnArrowAlert() {
+        let upArrowAlert = PoliceAlert(image_name: "arrow animation-Sheet", zPosition: 1000, scene: self, entityManager: entityManager, zRotation: 0, yPosition: 270)
+        entityManager.add(upArrowAlert)
+        
+        let downArrowAlert = PoliceAlert(image_name: "arrow animation-Sheet", zPosition: 1000, scene: self, entityManager: entityManager, zRotation: .pi, yPosition: 90)
+        entityManager.add(downArrowAlert)
+    }
+    
     override func didMove(to view: SKView) {
         //        soundManager.playBackgroundMusic()
         
@@ -131,6 +139,8 @@ class GameScene: SKScene, ObservableObject {
         let speedPosition = CGPoint(x: size.width / 2 - 110, y: size.height - 815)
         Self.speedEntity = SpeedLabel(text: 0, fontName: "Mine Mouse Regular", position: speedPosition)
         entityManager.add(Self.speedEntity)
+        
+        spawnArrowAlert()
         
 //        scoreLabel.fontName = "Mine Mouse Regular"
 //        scoreLabel.fontSize = 35
