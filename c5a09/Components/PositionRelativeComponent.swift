@@ -61,6 +61,8 @@ class PositionRelativeComponent: GKComponent {
         index = max(0, min(RoadComponent.positions.count - 1, index))
         if index <= 0 || index >= RoadComponent.positions.count - 5 {
             entityManager.remove(entity!)
+        } else {
+            node.zPosition = 10 + 300 - CGFloat(index)
         }
     }
 }

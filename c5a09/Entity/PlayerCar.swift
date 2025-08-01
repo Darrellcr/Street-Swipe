@@ -29,7 +29,7 @@ class PlayerCar: GKEntity {
     }
     
     class func create(scene: SKScene) -> PlayerCar {
-        let entity = PlayerCar(imageName: "player", zPosition: 11)
+        let entity = PlayerCar(imageName: "player", zPosition: 290)
         
         guard let spriteTextureSize = entity.component(ofType: RenderComponent.self)?.node.texture?.size(),
               let sizeComponent = entity.component(ofType: SizeComponent.self),
