@@ -1,5 +1,5 @@
 //
-//  StreetSwiper.swift
+//  StreetSwipe.swift
 //  c5a09
 //
 //  Created by Darrell Cornelius Rivaldo on 24/07/25.
@@ -9,10 +9,10 @@ import SwiftUI
 import SwiftData
 
 @main
-struct StreetSwiper: App {
+struct StreetSwipe: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LeaderboardView()
         }
         .modelContainer(for: BestScoreRecord.self)
     }

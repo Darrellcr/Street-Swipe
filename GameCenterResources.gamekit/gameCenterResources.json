@@ -1,0 +1,29 @@
+{
+  "meta" : {
+    "version" : "2024-11-15"
+  },
+  "resources" : {
+    "leaderboardLocalizations" : {
+      "com.streetswipe.topscore" : [
+        {
+          "formatterOverride" : "INTEGER",
+          "formatterSuffix" : "",
+          "formatterSuffixSingular" : "",
+          "locale" : "en-US",
+          "localID" : "com.streetswipe.topscore-en-US",
+          "name" : "Top Score"
+        }
+      ]
+    },
+    "leaderboards" : [
+      {
+        "archived" : false,
+        "defaultFormatter" : "INTEGER",
+        "referenceName" : "Top Score",
+        "scoreSortType" : "DESC",
+        "submissionType" : "BEST_SCORE",
+        "vendorIdentifier" : "com.streetswipe.topscore"
+      }
+    ]
+  }
+}
