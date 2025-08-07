@@ -375,6 +375,11 @@ class GameScene: SKScene, ObservableObject {
     }
     
     func gameOver(crashSoundPlayed: Bool = false) {
+        Task{
+            await Leaderboard.shared.submitScore(GameState.shared.score)
+            await Leaderboard.shared.loadData()
+        }
+        
         GameScene.gameOverAudioNode.run(SKAction.sequence([
             SKAction.wait(forDuration: (crashSoundPlayed) ? 0.5 : 0.0),
             SKAction.play()

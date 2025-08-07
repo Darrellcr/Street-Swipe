@@ -18,6 +18,7 @@ struct LandingView: View {
     
     @State private var animateTop = false
     @State private var animateBottom = false
+    @State private var showLeaderboard = false
     
     static let soundManager = SoundManager()
     static let hapticManager = HapticManager()
@@ -29,10 +30,10 @@ struct LandingView: View {
         
         Self.soundManager.playBackgroundMusic()
     }
-
+    
     var body: some View {
         ZStack {
-
+            
             VStack() {
                 Image("rear")
                     .resizable()
@@ -46,10 +47,9 @@ struct LandingView: View {
                 Image("dashboard")
                     .resizable()
                     .scaledToFit()
-//                    .frame(width: UIScreen.main.bounds.width + 50, height: 380)
+                //                    .frame(width: UIScreen.main.bounds.width + 50, height: 380)
                     .offset(y: animateBottom ? UIScreen.main.bounds.height : 0)
                     .animation(.easeOut(duration: 2), value: animateBottom)
-                
             }
             
             ExplosionAnimationView(frames: logoFrames)
@@ -69,9 +69,9 @@ struct LandingView: View {
                         isPressed = true
                         isAnimating = true
                         
-//                        let feedback = UINotificationFeedbackGenerator()
-//                        feedback.prepare()
-//                        feedback.notificationOccurred(.error)
+                        //                        let feedback = UINotificationFeedbackGenerator()
+                        //                        feedback.prepare()
+                        //                        feedback.notificationOccurred(.error)
                         
                         Self.hapticManager.playCrashHaptic(duration: 0.3)
                         
@@ -98,12 +98,27 @@ struct LandingView: View {
                 }
                 .frame(width: 90, height: 90)
                 
-//                .background(Color.white)
+                //                .background(Color.white)
                 .clipShape(.circle)
                 .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height - 180)
             }
+            
+            Button {
+                showLeaderboard = true
+                print(showLeaderboard)
+            } label: {
+                Text("Leaderboard")
+                    .frame(width: 300, height: 150)
+                    .background(Color.white)
+                    .foregroundColor(.black)
+                    .cornerRadius(20)
+            }
         }
         .ignoresSafeArea()
+        
+        if (showLeaderboard) {
+            LeaderboardView(showLeaderboard: $showLeaderboard)
+        }
     }
 }
 

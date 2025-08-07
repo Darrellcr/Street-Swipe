@@ -15,6 +15,7 @@ struct ContentView: View {
     @StateObject private var gameScene = GameScene(size: UIScreen.main.bounds.size)
     @State private var isPanning: Bool = false
     
+    @ObservedObject private var leaderboard = Leaderboard.shared
     @ObservedObject private var gameState = GameState.shared
     
     var body: some View {
@@ -62,6 +63,10 @@ struct ContentView: View {
         .task {
             GameState.shared.modelContext = modelContext
             GameState.shared.loadBestScore()
+            await leaderboard.authenticateLocalPlayer()
+//            await leaderboard.submitScore(100)
+            await leaderboard.loadData()
+            print(leaderboard.entries)
         }
     }
 }

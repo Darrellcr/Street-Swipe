@@ -12,7 +12,7 @@ import SwiftData
 struct StreetSwipe: App {
     var body: some Scene {
         WindowGroup {
-            LeaderboardView()
+            ContentView()
         }
         .modelContainer(for: BestScoreRecord.self)
     }
