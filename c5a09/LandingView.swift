@@ -108,7 +108,7 @@ struct LandingView: View {
                 print(showLeaderboard)
             } label: {
                 Text("Leaderboard")
-                    .frame(width: 300, height: 150)
+                    .frame(width: 150, height: 50)
                     .background(Color.white)
                     .foregroundColor(.black)
                     .cornerRadius(20)

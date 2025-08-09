@@ -76,7 +76,7 @@ final class GradingLabelComponent: GKComponent {
          settleDuration: TimeInterval = 0.08,
          holdBeforeFade: TimeInterval = 0.25,
          moveUpDistance: CGFloat = 80,
-         fontName: String = "Mine Mouse Regular",
+         fontName: String = "DepartureMono-Regular",
          fontSize: CGFloat = 48,
          onFinish: (() -> Void)? = nil) {
 

@@ -9,7 +9,7 @@ import Foundation
 import SpriteKit
 
 class SpeedLabel: GKEntity {
-    init(text: Int, fontName: String, fontSize: CGFloat = 30, fontColor: UIColor = .white, position: CGPoint, zPosition: CGFloat = 1000) {
+    init(text: Int, fontName: String, fontSize: CGFloat = 25, fontColor: UIColor = .white, position: CGPoint, zPosition: CGFloat = 1000) {
         super.init()
         
         let renderLabelComponent = RenderLabelComponent(type: .speed, text: text, fontName: fontName, fontSize: fontSize, fontColor: fontColor, position: position, zPosition: zPosition)

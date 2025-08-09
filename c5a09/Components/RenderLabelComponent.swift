@@ -18,7 +18,7 @@ class RenderLabelComponent: GKComponent {
         case speed
     }
     
-    init(type: LabelType, text: Int, fontName: String = "Mine Mouse Regular", fontSize: CGFloat = 0, fontColor: UIColor = .white, position: CGPoint, zPosition: CGFloat = 100) {
+    init(type: LabelType, text: Int, fontName: String = "DepartureMono-Regular", fontSize: CGFloat = 0, fontColor: UIColor = .white, position: CGPoint, zPosition: CGFloat = 100) {
         self.labelTye = type
         self.label = SKLabelNode(fontNamed: fontName)
         self.label.text = "\(text)"
