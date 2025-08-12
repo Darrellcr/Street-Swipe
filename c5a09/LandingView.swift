@@ -44,7 +44,7 @@ struct LandingView: View {
                 
                 Spacer()
                 
-                Image("dashboard")
+                Image("dashboard_new_empty")
                     .resizable()
                     .scaledToFit()
                 //                    .frame(width: UIScreen.main.bounds.width + 50, height: 380)
@@ -68,10 +68,6 @@ struct LandingView: View {
                         Self.soundManager.playTapSound()
                         isPressed = true
                         isAnimating = true
-                        
-                        //                        let feedback = UINotificationFeedbackGenerator()
-                        //                        feedback.prepare()
-                        //                        feedback.notificationOccurred(.error)
                         
                         Self.hapticManager.playCrashHaptic(duration: 0.3)
                         
@@ -97,22 +93,68 @@ struct LandingView: View {
                     }
                 }
                 .frame(width: 90, height: 90)
-                
-                //                .background(Color.white)
+                //                                .background(Color.white)
                 .clipShape(.circle)
                 .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height - 180)
             }
             
-            Button {
-                showLeaderboard = true
-                print(showLeaderboard)
-            } label: {
-                Text("Leaderboard")
-                    .frame(width: 150, height: 50)
-                    .background(Color.white)
-                    .foregroundColor(.black)
-                    .cornerRadius(20)
+            //            Button {
+            //                showLeaderboard = true
+            //                print(showLeaderboard)
+            //            }label: {
+            //                Text("leaderboard_icon")
+            //                    .frame(width: 150, height: 150)
+            //                    .background(Color.white)
+            //                    .foregroundColor(.black)
+            //                    .cornerRadius(20)
+            //            }
+            
+            HStack(spacing: 10){
+//                VStack {
+//                    Button(action: {
+//                        print("Settings")
+//                    }) {
+//                        Image("skin_icon")
+//                            .resizable()
+//                            .scaledToFit()
+//                            .frame(width: 70, height: 70)
+//                    }
+//                }
+//                .frame(width: 70, height: 70)
+//                .clipShape(.circle)
+
+                VStack {
+                    Button(action: {
+                        showLeaderboard = true
+                        print(showLeaderboard)
+                    }) {
+                        Image("leaderboard_icon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 70, height: 70)
+                    }
+                }
+                .frame(width: 70, height: 70)
+                .clipShape(.circle)
+
+//                VStack {
+//                    Button(action: {
+//                        print("Settings")
+//                    }) {
+//                        Image("sound_icon")
+//                            .resizable()
+//                            .scaledToFit()
+//                            .frame(width: 70, height: 70)
+//                    }
+//                }
+//                .frame(width: 70, height: 70)
+//                .clipShape(.circle)
             }
+            .padding(.horizontal)
+//            .frame(width: 70, height: 70)
+//            //                .background(Color.white)
+//            .clipShape(.circle)
+            .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height - 60)
         }
         .ignoresSafeArea()
         

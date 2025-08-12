@@ -46,9 +46,22 @@ struct LeaderboardView: View {
                    maxHeight: .infinity,
                    alignment: .bottom)
             
-            Button("Close") {             // tap → hide overlay
-                showLeaderboard = false   // toggles parent state
+            Button(action : {
+                showLeaderboard = false
+            }) {
+                Image("close_button")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 40)
             }
+            
+//            Button("Close") {             // tap → hide overlay
+//                showLeaderboard = false   // toggles parent state
+//            }
+            
+            Text("Close")
+                .foregroundStyle(Color.white)
+                .font(.custom("DepartureMono-Regular", size: 15))
         }
         //        .task {
         //            await leaderboard.authenticateLocalPlayer()
@@ -59,6 +72,6 @@ struct LeaderboardView: View {
     }
 }
 //
-//#Preview {
-//    LeaderboardView()
-//}
+#Preview {
+    LeaderboardView(showLeaderboard: .constant(true))
+}
