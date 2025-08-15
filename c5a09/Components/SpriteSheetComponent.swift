@@ -76,6 +76,7 @@ class SpriteSheetComponent: GKComponent {
         guard let renderComponent = entity?.component(ofType: RenderComponent.self)
         else {
             assert(false, "Missing required component: RenderComponent")
+            return
         }
         renderComponent.node.texture = textureFrames[curIndex]
     }

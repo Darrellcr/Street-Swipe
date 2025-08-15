@@ -46,6 +46,7 @@ class LightComponent: GKComponent {
         guard let node = entity?.component(ofType: RenderComponent.self)?.node
         else {
             assert(false, "Missing required component: RenderComponent")
+            return
         }
         
         self.node = node

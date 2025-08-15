@@ -30,6 +30,7 @@ class AlertPositionComponent: GKComponent {
         
         guard let node = entity?.component(ofType: RenderComponent.self)?.node else {
             assert(false, "Missing required RenderComponent")
+            return
         }
         
         self.node = node

@@ -40,6 +40,7 @@ class TrafficLightStateComponent: GKComponent {
         guard let lightComponent = entity?.component(ofType: LightComponent.self)
         else {
             assert(false, "Missing required component: LightComponent")
+            return
         }
         self.node = lightComponent.node
         self.lightNode = lightComponent.lightNode

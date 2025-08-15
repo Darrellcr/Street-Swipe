@@ -40,6 +40,7 @@ class SizeComponent: GKComponent {
         guard let node = entity?.component(ofType: RenderComponent.self)?.node
         else {
             assert(false, "RenderComponent not set")
+            return
         }
         self.node = node
         
