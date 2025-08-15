@@ -16,7 +16,7 @@ class Leaderboard: ObservableObject {
     @Published var playerCount: Int = 0
     
     private var leaderboard: GKLeaderboard?
-    private let leaderboardID: String = "high_score"
+    private let leaderboardID: String = "com.streetswipe.topscore"
     
     private func loadLeaderboard() async {
         guard leaderboard === nil else { return }
