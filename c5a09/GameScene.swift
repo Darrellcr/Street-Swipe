@@ -181,6 +181,7 @@ class GameScene: SKScene, ObservableObject {
         
         guard abs(dx) > minimumDistance || abs(dy) > minimumDistance else {
             handleHorn(state)
+            
             return
         }
         Self.hornAudioNode.run(SKAction.stop())

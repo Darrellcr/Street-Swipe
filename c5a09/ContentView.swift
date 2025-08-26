@@ -11,6 +11,7 @@ import SpriteKit
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @State private var distance: Int = 0
     @StateObject private var gameScene = GameScene(size: UIScreen.main.bounds.size)
     @State private var isPanning: Bool = false
@@ -26,6 +27,8 @@ struct ContentView: View {
                 .gesture(
                     DragGesture(minimumDistance: 0)
                         .onChanged { value in
+                            guard gameState.isRunning && !gameState.isGameOver else { return }
+                            
                             if !isPanning {
                                 isPanning = true
                                 gameScene.handlePan(
@@ -41,6 +44,8 @@ struct ContentView: View {
                                 state: .changed)
                         }
                         .onEnded { value in
+                            guard gameState.isRunning && !gameState.isGameOver else { return }
+                            
                             gameScene.handlePan(
                                 translation: value.translation,
                                 velocity: value.velocity,
@@ -48,6 +53,14 @@ struct ContentView: View {
                             isPanning = false
                         }
                 )
+                .onChange(of: scenePhase, initial: false) {
+                    switch scenePhase {
+                    case .active:
+                        GameScene.hornAudioNode.run(SKAction.stop())
+                    default:
+                        break
+                    }
+                }
             
             if !gameState.isRunning {
                 LandingView(gameScene: gameScene)
