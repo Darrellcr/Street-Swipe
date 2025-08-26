@@ -133,13 +133,13 @@ class GameScene: SKScene, ObservableObject {
         
         
         let scorePosition = CGPoint(x: size.width / 2, y: size.height - 100)
-        Self.scoreEntity = ScoreLabel(text: 0, fontName: "DepartureMono-Regular", position: scorePosition)
+        Self.scoreEntity = ScoreLabel(text: 0, fontName: "DepartureMono-Regular", fontSize: size.width * 0.08, position: scorePosition)
         entityManager.add(Self.scoreEntity)
         
-        let speedPosition = CGPoint(x: size.width / 2 - 110, y: size.height - 815)
-        Self.speedEntity = SpeedLabel(text: 0, fontName: "DepartureMono-Regular", position: speedPosition)
+        let speedPosition = CGPoint(x: size.width * 0.215, y: size.height * 0.04)
+        Self.speedEntity = SpeedLabel(text: 0, fontName: "DepartureMono-Regular", fontSize: size.width * 0.06, position: speedPosition)
         entityManager.add(Self.speedEntity)
-        
+         
         spawnArrowAlert()
         
 //        scoreLabel.fontName = "Mine Mouse Regular"
