@@ -36,6 +36,7 @@ class EntityManager {
         let moveSidewaysSystem = GKComponentSystem(componentClass: MoveSidewaysComponent.self)
         let gradingLabelSystem = GKComponentSystem(componentClass: GradingLabelComponent.self)
         let renderlabeLSystem = GKComponentSystem(componentClass: RenderLabelComponent.self)
+        let collectSystem = GKComponentSystem(componentClass: CollectComponent.self)
         return [
             countDownSystem,
             ambulanceSpeedSystem,
@@ -51,6 +52,7 @@ class EntityManager {
             moveSidewaysSystem,
             positionRelativeSystem,
             collisionSystem,
+            collectSystem,
             alertPositionSystem,
             lightSystem,
             trafficLightStateSystem,
@@ -124,7 +126,9 @@ class EntityManager {
             Explosion.self,
             Ambulance.self,
             AmbulanceAlert.self,
-            PoliceAlert.self
+            PoliceAlert.self,
+            Collectible.self,
+            DrunkAlert.self,
         ]
         
         if let gameScene = scene as? GameScene {

@@ -18,6 +18,8 @@ class GameScene: SKScene, ObservableObject {
     let gameCamera = GameCamera()
     static var playerCar: PlayerCar!
     
+    var drunkSystem: DrunkSystem!
+    
     var ambulance: Ambulance? = nil
     var ambulanceAlert: AmbulanceAlert? = nil
     var policeAlert: PoliceAlert? = nil
@@ -62,7 +64,7 @@ class GameScene: SKScene, ObservableObject {
     
     func spawnPoliceAlert() {
         if policeAlert == nil {
-            policeAlert = PoliceAlert(zPosition: 100, scene: self, entityManager: entityManager)
+            policeAlert = PoliceAlert(zPosition: 1000, scene: self, entityManager: entityManager)
             entityManager.add(policeAlert!)
         }
         else {
@@ -104,6 +106,8 @@ class GameScene: SKScene, ObservableObject {
         
         Self.speedometer = Speedometer.create(scene: self)
         entityManager.add(Self.speedometer)
+        
+        drunkSystem = DrunkSystem(scene: self, entityManager: entityManager)
         
         // BGM
 //        let bgmUrl = Bundle.main.url(forResource: "street_swipe_full_BGM", withExtension: "wav")
@@ -232,7 +236,7 @@ class GameScene: SKScene, ObservableObject {
     func panAction(_ dx: Double, _ dy: Double) {
         if GameState.shared.isGameOver { return }
         var unit = 150.0 / Double(gameCamera.maxX)
-        gameCamera.xShift = dx / unit
+        gameCamera.xShift = dx / unit * (drunkSystem.drunkState == 0 ? -1 : 1)
         unit = 380.0 / Double(speedConstants.count)
         RoadComponent.speedShift = Int(round(dy / unit))
     }
@@ -246,6 +250,8 @@ class GameScene: SKScene, ObservableObject {
             frameIndex = (frameIndex + 1) % speedConstants[0].count
             return
         }
+        
+        drunkSystem.update(deltaTime)
         
 //        AMBULANCE SPAWNING
 //        CASE 1: Start ambulance alert
@@ -344,6 +350,7 @@ class GameScene: SKScene, ObservableObject {
     
     func resetGame() {
         entityManager.reset()
+        drunkSystem.reset()
 //        distance = 0
 //        timer = 0
 //        isGameRunning = true
