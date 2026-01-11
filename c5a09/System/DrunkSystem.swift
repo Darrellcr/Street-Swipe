@@ -16,8 +16,10 @@ class DrunkSystem {
     var alcohol: Collectible? = nil
     var drunkAlert: DrunkAlert? = nil
     var drunkState: Int = -1
-    var drunkCoolDown: TimeInterval = 0
+    var drunkCoolDown: TimeInterval = 4
+    var drunkCoolDownTimer: TimeInterval = 0
     var canSpawnAlcohol: Bool { return alcohol == nil && drunkAlert == nil }
+    var shiftStrength: CGFloat = 3
     
     init(scene: GameScene, entityManager: EntityManager) {
         self.scene = scene
@@ -28,7 +30,7 @@ class DrunkSystem {
         despawnAlcohol()
         despawnDrunkAlert()
         drunkState = -1
-        drunkCoolDown = 0
+        drunkCoolDownTimer = 0
     }
     func spawnDrunkAlert() {
         drunkAlert = DrunkAlert(zPosition: 1000, scene: scene, entityManager: entityManager)
@@ -54,8 +56,8 @@ class DrunkSystem {
             print("Collect alchohol \(position)")
             self.spawnDrunkAlert()
             self.despawnAlcohol()
-            self.drunkState = Int.random(in: 0...2)
-            self.drunkCoolDown = 3
+            self.drunkState = Int.random(in: 1...2)
+            self.drunkCoolDownTimer = 3
             print("Set drunk state to \(self.drunkState)")
         }
         entityManager.add(alcohol!)
@@ -67,17 +69,16 @@ class DrunkSystem {
     }
     
     func update(_ deltaTime: CFTimeInterval) {
-        print("Can spawn: \(canSpawnAlcohol)")
+//        print("Can spawn: \(canSpawnAlcohol)")
         // Spawn alcohol
         if canSpawnAlcohol && Double.random(in: 0...1) < 0.005 {
-            print("SPAWN ALCOHOL")
             spawnAlcohol()
         }
         
         // Cooldown
         if drunkState != -1 {
-            drunkCoolDown -= deltaTime
-            if drunkCoolDown <= 0 {
+            drunkCoolDownTimer -= deltaTime
+            if drunkCoolDownTimer <= 0 {
                 reset()
             }
         }
@@ -85,11 +86,13 @@ class DrunkSystem {
         // Drunk state
         if drunkState == 1 {
             let unit = 150.0 / Double(scene.gameCamera.maxX)
-            scene.gameCamera.xShift -= 2 / unit
+//            scene.gameCamera.xShift -= 2 / unit
+            scene.gameCamera.xBeforePan -= shiftStrength / unit
         }
         if drunkState == 2 {
             let unit = 150.0 / Double(scene.gameCamera.maxX)
-            scene.gameCamera.xShift += 2 / unit
+//            scene.gameCamera.xShift += 2 / unit
+            scene.gameCamera.xBeforePan += shiftStrength / unit
         }
     }
 }
