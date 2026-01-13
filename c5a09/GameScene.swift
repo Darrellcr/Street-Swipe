@@ -109,6 +109,9 @@ class GameScene: SKScene, ObservableObject {
         
         drunkSystem = DrunkSystem(scene: self, entityManager: entityManager)
         
+        let highway = Highway(scene: self, entityManager: entityManager)
+        entityManager.add(highway)
+        
         // BGM
 //        let bgmUrl = Bundle.main.url(forResource: "street_swipe_full_BGM", withExtension: "wav")
 //        let bgmNode = SKAudioNode(url: bgmUrl!)

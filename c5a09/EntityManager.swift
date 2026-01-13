@@ -37,6 +37,9 @@ class EntityManager {
         let gradingLabelSystem = GKComponentSystem(componentClass: GradingLabelComponent.self)
         let renderlabeLSystem = GKComponentSystem(componentClass: RenderLabelComponent.self)
         let collectSystem = GKComponentSystem(componentClass: CollectComponent.self)
+        let highwaySystem = GKComponentSystem(componentClass: HighwayComponent.self)
+        let ticketSpawnerSystem = GKComponentSystem(componentClass: TicketSpawnerComponent.self)
+        let clockSpawnerSystem = GKComponentSystem(componentClass: ClockSpawnerComponent.self)
         return [
             countDownSystem,
             ambulanceSpeedSystem,
@@ -45,6 +48,9 @@ class EntityManager {
             roadSystem,
             playerCarSFXSystem,
             spawnerSystem,
+            ticketSpawnerSystem,
+            clockSpawnerSystem,
+            highwaySystem,
             trafficLightSpawnerSystem,
             zebraCrossSystem,
             zebraCrossCollisionSystem,

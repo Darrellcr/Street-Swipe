@@ -11,15 +11,15 @@ import SpriteKit
 
 class CollectComponent: GKComponent {
     var customBoxSize: CGSize?
-    var onCollision: ((CGPoint) -> Void)?
+    var onCollision: ((CGPoint, GKEntity) -> Void)?
     var collided: Bool = false
     
     static let playerCarIndexTop = 27
     private let hapticManager = HapticManager()
     static let playerCarIndexBottom = 14
-    static let showCollisionBox = false
+    static let showCollisionBox = true
     
-    init(customBoxSize: CGSize? = nil, onCollision: ((CGPoint) -> Void)? = nil) {
+    init(customBoxSize: CGSize? = nil, onCollision: ((CGPoint, GKEntity) -> Void)? = nil) {
         self.customBoxSize = customBoxSize
         self.onCollision = onCollision
         
@@ -72,7 +72,7 @@ class CollectComponent: GKComponent {
         playerCarNode.size.width *= 1 / 0.7
         guard let onCollision else { return }
         
-        onCollision(node.position)
+        onCollision(node.position, entity!)
         // RoadComponent.speedBeforePan = 0
         // RoadComponent.speedShift = 0
         

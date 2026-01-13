@@ -52,7 +52,7 @@ class DrunkSystem {
             width: 180,
             entityManager: entityManager,
             collisionBoxSize: CGSize(width: 120, height: 200)
-        ) { position in
+        ) { position, _ in
             print("Collect alchohol \(position)")
             self.spawnDrunkAlert()
             self.despawnAlcohol()

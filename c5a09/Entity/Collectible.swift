@@ -10,7 +10,7 @@ import GameplayKit
 import SpriteKit
 
 class Collectible: GKEntity {
-    init(imageName: String, imageRows: Int, imageCols: Int, index: Int, offsetPct: CGFloat, scene: GameScene, width: CGFloat, entityManager: EntityManager, collisionBoxSize: CGSize? = nil, onCollision: ((CGPoint) -> Void)? = nil) {
+    init(imageName: String, imageRows: Int, imageCols: Int, index: Int, offsetPct: CGFloat, scene: GameScene, width: CGFloat, entityManager: EntityManager, collisionBoxSize: CGSize? = nil, onCollision: ((CGPoint, GKEntity) -> Void)? = nil) {
         super.init()
         
         let renderComponent = RenderComponent(texture: SKTexture(imageNamed: imageName), zPosition: 100)
