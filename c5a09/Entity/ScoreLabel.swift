@@ -21,11 +21,3 @@ class ScoreLabel: GKEntity {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-//        let scoreLabel = SKLabelNode(fontNamed: "Mini Mouse Regular")
-//        scoreLabel.fontName = "Mine Mouse Regular"
-//        scoreLabel.fontSize = 35
-//        scoreLabel.fontColor = .white
-//        scoreLabel.position = CGPoint(x: size.width * 0.5, y: size.height - 100)
-//        scoreLabel.zPosition = 1000
-//        addChild(scoreLabel)

@@ -11,6 +11,7 @@ import GameplayKit
 class EntityManager {
     var entities = Set<GKEntity>()
     var toRemove = Set<GKEntity>()
+    var toAdd = Set<GKEntity>()
 
     lazy var componentSystems: [GKComponentSystem] = {
         let roadSystem = GKComponentSystem(componentClass: RoadComponent.self)
@@ -36,6 +37,10 @@ class EntityManager {
         let moveSidewaysSystem = GKComponentSystem(componentClass: MoveSidewaysComponent.self)
         let gradingLabelSystem = GKComponentSystem(componentClass: GradingLabelComponent.self)
         let renderlabeLSystem = GKComponentSystem(componentClass: RenderLabelComponent.self)
+        let collectSystem = GKComponentSystem(componentClass: CollectComponent.self)
+        let highwaySystem = GKComponentSystem(componentClass: HighwayComponent.self)
+        let ticketSpawnerSystem = GKComponentSystem(componentClass: TicketSpawnerComponent.self)
+        let clockSpawnerSystem = GKComponentSystem(componentClass: ClockSpawnerComponent.self)
         return [
             countDownSystem,
             ambulanceSpeedSystem,
@@ -44,6 +49,9 @@ class EntityManager {
             roadSystem,
             playerCarSFXSystem,
             spawnerSystem,
+            ticketSpawnerSystem,
+            clockSpawnerSystem,
+            highwaySystem,
             trafficLightSpawnerSystem,
             zebraCrossSystem,
             zebraCrossCollisionSystem,
@@ -51,15 +59,16 @@ class EntityManager {
             moveSidewaysSystem,
             positionRelativeSystem,
             collisionSystem,
+            collectSystem,
             alertPositionSystem,
             lightSystem,
             trafficLightStateSystem,
             speedSystem,
             spriteSheetSystem,
             spawnerGCSystem,
-            renderlabeLSystem,
             gradingLabelSystem,
-            renderSystem
+            renderSystem,
+            renderlabeLSystem
         ]
     }()
     
@@ -80,13 +89,18 @@ class EntityManager {
             scene.addChild(playerSFXComponent.decelerationNode)
         }
         
-        if let labelNode = entity.component(ofType: RenderLabelComponent.self)?.label {
+        if let labelNode = entity.component(ofType: RenderLabelComponent.self)?.label,
+           labelNode.parent == nil {
             scene.addChild(labelNode)
         }
         
         for componentSystem in componentSystems {
             componentSystem.addComponent(foundIn: entity)
         }
+    }
+    
+    func deferAdd(_ entity: GKEntity) {
+        toAdd.insert(entity)
     }
     
     func remove(_ entity: GKEntity) {
@@ -103,12 +117,33 @@ class EntityManager {
             componentSystem.update(deltaTime: deltaTime)
         }
         
+        for entity in toAdd {
+            entities.insert(entity)
+            
+            if let spriteNode = entity.component(ofType: RenderComponent.self)?.node {
+                scene.addChild(spriteNode)
+            }
+            if let playerSFXComponent = entity.component(ofType: PlayerCarSFXComponent.self) {
+                scene.addChild(playerSFXComponent.accelerationNode)
+                scene.addChild(playerSFXComponent.decelerationNode)
+            }
+            
+            if let labelNode = entity.component(ofType: RenderLabelComponent.self)?.label,
+               labelNode.parent == nil {
+                scene.addChild(labelNode)
+            }
+            
+            for componentSystem in componentSystems {
+                componentSystem.addComponent(foundIn: entity)
+            }
+        }
+        toAdd.removeAll()
+        
         for entity in toRemove {
             for componentSystem in componentSystems {
                 componentSystem.removeComponent(foundIn: entity)
             }
         }
-        
         toRemove.removeAll()
     }
     
@@ -124,7 +159,9 @@ class EntityManager {
             Explosion.self,
             Ambulance.self,
             AmbulanceAlert.self,
-            PoliceAlert.self
+            PoliceAlert.self,
+            Collectible.self,
+            DrunkAlert.self,
         ]
         
         if let gameScene = scene as? GameScene {

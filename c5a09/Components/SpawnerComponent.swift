@@ -32,28 +32,24 @@ class SpawnerComponent: GKComponent {
     
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
-        var spawnCondition: Bool
+        
+        guard canSpawn() else { return }
+        
+        let obstacle = obstacleFactory.create(obstacleType, scene: scene, entityManager: entityManager)
+        entityManager.add(obstacle)
+        obstacles.append(obstacle)
+    }
+    
+    private func canSpawn() -> Bool {
+        guard scene.spawnerEnabled else { return false }
+        
         let lastObstacleIndex = obstacles.count == 0
         ? 0
         : obstacles[obstacles.count - 1].component(ofType: PositionRelativeComponent.self)?.index
         
-        if let customSpawnCondition {
-            spawnCondition = customSpawnCondition(obstacles.count, lastObstacleIndex ?? 0)
-        } else {
-            spawnCondition = Double.random(in: 0...1) < 0.003 && RoadComponent.speed > 0 && obstacles.count < 3
+        guard let customSpawnCondition else {
+            return Double.random(in: 0...1) < 0.003 && RoadComponent.speed > 0 && obstacles.count < 3
         }
-        
-        if spawnCondition {
-            let obstacle = obstacleFactory.create(obstacleType, scene: scene, entityManager: entityManager)
-
-            entityManager.add(obstacle)
-            obstacles.append(obstacle)
-//            print("spawned obstacle")
-        }
-//        entityManager.toRemove.forEach { entity in
-//            guard obstacles.contains(where: { $0 === entity }) else { return }
-//        
-//            obstacles.removeAll(where: { $0 === entity })
-//        }
+        return customSpawnCondition(obstacles.count, lastObstacleIndex ?? 0)
     }
 }

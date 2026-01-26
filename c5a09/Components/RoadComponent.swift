@@ -15,8 +15,10 @@ class RoadComponent: GKComponent {
     
     static var speedBeforePan: Int = 0
     static var speedShift: Int = 0
+    static var minimumSpeed: Int = 0
+    static var maximumSpeed: Int = 17
     static var speed: Int {
-        max(min(speedBeforePan + speedShift, 17), 0)
+        max(min(speedBeforePan + speedShift, maximumSpeed), minimumSpeed)
     }
     static var scales: [CGFloat] = []
     static var positions: [CGPoint] = []

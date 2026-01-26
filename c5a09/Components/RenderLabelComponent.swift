@@ -16,6 +16,8 @@ class RenderLabelComponent: GKComponent {
     enum LabelType {
         case score
         case speed
+        case highwayTimer
+        case other
     }
     
     init(type: LabelType, text: Int, fontName: String = "DepartureMono-Regular", fontSize: CGFloat = 0, fontColor: UIColor = .white, position: CGPoint, zPosition: CGFloat = 100) {
@@ -32,18 +34,35 @@ class RenderLabelComponent: GKComponent {
         updateLabelText(with: text)
     }
     
+    init(type: LabelType, text: String, fontName: String = "DepartureMono-Regular", fontSize: CGFloat = 0, fontColor: UIColor = .white, position: CGPoint, zPosition: CGFloat = 100) {
+        self.labelTye = type
+        self.label = SKLabelNode(fontNamed: fontName)
+        self.label.fontSize = fontSize
+        self.label.fontColor = fontColor
+        self.label.position = position
+        self.label.zPosition = zPosition
+        
+        super.init()
+        
+        updateLabelText(with: text)
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     func updateLabelText(with newValue: Int) {
         switch labelTye {
-        case .score:
-            label.text = "\(newValue)"
         case .speed:
             let speedValue = newValue > 0 ? 10 * newValue + 10 : 0
             label.text = "\(speedValue)"
+        default:
+            label.text = "\(newValue)"
         }
+    }
+    
+    func updateLabelText(with newValue: String) {
+        label.text = newValue
     }
     
     override func update(deltaTime seconds: TimeInterval) {
