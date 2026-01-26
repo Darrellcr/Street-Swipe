@@ -19,16 +19,21 @@ class RenderComponent: GKComponent {
         super.init()
     }
     
-    init(texture: SKTexture, zPosition: CGFloat = 0) {
+    init(texture: SKTexture, zPosition: CGFloat = 0, size: CGSize? = nil) {
         texture.filteringMode = .nearest
         node = SKSpriteNode(texture: texture)
         node.zPosition = zPosition
+        if let size {
+            node.size = size
+        }
         
         super.init()
     }
     
-    init(color: UIColor, size: CGSize) {
+    init(color: UIColor, size: CGSize, position: CGPoint = .zero, zPosition: CGFloat = 0) {
         node = SKSpriteNode(color: color, size: size)
+        node.zPosition = zPosition
+        node.position = position
         
         super.init()
     }

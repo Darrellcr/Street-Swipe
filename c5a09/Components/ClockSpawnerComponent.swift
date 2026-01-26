@@ -9,14 +9,17 @@ import GameplayKit
 
 class ClockSpawnerComponent: GKComponent {
     private var timer: TimeInterval = 0.0
-    private let baseCooldown: TimeInterval = 3.0
-    private let cooldownVariationRange: TimeInterval = 1.0
+    private let baseCooldown: TimeInterval = 2.0
+    private let cooldownVariationRange: TimeInterval = 2.0
     private let roadLastIndex = RoadComponent.positions.count - 6
     private var clocks: Set<GKEntity> = []
     
+    private let timeAdded: TimeInterval = 2.5
+    private let minimumDistanceBetweenClocks: Int = 100
+    private var lastClockAdded: GKEntity? = nil
+    
     private let scene: GameScene
     private let entityManager: EntityManager
-    private var highwayComponent: HighwayComponent!
     
     init(scene: GameScene, entityManager: EntityManager) {
         self.scene = scene
@@ -30,17 +33,30 @@ class ClockSpawnerComponent: GKComponent {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func didAddToEntity() {
-        highwayComponent = entity!.component(ofType: HighwayComponent.self)
-    }
-    
     override func update(deltaTime seconds: TimeInterval) {
-//        guard highwayComponent.onHighway else { return }
+        super.update(deltaTime: seconds)
+        
+        removeOutOfScreenClocks()
+        if HighwayComponent.timer <= 0 {
+            removeAllClocks()
+        }
+        guard HighwayComponent.onHighway else { return }
         
         timer -= seconds
-        guard timer <= 0 else { return }
+        guard canSpawn() else { return }
         spawnClock()
         resetTimer()
+    }
+    
+    private func canSpawn() -> Bool {
+        guard timer <= 0 && clocks.count < 3 else { return false }
+        guard clocks.count > 0 else { return true }
+        
+        guard let lastPosition = lastClockAdded?.component(ofType: PositionRelativeComponent.self)?.index
+        else { return true }
+        
+        let distance = abs(lastPosition - roadLastIndex)
+        return distance >= minimumDistanceBetweenClocks
     }
     
     private func spawnClock() {
@@ -56,18 +72,15 @@ class ClockSpawnerComponent: GKComponent {
             collisionBoxSize: CGSize(width: 150, height: 170)
         ) { position, entity in
             print("Collect clock \(position)")
-//            self.spawnDrunkAlert()
-//            self.despawnAlcohol()
-//            self.drunkState = Int.random(in: 1...2)
-//            self.drunkCoolDownTimer = 3
-//            print("Set drunk state to \(self.drunkState)")
-            self.despawnTicket(entity)
+            HighwayComponent.timer += self.timeAdded
+            self.despawnClock(entity)
         }
         entityManager.add(clock)
         clocks.insert(clock)
+        lastClockAdded = clock
     }
     
-    private func despawnTicket(_ clock: GKEntity) {
+    private func despawnClock(_ clock: GKEntity) {
         entityManager.remove(clock)
         clocks.remove(clock)
     }
@@ -85,7 +98,23 @@ class ClockSpawnerComponent: GKComponent {
             }
         }
         for clock in toRemove {
-            despawnTicket(clock)
+            despawnClock(clock)
         }
+    }
+    
+    private func removeAllClocks() {
+        var toRemove = clocks
+        for clock in toRemove {
+            despawnClock(clock)
+        }
+    }
+    
+    public func reset() {
+        for clock in clocks {
+            entityManager.remove(clock)
+        }
+        clocks.removeAll()
+        lastClockAdded = nil
+        timer = 0
     }
 }

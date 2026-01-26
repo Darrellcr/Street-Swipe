@@ -46,7 +46,11 @@ class TrafficLightSpawnerComponent: GKComponent {
 //                Self.rightTrafficLight = nil
 //            }
 //        }
-        
+        guard scene.spawnerEnabled else { return }
+        let highwayTicket = TicketSpawnerComponent.ticket
+        let highwayTicketPosition = highwayTicket?.component(ofType: PositionRelativeComponent.self)?.index
+        guard highwayTicket == nil || highwayTicketPosition == nil || highwayTicketPosition! > 50
+        else { return }
         spawnZebraCross()
         spawnPocong()
         spawnTrafficLights()

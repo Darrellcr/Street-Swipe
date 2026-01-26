@@ -13,15 +13,21 @@ class CollectComponent: GKComponent {
     var customBoxSize: CGSize?
     var onCollision: ((CGPoint, GKEntity) -> Void)?
     var collided: Bool = false
+    var position: CGPoint
     
     static let playerCarIndexTop = 27
     private let hapticManager = HapticManager()
     static let playerCarIndexBottom = 14
     static let showCollisionBox = true
     
-    init(customBoxSize: CGSize? = nil, onCollision: ((CGPoint, GKEntity) -> Void)? = nil) {
+    init(
+        customBoxSize: CGSize? = nil,
+        position: CGPoint = .init(x: 0.5, y: 0.5),
+        onCollision: ((CGPoint, GKEntity) -> Void)? = nil
+    ) {
         self.customBoxSize = customBoxSize
         self.onCollision = onCollision
+        self.position = position
         
         super.init()
     }
@@ -38,7 +44,10 @@ class CollectComponent: GKComponent {
         
         var rect: CGRect = node.calculateAccumulatedFrame()
         if let customBoxSize {
-            let origin = CGPoint(x: customBoxSize.width * -0.5, y: customBoxSize.height * -0.5)
+            let origin = CGPoint(
+                x: customBoxSize.width * (position.x - 1.0),
+                y: customBoxSize.height * (position.y - 1.0)
+            )
             rect = CGRect(origin: origin, size: customBoxSize)
         }
         

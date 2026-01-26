@@ -71,7 +71,8 @@ class DrunkSystem {
     func update(_ deltaTime: CFTimeInterval) {
 //        print("Can spawn: \(canSpawnAlcohol)")
         // Spawn alcohol
-        if canSpawnAlcohol && Double.random(in: 0...1) < 0.005 {
+        if canSpawnAlcohol
+            && (HighwayComponent.onHighway || Double.random(in: 0...1) < 0.005) {
             spawnAlcohol()
         }
         
@@ -82,6 +83,8 @@ class DrunkSystem {
                 reset()
             }
         }
+        
+        guard !scene.gameOverStop else { return }
         
         // Drunk state
         if drunkState == 1 {
@@ -94,5 +97,15 @@ class DrunkSystem {
 //            scene.gameCamera.xShift += 2 / unit
             scene.gameCamera.xBeforePan += shiftStrength / unit
         }
+    }
+    
+    func removeOutOfScreenAlcohol() {
+        guard let alcohol = self.alcohol else { return }
+        guard let positionRelativeComponent = alcohol.component(ofType: PositionRelativeComponent.self)
+        else { return }
+        
+        let position = positionRelativeComponent.index
+        guard position < 1 else { return }
+        despawnAlcohol()
     }
 }

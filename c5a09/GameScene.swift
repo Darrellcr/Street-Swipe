@@ -17,18 +17,21 @@ class GameScene: SKScene, ObservableObject {
     var lastUpdateTime: TimeInterval = 0
     let gameCamera = GameCamera()
     static var playerCar: PlayerCar!
+    var spawnerEnabled: Bool = true
     
     var drunkSystem: DrunkSystem!
     
     var ambulance: Ambulance? = nil
     var ambulanceAlert: AmbulanceAlert? = nil
     var policeAlert: PoliceAlert? = nil
+    var highway: Highway? = nil
     
     static var speedometer: Speedometer!
     static var scoreEntity: ScoreLabel!
     static var speedEntity: SpeedLabel!
     
     private let soundManager = SoundManager()
+    var spawners: [Spawner] = []
     
     let perfectAudio = SKAudioNode(url: Bundle.main.url(forResource: "perfect", withExtension: "wav")!)
     
@@ -109,9 +112,9 @@ class GameScene: SKScene, ObservableObject {
         
         drunkSystem = DrunkSystem(scene: self, entityManager: entityManager)
         
-        let highway = Highway(scene: self, entityManager: entityManager)
-        entityManager.add(highway)
-        
+        highway = Highway(scene: self, entityManager: entityManager)
+        entityManager.add(highway!)
+//        
         // BGM
 //        let bgmUrl = Bundle.main.url(forResource: "street_swipe_full_BGM", withExtension: "wav")
 //        let bgmNode = SKAudioNode(url: bgmUrl!)
@@ -354,6 +357,7 @@ class GameScene: SKScene, ObservableObject {
     func resetGame() {
         entityManager.reset()
         drunkSystem.reset()
+        highway?.reset()
 //        distance = 0
 //        timer = 0
 //        isGameRunning = true
@@ -379,6 +383,10 @@ class GameScene: SKScene, ObservableObject {
         let trafficLightSpawner = Spawner(entityManager: entityManager, scene: self)
         entityManager.add(trafficLightSpawner)
         
+        spawners.append(truckSpawner)
+        spawners.append(carSpawner)
+        spawners.append(motorbikeSpawner)
+        
         gameCamera.xBeforePan = 0
         gameCamera.xShift = 0
         RoadComponent.speedBeforePan = 2
@@ -396,6 +404,7 @@ class GameScene: SKScene, ObservableObject {
             SKAction.play()
         ]))
         
+        RoadComponent.minimumSpeed = 0
         RoadComponent.speedBeforePan = 0
         RoadComponent.speedShift = 0
         gameOverStop = true

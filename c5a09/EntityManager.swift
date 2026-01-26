@@ -11,6 +11,7 @@ import GameplayKit
 class EntityManager {
     var entities = Set<GKEntity>()
     var toRemove = Set<GKEntity>()
+    var toAdd = Set<GKEntity>()
 
     lazy var componentSystems: [GKComponentSystem] = {
         let roadSystem = GKComponentSystem(componentClass: RoadComponent.self)
@@ -65,9 +66,9 @@ class EntityManager {
             speedSystem,
             spriteSheetSystem,
             spawnerGCSystem,
-            renderlabeLSystem,
             gradingLabelSystem,
-            renderSystem
+            renderSystem,
+            renderlabeLSystem
         ]
     }()
     
@@ -88,13 +89,18 @@ class EntityManager {
             scene.addChild(playerSFXComponent.decelerationNode)
         }
         
-        if let labelNode = entity.component(ofType: RenderLabelComponent.self)?.label {
+        if let labelNode = entity.component(ofType: RenderLabelComponent.self)?.label,
+           labelNode.parent == nil {
             scene.addChild(labelNode)
         }
         
         for componentSystem in componentSystems {
             componentSystem.addComponent(foundIn: entity)
         }
+    }
+    
+    func deferAdd(_ entity: GKEntity) {
+        toAdd.insert(entity)
     }
     
     func remove(_ entity: GKEntity) {
@@ -111,12 +117,33 @@ class EntityManager {
             componentSystem.update(deltaTime: deltaTime)
         }
         
+        for entity in toAdd {
+            entities.insert(entity)
+            
+            if let spriteNode = entity.component(ofType: RenderComponent.self)?.node {
+                scene.addChild(spriteNode)
+            }
+            if let playerSFXComponent = entity.component(ofType: PlayerCarSFXComponent.self) {
+                scene.addChild(playerSFXComponent.accelerationNode)
+                scene.addChild(playerSFXComponent.decelerationNode)
+            }
+            
+            if let labelNode = entity.component(ofType: RenderLabelComponent.self)?.label,
+               labelNode.parent == nil {
+                scene.addChild(labelNode)
+            }
+            
+            for componentSystem in componentSystems {
+                componentSystem.addComponent(foundIn: entity)
+            }
+        }
+        toAdd.removeAll()
+        
         for entity in toRemove {
             for componentSystem in componentSystems {
                 componentSystem.removeComponent(foundIn: entity)
             }
         }
-        
         toRemove.removeAll()
     }
     

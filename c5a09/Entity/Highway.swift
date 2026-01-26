@@ -9,18 +9,28 @@ import GameplayKit
 //import SpriteKit
 
 class Highway: GKEntity {
+    private let highwayComponent: HighwayComponent
+    private let ticketSpawnerComponent: TicketSpawnerComponent
+    private let clockSpawnerComponent: ClockSpawnerComponent
+    
     init(scene: GameScene, entityManager: EntityManager) {
+        highwayComponent = HighwayComponent(scene: scene, entityManager: entityManager)
+        ticketSpawnerComponent = TicketSpawnerComponent(scene: scene, entityManager: entityManager)
+        clockSpawnerComponent = ClockSpawnerComponent(scene: scene, entityManager: entityManager)
+
         super.init()
-        
-        let highwayComponent = HighwayComponent()
         addComponent(highwayComponent)
-        let ticketSpawnerComponent = TicketSpawnerComponent(scene: scene, entityManager: entityManager)
         addComponent(ticketSpawnerComponent)
-        let clockSpawnerComponent = ClockSpawnerComponent(scene: scene, entityManager: entityManager)
         addComponent(clockSpawnerComponent)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    public func reset() {
+        highwayComponent.reset()
+        ticketSpawnerComponent.reset()
+        clockSpawnerComponent.reset()
     }
 }

@@ -15,12 +15,14 @@ class PositionRelativeComponent: GKComponent {
     let entityManager: EntityManager
     var zPosition: CGFloat = 0
     private var node: SKSpriteNode!
+    private var anchor: CGPoint?
     
-    init(index: Int, offsetPct: CGFloat, scene: GameScene, entityManager: EntityManager) {
+    init(index: Int, offsetPct: CGFloat, scene: GameScene, entityManager: EntityManager, anchor: CGPoint? = nil) {
         self.index = index
         self.offsetPct = offsetPct
         self.scene = scene
         self.entityManager = entityManager
+        self.anchor = anchor
         
         super.init()
     }
@@ -36,8 +38,10 @@ class PositionRelativeComponent: GKComponent {
             assert(false, "Missing required RenderComponent")
             return
         }
-        
+//        node.anchorPoint = .init(x: 0.5, y: .zero)
         self.node = node
+        guard let anchor else { return }
+        self.node.anchorPoint = anchor
     }
     
     override func update(deltaTime seconds: TimeInterval) {
